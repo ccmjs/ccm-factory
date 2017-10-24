@@ -126,6 +126,11 @@
                       "inner": "Komponenten spezifische Konfiguration"
                     }
                   ]
+                },
+                {
+                  "tag": "button",
+                  "inner": "Neue Komponente generieren",
+                  "onclick": "%generateFromGuidedClick%"
                 }
               ]
             },
@@ -155,7 +160,8 @@
           loadComponentClick: loadComponent,
           configEditorChosenClick: configEditorChosen,
           guidedEditingChosenClick: guidedEditingChosen,
-          generateFromEditorClick: generateNewComponentFromEditor
+          generateFromEditorClick: generateNewComponentFromEditor,
+          generateFromGuidedClick: generateNewComponentFromGuided
         });
 
         this.element.appendChild(mainElement);
@@ -224,6 +230,7 @@
           mainElement.querySelector('#chooseEditingStyle').style.display = 'none';
           mainElement.querySelector('#areaForGuidedEditing').style.display = 'block';
           fillInCCMGuidedFields();
+          generateComponentSpecificFields();
         }
 
         /**
@@ -234,6 +241,58 @@
           mainElement.querySelector('#guided_nameOfNewComponent').value = newComponent.name + '-new';
           // ccm url
           mainElement.querySelector('#guided_ccmURL').value = newComponent.ccm;
+        }
+
+        /**
+         * Analyses the config of a given component and generates fields to edit it
+         */
+        function generateComponentSpecificFields() {
+          for (var key in newComponent.config) {
+            //console.log(key + " -> " + newComponent.config[key] + " (" + typeof(newComponent.config[key])+ ")");
+            switch (typeof(newComponent.config[key])) {
+              case "string":
+                generateNewStringField(key, newComponent.config[key]);
+                break;
+              default:
+                console.log('!Parsing not implemented! ' + key + ' -> ' + newComponent.config[key] + ' (' + typeof(newComponent.config[key])+ ')');
+                break;
+            }
+          }
+        }
+
+        /**
+         * Generates an input to modify a string
+         * @param key
+         * @param value
+         */
+        function generateNewStringField(key, value) {
+          var caption = document.createElement('div');
+          caption.innerHTML = key + ':';
+          var input = document.createElement('input');
+          input.value = value;
+          input.id = 'guidedConfParameter_' + key;
+          mainElement.querySelector('#guided_componentSpecificConfiguration').appendChild(caption);
+          mainElement.querySelector('#guided_componentSpecificConfiguration').appendChild(input);
+        }
+
+        /**
+         * Generates a new component from the guided process
+         */
+        function generateNewComponentFromGuided() {
+          // name
+          newComponent.name = mainElement.querySelector('#guided_nameOfNewComponent').value;
+          // ccm url
+          newComponent.ccm = mainElement.querySelector('#guided_ccmURL').value;
+          // custom fields
+          var customFields = mainElement.querySelectorAll('input');
+          for (var i = 0; i < customFields.length; i++) {
+            if (customFields[i].id.startsWith('guidedConfParameter_')) {
+              var keyToChange = customFields[i].id.slice(20);
+              newComponent.config[keyToChange] = customFields[i].value;
+            }
+          }
+
+          displayNewComponent();
         }
 
         /**
