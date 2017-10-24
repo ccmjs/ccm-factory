@@ -16,6 +16,7 @@
             {
               "tag": "input",
               "id": "componentURL",
+              "size": "70",
               "value": "http://localhost:5000/resources/test_components/ccm.navmenu.js"
             },
             {
@@ -83,8 +84,48 @@
               "style": "display: none;",
               "inner": [
                 {
-                  "tag": "div",
+                  "tag": "h2",
                   "inner": "Geführter Modus zum Editieren der Konfiguration"
+                },
+                {
+                  "inner": [
+                    {
+                      "tag": "h4",
+                      "inner": "CCM Konfiguration"
+                    },
+                    {
+                      "inner": [
+                        {
+                          "inner": "Name der neuen Komponente: "
+                        },
+                        {
+                          "tag": "input",
+                          "id": "guided_nameOfNewComponent"
+                        }
+                      ]
+                    },
+                    {
+                      "inner": [
+                        {
+                          "inner": "URL von CCM: "
+                        },
+                        {
+                          "tag": "input",
+                          "size": "50",
+                          "id": "guided_ccmURL"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "id": "guided_componentSpecificConfiguration",
+                  "inner": [
+                    {
+                      "tag": "h4",
+                      "inner": "Komponenten spezifische Konfiguration"
+                    }
+                  ]
                 }
               ]
             },
@@ -168,21 +209,31 @@
         }
 
         /**
-         * Config is edited through a guided process
-         */
-        function guidedEditingChosen() {
-          mainElement.querySelector('#chooseEditingStyle').style.display = 'none';
-          mainElement.querySelector('#areaForGuidedEditing').style.display = 'block';
-          displayName();
-        }
-
-        /**
          * Uses the modified config from the editor to generate a new component
          */
         function generateNewComponentFromEditor() {
           newComponent.name = mainElement.querySelector('#nameOfNewComponent').value;
           newComponent.config = JSON.parse(mainElement.querySelector('#configEditor').value);
           displayNewComponent();
+        }
+
+        /**
+         * Config is edited through a guided process
+         */
+        function guidedEditingChosen() {
+          mainElement.querySelector('#chooseEditingStyle').style.display = 'none';
+          mainElement.querySelector('#areaForGuidedEditing').style.display = 'block';
+          fillInCCMGuidedFields();
+        }
+
+        /**
+         * Fills in the standard ccm fields in the guided editing
+         */
+        function fillInCCMGuidedFields() {
+          // component name
+          mainElement.querySelector('#guided_nameOfNewComponent').value = newComponent.name + '-new';
+          // ccm url
+          mainElement.querySelector('#guided_ccmURL').value = newComponent.ccm;
         }
 
         /**
