@@ -27,26 +27,66 @@
               "tag": "br"
             },
             {
-              "tag": "textarea",
-              "id": "configEditor",
-              "rows": 20,
-              "cols": 50,
-              "inner": "Config"
+              "tag": "div",
+              "id": "chooseEditingStyle",
+              "style": "display: none;",
+              "inner": [
+                {
+                  "tag": "button",
+                  "inner": "Config Editor",
+                  "onclick": "%configEditorChosenClick%"
+                },{
+                  "tag": "button",
+                  "inner": "Geführter Modus",
+                  "onclick": "%guidedEditingChosenClick%"
+                }
+              ]
             },
             {
-              "tag": "br"
+              "tag": "div",
+              "id": "areaForConfigEditing",
+              "style": "display: none;",
+              "inner": [
+                {
+                  "tag": "textarea",
+                  "id": "configEditor",
+                  "rows": 20,
+                  "cols": 50,
+                  "inner": "Config"
+                },
+                {
+                  "tag": "br"
+                },
+                {
+                  "tag": "div",
+                  "id": "nameOfNewComponentInput",
+                  "inner": [
+                    {
+                      "inner": "Name der neuen Komponente: "
+                    },
+                    {
+                      "tag": "input",
+                      "id": "nameOfNewComponent"
+                    },
+                    {
+                      "tag": "button",
+                      "inner": "Neue Komponente generieren",
+                      "onclick": "%generateFromEditorClick%"
+                    }
+                  ]
+                }
+              ]
             },
             {
-              "inner": "Name der neuen Komponente: "
-            },
-            {
-              "tag": "input",
-              "id": "nameOfNewComponent"
-            },
-            {
-              "tag": "button",
-              "inner": "Neue Komponente generieren",
-              "onclick": "%generateClick%"
+              "tag": "div",
+              "id": "areaForGuidedEditing",
+              "style": "display: none;",
+              "inner": [
+                {
+                  "tag": "div",
+                  "inner": "Geführter Modus zum Editieren der Konfiguration"
+                }
+              ]
             },
             {
               "tag": "br"
@@ -54,6 +94,7 @@
             {
               "tag": "textarea",
               "id": "newComponentDisplay",
+              "style": "display: none;",
               "rows": 20,
               "cols": 50,
               "inner": "Neue Komponente"
@@ -68,9 +109,12 @@
 
       this.start = function() {
 
+        // !ANMERKUNG!: Die Funktionszuweisungen müssen in der richtigen Reihenfolge, entsprechend dem Vorkommen im Json auftauchen
         var mainElement = this.ccm.helper.html(this.html.main, {
           loadComponentClick: loadComponent,
-          generateClick: generateNewComponent
+          configEditorChosenClick: configEditorChosen,
+          guidedEditingChosenClick: guidedEditingChosen,
+          generateFromEditorClick: generateNewComponentFromEditor
         });
 
         this.element.appendChild(mainElement);
@@ -87,16 +131,32 @@
           self.ccm.load({url: urlToComponent}, function (loadedComponent) {
             newComponent = loadedComponent;
 
-            displayConfig();
-            displayName();
+            displayEditingOptions();
           });
 
         }
 
         /**
-         * Displays the config of the loaded component
+         * Shows the options available for editing the config
          */
-        function displayConfig() {
+        function displayEditingOptions() {
+          mainElement.querySelector('#chooseEditingStyle').style.display = 'block';
+        }
+
+        /**
+         * The config is going to be edited with an editor
+         */
+        function configEditorChosen() {
+          mainElement.querySelector('#chooseEditingStyle').style.display = 'none';
+          displayConfigInEditor();
+          displayName();
+        }
+
+        /**
+         * Displays the config editor and the config of the loaded component in it
+         */
+        function displayConfigInEditor() {
+          mainElement.querySelector('#areaForConfigEditing').style.display = 'block';
           mainElement.querySelector('#configEditor').value = JSON.stringify(newComponent.config, null, 2);
         }
 
@@ -108,9 +168,18 @@
         }
 
         /**
-         * Uses the modified config to generate a new component
+         * Config is edited through a guided process
          */
-        function generateNewComponent() {
+        function guidedEditingChosen() {
+          mainElement.querySelector('#chooseEditingStyle').style.display = 'none';
+          mainElement.querySelector('#areaForGuidedEditing').style.display = 'block';
+          displayName();
+        }
+
+        /**
+         * Uses the modified config from the editor to generate a new component
+         */
+        function generateNewComponentFromEditor() {
           newComponent.name = mainElement.querySelector('#nameOfNewComponent').value;
           newComponent.config = JSON.parse(mainElement.querySelector('#configEditor').value);
           displayNewComponent();
@@ -120,6 +189,8 @@
          * The new component is displayed in a textarea
          */
         function displayNewComponent() {
+          mainElement.querySelector('#newComponentDisplay').style.display = 'block';
+
           /**
            * 1.replace: Newlines will be visible in the textarea
            * 2. and 3.replace: Removes quotation marks from functions
