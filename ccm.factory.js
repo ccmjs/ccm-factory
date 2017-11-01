@@ -11,13 +11,13 @@
           "id": "main",
           "inner": [
             {
-              "inner": "URL der Komponente:"
+              "inner": "URL der Komponente:<br>http://localhost:5000/resources/test_components/ccm.navmenu.js<br>http://localhost:5000/resources/test_components/ccm.kanban_card.js<br>"
             },
             {
               "tag": "input",
               "id": "componentURL",
               "size": "70",
-              "value": "http://localhost:5000/resources/test_components/ccm.navmenu.js"
+              "value": "http://localhost:5000/resources/test_components/ccm.kanban_card.js"
             },
             {
               "tag": "button",
@@ -250,8 +250,21 @@
           for (var key in newComponent.config) {
             //console.log(key + " -> " + newComponent.config[key] + " (" + typeof(newComponent.config[key])+ ")");
             switch (typeof(newComponent.config[key])) {
-              case "string":
+              case 'string':
                 generateNewStringField(key, newComponent.config[key]);
+                break;
+              case 'object':
+                // Check if the object is an array
+                if (Array.isArray(newComponent.config[key])) {
+                  // check if the array is a ccm load instruction, because those will be handled separately
+                  if (newComponent.config[key][0] === 'ccm.load') {
+                    console.log('ccm load detected !Parsing not implemented! ' + key + ' -> ' + newComponent.config[key] + ' (' + typeof(newComponent.config[key])+ ')');
+                  } else {
+                    generateArrayEditor(key, newComponent.config[key]);
+                  }
+                } else {
+                  console.log('Object detected !Parsing not implemented! ' + key + ' -> ' + newComponent.config[key] + ' (' + typeof(newComponent.config[key])+ ')');
+                }
                 break;
               default:
                 console.log('!Parsing not implemented! ' + key + ' -> ' + newComponent.config[key] + ' (' + typeof(newComponent.config[key])+ ')');
@@ -273,6 +286,86 @@
           input.id = 'guidedConfParameter_' + key;
           mainElement.querySelector('#guided_componentSpecificConfiguration').appendChild(caption);
           mainElement.querySelector('#guided_componentSpecificConfiguration').appendChild(input);
+        }
+
+        /**
+         * Generates an editor for arrays
+         * @param key
+         * @param value
+         */
+        function generateArrayEditor(key, value) {
+          var typeInArray = checkTypeOfArray(value);
+          switch (typeInArray) {
+            case 'string':
+                generateArrayEditorForStrings(key, value);
+              break;
+            default:
+              console.log('Array editor for ' + typeInArray + ' not yet implemented.')
+              break;
+          }
+        }
+
+        /**
+         * Generates an editor for arrays containing strings
+         * @param key
+         * @param value
+         */
+        function generateArrayEditorStrings(key, value) {
+          /*
+          TODO:
+            - Felder mit den bestehenden Werten anzeigen
+            - Einen - Button für jedes Feld anlegen
+            - Einen + Button für ein neues Feld
+            - Die inputs müssen eine andere id als die restlichen config parameter bekommen und der typ muss auch codiert werden (vielleicht löse ich das indem in nicht mehr über die id gehe sondern über einen custom paramenter, wenn man den abfragen kann?!)
+              - Vielleicht wäre ein Wrapper gut, dessen id ich abfragen kann und von dem ich aus dann nur noch die children iterieren muss
+            - Bei der erstellung der neuen Config, das Array wieder zusammensetzen
+           */
+        }
+
+        /**
+         * Return the type that all elements of the array have in common
+         * @param array
+         * @returns {string} Type
+         */
+        function checkTypeOfArray (array) {
+          var numberOfElements = array.length;
+          var returnType = 'undefined';
+          var typesInArray = {
+            "string": 0,
+            "number": 0,
+            "boolean": 0,
+            "object": 0
+          };
+          array.forEach(function (element) {
+            switch (typeof(element)) {
+              case 'string':
+                typesInArray.string++;
+                break;
+              case 'number':
+                typesInArray.number++;
+                break;
+              case 'boolean':
+                typesInArray.boolean++;
+                break;
+              case 'object':
+                typesInArray.object++;
+                break;
+              default:
+                break;
+            }
+          });
+
+          if (typesInArray.string === numberOfElements) {
+            returnType = 'string';
+          } else if (typesInArray.number === numberOfElements) {
+            returnType = 'number';
+          } else if (typesInArray.boolean === numberOfElements) {
+            returnType = 'boolean';
+          } else if (typesInArray.object === numberOfElements) {
+            returnType = 'object';
+          }
+
+          return returnType;
         }
 
         /**
