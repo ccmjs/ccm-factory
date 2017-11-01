@@ -283,7 +283,7 @@
           caption.innerHTML = key + ':';
           var input = document.createElement('input');
           input.value = value;
-          input.id = 'guidedConfParameter_' + key;
+          input.id = 'guidedConfParameterString_' + key;
           mainElement.querySelector('#guided_componentSpecificConfiguration').appendChild(caption);
           mainElement.querySelector('#guided_componentSpecificConfiguration').appendChild(input);
         }
@@ -297,29 +297,12 @@
           var typeInArray = checkTypeOfArray(value);
           switch (typeInArray) {
             case 'string':
-                generateArrayEditorForStrings(key, value);
+              generateArrayEditorStrings(key, value);
               break;
             default:
-              console.log('Array editor for ' + typeInArray + ' not yet implemented.')
+              console.log('Array editor for ' + typeInArray + ' not yet implemented.');
               break;
           }
-        }
-
-        /**
-         * Generates an editor for arrays containing strings
-         * @param key
-         * @param value
-         */
-        function generateArrayEditorStrings(key, value) {
-          /*
-          TODO:
-            - Felder mit den bestehenden Werten anzeigen
-            - Einen - Button für jedes Feld anlegen
-            - Einen + Button für ein neues Feld
-            - Die inputs müssen eine andere id als die restlichen config parameter bekommen und der typ muss auch codiert werden (vielleicht löse ich das indem in nicht mehr über die id gehe sondern über einen custom paramenter, wenn man den abfragen kann?!)
-              - Vielleicht wäre ein Wrapper gut, dessen id ich abfragen kann und von dem ich aus dann nur noch die children iterieren muss
-            - Bei der erstellung der neuen Config, das Array wieder zusammensetzen
-           */
         }
 
         /**
@@ -369,6 +352,62 @@
         }
 
         /**
+         * Generates an editor for arrays containing strings
+         * @param key
+         * @param array
+         */
+        function generateArrayEditorStrings(key, array) {
+          /*
+          TODO:
+            - Felder mit den bestehenden Werten anzeigen
+            - Einen - Button für jedes Feld anlegen
+            - Einen + Button für ein neues Feld
+            - Die inputs müssen eine andere id als die restlichen config parameter bekommen und der typ muss auch codiert werden (vielleicht löse ich das indem in nicht mehr über die id gehe sondern über einen custom paramenter, wenn man den abfragen kann?!)
+              - Vielleicht wäre ein Wrapper gut, dessen id ich abfragen kann und von dem ich aus dann nur noch die children iterieren muss
+            - Bei der erstellung der neuen Config, das Array wieder zusammensetzen
+           */
+          var caption = document.createElement('div');
+          caption.innerHTML = key + ':';
+          var stringArrayInputs = document.createElement('div');
+          stringArrayInputs.id = 'GuidedArrayStringList_' + key;
+          array.forEach(function (element) {
+            var input = document.createElement('input');
+            input.value = element;
+            var deleteButton = document.createElement('button');
+            deleteButton.innerHTML = 'X';
+            deleteButton.onclick = function () {
+              this.nextElementSibling.outerHTML = '';
+              this.previousElementSibling.outerHTML = '';
+              this.outerHTML = '';
+            };
+            var htmlBreak = document.createElement('br');
+            stringArrayInputs.appendChild(input);
+            stringArrayInputs.appendChild(deleteButton);
+            stringArrayInputs.appendChild(htmlBreak);
+          });
+          var addButton = document.createElement('button');
+          addButton.innerHTML = '+';
+          addButton.onclick = function () {
+            var input = document.createElement('input');
+            input.value = '';
+            var deleteButton = document.createElement('button');
+            deleteButton.innerHTML = 'X';
+            deleteButton.onclick = function () {
+              this.nextElementSibling.outerHTML = '';
+              this.previousElementSibling.outerHTML = '';
+              this.outerHTML = '';
+            };
+            var htmlBreak = document.createElement('br');
+            this.previousElementSibling.appendChild(input);
+            this.previousElementSibling.appendChild(deleteButton);
+            this.previousElementSibling.appendChild(htmlBreak);
+          };
+          mainElement.querySelector('#guided_componentSpecificConfiguration').appendChild(caption);
+          mainElement.querySelector('#guided_componentSpecificConfiguration').appendChild(stringArrayInputs);
+          mainElement.querySelector('#guided_componentSpecificConfiguration').appendChild(addButton);
+        }
+
+        /**
          * Generates a new component from the guided process
          */
         function generateNewComponentFromGuided() {
@@ -376,12 +415,29 @@
           newComponent.name = mainElement.querySelector('#guided_nameOfNewComponent').value;
           // ccm url
           newComponent.ccm = mainElement.querySelector('#guided_ccmURL').value;
-          // custom fields
+          // custom fields can be inputs
           var customFields = mainElement.querySelectorAll('input');
           for (var i = 0; i < customFields.length; i++) {
-            if (customFields[i].id.startsWith('guidedConfParameter_')) {
-              var keyToChange = customFields[i].id.slice(20);
+            // set string parameters
+            if (customFields[i].id.startsWith('guidedConfParameterString_')) {
+              var keyToChange = customFields[i].id.slice(26);
               newComponent.config[keyToChange] = customFields[i].value;
+            }
+          }
+          // search for custom arrays in divs
+          var potentialCustomArrays = mainElement.querySelectorAll('div');
+          for (var i = 0; i < potentialCustomArrays.length; i ++) {
+            // Set new string array in config
+            if (potentialCustomArrays[i].id.startsWith('GuidedArrayStringList_')) {
+              var keyToChange = potentialCustomArrays[i].id.slice(22);
+              var newConfigArray = [];
+              var children = potentialCustomArrays[i].children;
+              for (var j = 0; j < children.length; j++) {
+                if (children[j].nodeName === 'INPUT') {
+                  newConfigArray.push(children[j].value);
+                }
+              }
+              newComponent.config[keyToChange] = newConfigArray;
             }
           }
 
