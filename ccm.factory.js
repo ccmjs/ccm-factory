@@ -453,8 +453,9 @@
           /**
            * 1.replace: Newlines will be visible in the textarea
            * 2. and 3.replace: Removes quotation marks from functions
+           * 4.replace: Fixes broken regular expressions
            */
-          var innerPartOfCompoment = JSONfn.stringify(newComponent).replace(/\\n/g, '\r\n').replace(/"function/g, 'function').replace(/}"/g, '}');
+          var innerPartOfCompoment = JSONfn.stringify(newComponent).replace(/\\n/g, '\r\n').replace(/"function/g, 'function').replace(/}"/g, '}').replace(/\\\\\//g, '\\/');
           var componentBeginning = '( function () {\n' +
             '\n' +
             '  var component = ';
