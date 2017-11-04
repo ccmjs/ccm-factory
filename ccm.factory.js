@@ -1,6 +1,6 @@
 ( function() {
 
-  var component = {
+  let component = {
     name: 'factory',
 
     ccm: 'resources/ccm-10.0.0.min.js',
@@ -151,12 +151,12 @@
     },
 
     Instance: function() {
-      var self = this;
+      let self = this;
 
       this.start = function() {
 
         // !ANMERKUNG!: Die Funktionszuweisungen müssen in der richtigen Reihenfolge, entsprechend dem Vorkommen im Json auftauchen
-        var mainElement = this.ccm.helper.html(this.html.main, {
+        let mainElement = this.ccm.helper.html(this.html.main, {
           loadComponentClick: loadComponent,
           configEditorChosenClick: configEditorChosen,
           guidedEditingChosenClick: guidedEditingChosen,
@@ -167,13 +167,13 @@
         this.element.appendChild(mainElement);
 
         // In here the newly generated component gets stored
-        var newComponent;
+        let newComponent;
 
         /**
          * Downloads the component
          */
         function loadComponent() {
-          var urlToComponent = mainElement.querySelector('#componentURL').value;
+          let urlToComponent = mainElement.querySelector('#componentURL').value;
 
           self.ccm.load({url: urlToComponent}, function (loadedComponent) {
             newComponent = loadedComponent;
@@ -247,11 +247,14 @@
          * Analyses the config of a given component and generates fields to edit it
          */
         function generateComponentSpecificFields() {
-          for (var key in newComponent.config) {
+          for (let key in newComponent.config) {
             //console.log(key + " -> " + newComponent.config[key] + " (" + typeof(newComponent.config[key])+ ")");
             switch (typeof(newComponent.config[key])) {
               case 'string':
                 generateNewStringField(key, newComponent.config[key]);
+                break;
+              case 'boolean':
+                generateNewBooleanField(key, newComponent.config[key]);
                 break;
               case 'object':
                 // Check if the object is an array
@@ -274,14 +277,38 @@
         }
 
         /**
+         * Generates an input to modify a boolean
+         * @param key
+         * @param value
+         */
+        function generateNewBooleanField(key, value) {
+          let caption = document.createElement('div');
+          caption.innerHTML = key + ':';
+          let select = document.createElement('select');
+          select.id = 'guidedConfParameterBoolean_' + key;
+          let optionT = document.createElement('option');
+          optionT.text = 'true';
+          optionT.value = 'true';
+          if (value) optionT.selected = 'selected';
+          select.appendChild(optionT);
+          let optionF = document.createElement('option');
+          optionF.text = 'false';
+          optionF.value = 'false';
+          if (!value) optionF.selected = 'selected';
+          select.appendChild(optionF);
+          mainElement.querySelector('#guided_componentSpecificConfiguration').appendChild(caption);
+          mainElement.querySelector('#guided_componentSpecificConfiguration').appendChild(select);
+        }
+
+        /**
          * Generates an input to modify a string
          * @param key
          * @param value
          */
         function generateNewStringField(key, value) {
-          var caption = document.createElement('div');
+          let caption = document.createElement('div');
           caption.innerHTML = key + ':';
-          var input = document.createElement('input');
+          let input = document.createElement('input');
           input.value = value;
           input.id = 'guidedConfParameterString_' + key;
           mainElement.querySelector('#guided_componentSpecificConfiguration').appendChild(caption);
@@ -294,7 +321,7 @@
          * @param value
          */
         function generateArrayEditor(key, value) {
-          var typeInArray = checkTypeOfArray(value);
+          let typeInArray = checkTypeOfArray(value);
           switch (typeInArray) {
             case 'string':
               generateArrayEditorStrings(key, value);
@@ -311,9 +338,9 @@
          * @returns {string} Type
          */
         function checkTypeOfArray (array) {
-          var numberOfElements = array.length;
-          var returnType = 'undefined';
-          var typesInArray = {
+          let numberOfElements = array.length;
+          let returnType = 'undefined';
+          let typesInArray = {
             "string": 0,
             "number": 0,
             "boolean": 0,
@@ -366,38 +393,38 @@
               - Vielleicht wäre ein Wrapper gut, dessen id ich abfragen kann und von dem ich aus dann nur noch die children iterieren muss
             - Bei der erstellung der neuen Config, das Array wieder zusammensetzen
            */
-          var caption = document.createElement('div');
+          let caption = document.createElement('div');
           caption.innerHTML = key + ':';
-          var stringArrayInputs = document.createElement('div');
+          let stringArrayInputs = document.createElement('div');
           stringArrayInputs.id = 'GuidedArrayStringList_' + key;
           array.forEach(function (element) {
-            var input = document.createElement('input');
+            let input = document.createElement('input');
             input.value = element;
-            var deleteButton = document.createElement('button');
+            let deleteButton = document.createElement('button');
             deleteButton.innerHTML = 'X';
             deleteButton.onclick = function () {
               this.nextElementSibling.outerHTML = '';
               this.previousElementSibling.outerHTML = '';
               this.outerHTML = '';
             };
-            var htmlBreak = document.createElement('br');
+            let htmlBreak = document.createElement('br');
             stringArrayInputs.appendChild(input);
             stringArrayInputs.appendChild(deleteButton);
             stringArrayInputs.appendChild(htmlBreak);
           });
-          var addButton = document.createElement('button');
+          let addButton = document.createElement('button');
           addButton.innerHTML = '+';
           addButton.onclick = function () {
-            var input = document.createElement('input');
+            let input = document.createElement('input');
             input.value = '';
-            var deleteButton = document.createElement('button');
+            let deleteButton = document.createElement('button');
             deleteButton.innerHTML = 'X';
             deleteButton.onclick = function () {
               this.nextElementSibling.outerHTML = '';
               this.previousElementSibling.outerHTML = '';
               this.outerHTML = '';
             };
-            var htmlBreak = document.createElement('br');
+            let htmlBreak = document.createElement('br');
             this.previousElementSibling.appendChild(input);
             this.previousElementSibling.appendChild(deleteButton);
             this.previousElementSibling.appendChild(htmlBreak);
@@ -416,23 +443,32 @@
           // ccm url
           newComponent.ccm = mainElement.querySelector('#guided_ccmURL').value;
           // custom fields can be inputs
-          var customFields = mainElement.querySelectorAll('input');
-          for (var i = 0; i < customFields.length; i++) {
+          let customFields = mainElement.querySelectorAll('input');
+          for (let i = 0; i < customFields.length; i++) {
             // set string parameters
             if (customFields[i].id.startsWith('guidedConfParameterString_')) {
-              var keyToChange = customFields[i].id.slice(26);
+              let keyToChange = customFields[i].id.slice(26);
               newComponent.config[keyToChange] = customFields[i].value;
             }
           }
+          // custom fields can be selects
+          let customFieldsSelect = mainElement.querySelectorAll('select');
+          for (let i = 0; i < customFieldsSelect.length; i++) {
+            // set boolean parameters
+            if (customFieldsSelect[i].id.startsWith('guidedConfParameterBoolean_')) {
+              let keyToChange = customFieldsSelect[i].id.slice(27);
+              newComponent.config[keyToChange] = (customFieldsSelect[i].value === 'true');
+            }
+          }
           // search for custom arrays in divs
-          var potentialCustomArrays = mainElement.querySelectorAll('div');
-          for (var i = 0; i < potentialCustomArrays.length; i ++) {
+          let potentialCustomArrays = mainElement.querySelectorAll('div');
+          for (let i = 0; i < potentialCustomArrays.length; i ++) {
             // Set new string array in config
             if (potentialCustomArrays[i].id.startsWith('GuidedArrayStringList_')) {
-              var keyToChange = potentialCustomArrays[i].id.slice(22);
-              var newConfigArray = [];
-              var children = potentialCustomArrays[i].children;
-              for (var j = 0; j < children.length; j++) {
+              let keyToChange = potentialCustomArrays[i].id.slice(22);
+              let newConfigArray = [];
+              let children = potentialCustomArrays[i].children;
+              for (let j = 0; j < children.length; j++) {
                 if (children[j].nodeName === 'INPUT') {
                   newConfigArray.push(children[j].value);
                 }
@@ -455,13 +491,13 @@
            * 2. and 3.replace: Removes quotation marks from functions
            * 4.replace: Fixes broken regular expressions
            */
-          var innerPartOfCompoment = JSONfn.stringify(newComponent).replace(/\\n/g, '\r\n').replace(/"function/g, 'function').replace(/}"/g, '}').replace(/\\\\\//g, '\\/');
-          var componentBeginning = '( function () {\n' +
+          let innerPartOfCompoment = JSONfn.stringify(newComponent).replace(/\\n/g, '\r\n').replace(/"function/g, 'function').replace(/}"/g, '}').replace(/\\\\\//g, '\\/');
+          let componentBeginning = '( function () {\n' +
             '\n' +
-            '  var component = ';
-          var componentEnding = ';\n' +
+            '  let component = ';
+          let componentEnding = ';\n' +
             '\n' +
-            '  function p(){window.ccm[v].component(component)}var f="ccm."+component.name+(component.version?"-"+component.version.join("."):"")+".js";if(window.ccm&&null===window.ccm.files[f])window.ccm.files[f]=component;else{var n=window.ccm&&window.ccm.components[component.name];n&&n.ccm&&(component.ccm=n.ccm),"string"==typeof component.ccm&&(component.ccm={url:component.ccm});var v=component.ccm.url.split("/").pop().split("-");if(v.length>1?(v=v[1].split("."),v.pop(),"min"===v[v.length-1]&&v.pop(),v=v.join(".")):v="latest",window.ccm&&window.ccm[v])p();else{var e=document.createElement("script");document.head.appendChild(e),component.ccm.integrity&&e.setAttribute("integrity",component.ccm.integrity),component.ccm.crossorigin&&e.setAttribute("crossorigin",component.ccm.crossorigin),e.onload=function(){p(),document.head.removeChild(e)},e.src=component.ccm.url}}\n' +
+            '  function p(){window.ccm[v].component(component)}let f="ccm."+component.name+(component.version?"-"+component.version.join("."):"")+".js";if(window.ccm&&null===window.ccm.files[f])window.ccm.files[f]=component;else{let n=window.ccm&&window.ccm.components[component.name];n&&n.ccm&&(component.ccm=n.ccm),"string"==typeof component.ccm&&(component.ccm={url:component.ccm});let v=component.ccm.url.split("/").pop().split("-");if(v.length>1?(v=v[1].split("."),v.pop(),"min"===v[v.length-1]&&v.pop(),v=v.join(".")):v="latest",window.ccm&&window.ccm[v])p();else{let e=document.createElement("script");document.head.appendChild(e),component.ccm.integrity&&e.setAttribute("integrity",component.ccm.integrity),component.ccm.crossorigin&&e.setAttribute("crossorigin",component.ccm.crossorigin),e.onload=function(){p(),document.head.removeChild(e)},e.src=component.ccm.url}}\n' +
             '}() );';
 
           mainElement.querySelector('#newComponentDisplay').value = componentBeginning + innerPartOfCompoment + componentEnding;
