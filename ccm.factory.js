@@ -230,7 +230,7 @@
           mainElement.querySelector('#chooseEditingStyle').style.display = 'none';
           mainElement.querySelector('#areaForGuidedEditing').style.display = 'block';
           fillInCCMGuidedFields();
-          generateComponentSpecificFields();
+          generateComponentSpecificFields('');
         }
 
         /**
@@ -246,34 +246,66 @@
         /**
          * Analyses the config of a given component and generates fields to edit it
          */
-        function generateComponentSpecificFields() {
-          for (let key in newComponent.config) {
-            //console.log(key + " -> " + newComponent.config[key] + " (" + typeof(newComponent.config[key])+ ")");
-            switch (typeof(newComponent.config[key])) {
+        function generateComponentSpecificFields(currentKey) {
+          let currentConfigPoint;
+          if (currentKey === '') {
+            currentConfigPoint = newComponent.config;
+          } else {
+            currentConfigPoint = objectByString(newComponent.config, currentKey);
+          }
+
+          for (let key in currentConfigPoint) {
+            let displayBufferForKey;
+            if (currentKey === '') {
+              displayBufferForKey = '';
+            } else {
+              displayBufferForKey = currentKey + '.';
+            }
+            switch (typeof(currentConfigPoint[key])) {
               case 'string':
-                generateNewStringField(key, newComponent.config[key]);
+                generateNewStringField(displayBufferForKey + key, currentConfigPoint[key]);
                 break;
               case 'boolean':
-                generateNewBooleanField(key, newComponent.config[key]);
+                generateNewBooleanField(displayBufferForKey + key, currentConfigPoint[key]);
                 break;
               case 'object':
                 // Check if the object is an array
-                if (Array.isArray(newComponent.config[key])) {
+                if (Array.isArray(currentConfigPoint[key])) {
                   // check if the array is a ccm load instruction, because those will be handled separately
-                  if (newComponent.config[key][0] === 'ccm.load') {
-                    console.log('ccm load detected !Parsing not implemented! ' + key + ' -> ' + newComponent.config[key] + ' (' + typeof(newComponent.config[key])+ ')');
+                  if (String(currentConfigPoint[key][0]).startsWith('ccm.')) {
+                    console.log(String(currentConfigPoint[key][0]) + ' detected !Parsing not implemented! ' + key + ' -> ' + currentConfigPoint[key] + ' (' + typeof(currentConfigPoint[key])+ ')');
                   } else {
-                    generateArrayEditor(key, newComponent.config[key]);
+                    generateArrayEditor(displayBufferForKey + key, currentConfigPoint[key]);
                   }
                 } else {
-                  console.log('Object detected !Parsing not implemented! ' + key + ' -> ' + newComponent.config[key] + ' (' + typeof(newComponent.config[key])+ ')');
+                  // Check if the object is the html template
+                  if (key === 'html') {
+                    generateHTMLEditor();
+                  } else {
+                    generateComponentSpecificFields(displayBufferForKey + key);
+                  }
                 }
                 break;
               default:
-                console.log('!Parsing not implemented! ' + key + ' -> ' + newComponent.config[key] + ' (' + typeof(newComponent.config[key])+ ')');
+                console.log('!Parsing not implemented! ' + key + ' -> ' + currentConfigPoint[key] + ' (' + typeof(newComponent.config[key])+ ')');
                 break;
             }
           }
+        }
+
+        /**
+         * Generates a text area in which the html template can be edited
+         */
+        function generateHTMLEditor() {
+          let caption = document.createElement('div');
+          caption.innerHTML = 'HTML:';
+          let htmlEditorTextArea = document.createElement('textarea');
+          htmlEditorTextArea.id = 'htmlEditor';
+          htmlEditorTextArea.rows = 20;
+          htmlEditorTextArea.cols = 50;
+          htmlEditorTextArea.value = JSON.stringify(newComponent.config.html, null, 2);
+          mainElement.querySelector('#guided_componentSpecificConfiguration').appendChild(caption);
+          mainElement.querySelector('#guided_componentSpecificConfiguration').appendChild(htmlEditorTextArea);
         }
 
         /**
@@ -384,15 +416,6 @@
          * @param array
          */
         function generateArrayEditorStrings(key, array) {
-          /*
-          TODO:
-            - Felder mit den bestehenden Werten anzeigen
-            - Einen - Button für jedes Feld anlegen
-            - Einen + Button für ein neues Feld
-            - Die inputs müssen eine andere id als die restlichen config parameter bekommen und der typ muss auch codiert werden (vielleicht löse ich das indem in nicht mehr über die id gehe sondern über einen custom paramenter, wenn man den abfragen kann?!)
-              - Vielleicht wäre ein Wrapper gut, dessen id ich abfragen kann und von dem ich aus dann nur noch die children iterieren muss
-            - Bei der erstellung der neuen Config, das Array wieder zusammensetzen
-           */
           let caption = document.createElement('div');
           caption.innerHTML = key + ':';
           let stringArrayInputs = document.createElement('div');
@@ -442,13 +465,15 @@
           newComponent.name = mainElement.querySelector('#guided_nameOfNewComponent').value;
           // ccm url
           newComponent.ccm = mainElement.querySelector('#guided_ccmURL').value;
+          // html template
+          newComponent.config.html = JSON.parse(mainElement.querySelector('#htmlEditor').value);
           // custom fields can be inputs
           let customFields = mainElement.querySelectorAll('input');
           for (let i = 0; i < customFields.length; i++) {
             // set string parameters
             if (customFields[i].id.startsWith('guidedConfParameterString_')) {
               let keyToChange = customFields[i].id.slice(26);
-              newComponent.config[keyToChange] = customFields[i].value;
+              setNewConfigValue(keyToChange, customFields[i].value);
             }
           }
           // custom fields can be selects
@@ -457,7 +482,7 @@
             // set boolean parameters
             if (customFieldsSelect[i].id.startsWith('guidedConfParameterBoolean_')) {
               let keyToChange = customFieldsSelect[i].id.slice(27);
-              newComponent.config[keyToChange] = (customFieldsSelect[i].value === 'true');
+              setNewConfigValue(keyToChange, (customFieldsSelect[i].value === 'true'));
             }
           }
           // search for custom arrays in divs
@@ -473,7 +498,7 @@
                   newConfigArray.push(children[j].value);
                 }
               }
-              newComponent.config[keyToChange] = newConfigArray;
+              setNewConfigValue(keyToChange, newConfigArray);
             }
           }
 
@@ -497,10 +522,40 @@
             '  let component = ';
           let componentEnding = ';\n' +
             '\n' +
-            '  function p(){window.ccm[v].component(component)}let f="ccm."+component.name+(component.version?"-"+component.version.join("."):"")+".js";if(window.ccm&&null===window.ccm.files[f])window.ccm.files[f]=component;else{let n=window.ccm&&window.ccm.components[component.name];n&&n.ccm&&(component.ccm=n.ccm),"string"==typeof component.ccm&&(component.ccm={url:component.ccm});let v=component.ccm.url.split("/").pop().split("-");if(v.length>1?(v=v[1].split("."),v.pop(),"min"===v[v.length-1]&&v.pop(),v=v.join(".")):v="latest",window.ccm&&window.ccm[v])p();else{let e=document.createElement("script");document.head.appendChild(e),component.ccm.integrity&&e.setAttribute("integrity",component.ccm.integrity),component.ccm.crossorigin&&e.setAttribute("crossorigin",component.ccm.crossorigin),e.onload=function(){p(),document.head.removeChild(e)},e.src=component.ccm.url}}\n' +
+            '  function p(){window.ccm[v].component(component)}var f="ccm."+component.name+(component.version?"-"+component.version.join("."):"")+".js";if(window.ccm&&null===window.ccm.files[f])window.ccm.files[f]=component;else{var n=window.ccm&&window.ccm.components[component.name];n&&n.ccm&&(component.ccm=n.ccm),"string"==typeof component.ccm&&(component.ccm={url:component.ccm});var v=component.ccm.url.split("/").pop().split("-");if(v.length>1?(v=v[1].split("."),v.pop(),"min"===v[v.length-1]&&v.pop(),v=v.join(".")):v="latest",window.ccm&&window.ccm[v])p();else{var e=document.createElement("script");document.head.appendChild(e),component.ccm.integrity&&e.setAttribute("integrity",component.ccm.integrity),component.ccm.crossorigin&&e.setAttribute("crossorigin",component.ccm.crossorigin),e.onload=function(){p(),document.head.removeChild(e)},e.src=component.ccm.url}}\n' +
             '}() );';
 
           mainElement.querySelector('#newComponentDisplay').value = componentBeginning + innerPartOfCompoment + componentEnding;
+        }
+
+        // https://stackoverflow.com/questions/6491463/accessing-nested-javascript-objects-with-string-key
+        function objectByString(o, s) {
+          s = s.replace(/\[(\w+)\]/g, '.$1'); // convert indexes to properties
+          s = s.replace(/^\./, '');           // strip a leading dot
+          let a = s.split('.');
+          for (let i = 0, n = a.length; i < n; ++i) {
+            let k = a[i];
+            if (k in o) {
+              o = o[k];
+            } else {
+              return;
+            }
+          }
+          return o;
+        }
+
+        // https://stackoverflow.com/questions/18936915/dynamically-set-property-of-nested-object
+        function setNewConfigValue(path, value) {
+          let schema = newComponent.config;
+          let pList = path.split('.');
+          let len = pList.length;
+          for(let i = 0; i < len-1; i++) {
+            let elem = pList[i];
+            if( !schema[elem] ) schema[elem] = {};
+            schema = schema[elem];
+          }
+
+          schema[pList[len-1]] = value;
         }
 
       };
