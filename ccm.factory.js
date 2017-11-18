@@ -165,6 +165,13 @@
               "rows": 20,
               "cols": 50,
               "inner": "Neue Komponente"
+            },
+            {
+              "tag": "br"
+            },
+            {
+              "tag": "div",
+              "id": "demoArea"
             }
           ]
         }
@@ -204,6 +211,12 @@
         // In here the newly generated component gets stored
         let newComponent;
 
+        // Creating a script tag for the demo
+        const demoScriptTag = document.createElement('script');
+        demoScriptTag.id = 'demoScriptTag';
+        demoScriptTag.type = 'text/javascript';
+        mainElement.querySelector('#demoArea').appendChild(demoScriptTag);
+
         /**
          * Downloads the component
          */
@@ -215,7 +228,6 @@
 
             displayEditingOptions();
           });
-
         }
 
         /**
@@ -562,6 +574,8 @@
           }
 
           displayNewComponent();
+
+          demoNewComponent();
         }
 
         /**
@@ -570,21 +584,50 @@
         function displayNewComponent() {
           mainElement.querySelector('#newComponentDisplay').style.display = 'block';
 
+          mainElement.querySelector('#newComponentDisplay').value = generateNewComponentCode(newComponent);
+        }
+
+        /**
+         * Returns the new code of the modified component
+         * @param newComponentObject The Object to generate the code from
+         * @returns {string}
+         */
+        function generateNewComponentCode(newComponentObject) {
           /**
            * 1.replace: Newlines will be visible in the textarea
            * 2. and 3.replace: Removes quotation marks from functions
            * 4.replace: Fixes broken regular expressions
            */
-          let innerPartOfCompoment = JSONfn.stringify(newComponent).replace(/\\n/g, '\r\n').replace(/"function/g, 'function').replace(/}"/g, '}').replace(/\\\\\//g, '\\/');
-          let componentBeginning = '{\n' +
+          const innerPartOfCompoment = JSONfn.stringify(newComponentObject).replace(/\\n/g, '\r\n').replace(/"function/g, 'function').replace(/}"/g, '}').replace(/\\\\\//g, '\\/');
+          const componentBeginning = '{\n' +
             '\n' +
             '  const component = ';
-          let componentEnding = ';\n' +
+          const componentEnding = ';\n' +
             '\n' +
             '  function p(){window.ccm[v].component(component)}const f="ccm."+component.name+(component.version?"-"+component.version.join("."):"")+".js";if(window.ccm&&null===window.ccm.files[f])window.ccm.files[f]=component;else{const n=window.ccm&&window.ccm.components[component.name];n&&n.ccm&&(component.ccm=n.ccm),"string"===typeof component.ccm&&(component.ccm={url:component.ccm});var v=component.ccm.url.split("/").pop().split("-");if(v.length>1?(v=v[1].split("."),v.pop(),"min"===v[v.length-1]&&v.pop(),v=v.join(".")):v="latest",window.ccm&&window.ccm[v])p();else{const e=document.createElement("script");document.head.appendChild(e),component.ccm.integrity&&e.setAttribute("integrity",component.ccm.integrity),component.ccm.crossorigin&&e.setAttribute("crossorigin",component.ccm.crossorigin),e.onload=function(){p(),document.head.removeChild(e)},e.src=component.ccm.url}}\n' +
             '}';
 
-          mainElement.querySelector('#newComponentDisplay').value = componentBeginning + innerPartOfCompoment + componentEnding;
+          return componentBeginning + innerPartOfCompoment + componentEnding;
+        }
+
+        /**
+         * Creates a demo of the new component
+         */
+        function demoNewComponent() {
+          // delete current demo
+          const oldDemoComponent = document.querySelector('[data-demotype="isDemoComponent"]');
+          if (oldDemoComponent) oldDemoComponent.outerHTML = '';
+
+          // Cloning the new component to give it a different name for the demo
+          const demoNewComponent = JSONfn.parse(JSONfn.stringify(newComponent));
+          const newComponentName = Math.random().toString(36).substr(2, 5);
+          demoNewComponent.name = newComponentName;
+
+          const demoHtmlTag = document.createElement('ccm-' + newComponentName);
+          demoHtmlTag.setAttribute('data-demotype', 'isDemoComponent');
+          document.body.appendChild(demoHtmlTag);
+
+          eval(generateNewComponentCode(demoNewComponent));
         }
 
         // https://stackoverflow.com/questions/6491463/accessing-nested-javascript-objects-with-string-key
