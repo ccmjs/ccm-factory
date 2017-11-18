@@ -168,7 +168,8 @@
             }
           ]
         }
-      }
+      },
+      JSONfn:  [ 'ccm.load', 'jsonfn.js' ],
     },
 
     /**
