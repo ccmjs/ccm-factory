@@ -11,7 +11,7 @@
           "id": "main",
           "inner": [
             {
-              "inner": "URL der Komponente:<br>http://localhost:5000/resources/test_components/ccm.navmenu.js<br>http://localhost:5000/resources/test_components/ccm.kanban_card.js<br>"
+              "inner": "URL der Komponente:<br>http://localhost:5000/resources/test_components/ccm.navmenu.js<br>http://localhost:5000/resources/test_components/ccm.kanban_card.js<br>http://localhost:5000/resources/test_components/ccm.game_chooser.js<br>http://localhost:5000/resources/test_components/ccm.form.js<br>http://localhost:5000/resources/test_components/ccm.teambuild_builder.js<br>"
             },
             {
               "tag": "input",
@@ -265,6 +265,9 @@
               case 'string':
                 generateNewStringField(displayBufferForKey + key, currentConfigPoint[key]);
                 break;
+              case 'number':
+                generateNewNumberField(displayBufferForKey + key, currentConfigPoint[key]);
+                break;
               case 'boolean':
                 generateNewBooleanField(displayBufferForKey + key, currentConfigPoint[key]);
                 break;
@@ -343,6 +346,22 @@
           let input = document.createElement('input');
           input.value = value;
           input.id = 'guidedConfParameterString_' + key;
+          mainElement.querySelector('#guided_componentSpecificConfiguration').appendChild(caption);
+          mainElement.querySelector('#guided_componentSpecificConfiguration').appendChild(input);
+        }
+
+        /**
+         * Generates an input to modify a number
+         * @param key
+         * @param value
+         */
+        function generateNewNumberField(key, value) {
+          let caption = document.createElement('div');
+          caption.innerHTML = key + ':';
+          let input = document.createElement('input');
+          input.value = value;
+          input.id = 'guidedConfParameterNumber_' + key;
+          input.type = 'number';
           mainElement.querySelector('#guided_componentSpecificConfiguration').appendChild(caption);
           mainElement.querySelector('#guided_componentSpecificConfiguration').appendChild(input);
         }
@@ -474,6 +493,11 @@
             if (customFields[i].id.startsWith('guidedConfParameterString_')) {
               let keyToChange = customFields[i].id.slice(26);
               setNewConfigValue(keyToChange, customFields[i].value);
+            }
+            // set number parameters
+            if (customFields[i].id.startsWith('guidedConfParameterNumber_')) {
+              let keyToChange = customFields[i].id.slice(26);
+              setNewConfigValue(keyToChange, parseInt(customFields[i].value));
             }
           }
           // custom fields can be selects
