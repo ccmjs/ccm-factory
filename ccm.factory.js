@@ -211,12 +211,6 @@
         // In here the newly generated component gets stored
         let newComponent;
 
-        // Creating a script tag for the demo
-        const demoScriptTag = document.createElement('script');
-        demoScriptTag.id = 'demoScriptTag';
-        demoScriptTag.type = 'text/javascript';
-        mainElement.querySelector('#demoArea').appendChild(demoScriptTag);
-
         /**
          * Downloads the component
          */
