@@ -41,6 +41,24 @@
               "value": "http://localhost:5000/resources/test_components/ccm.kanban_card.js"
             },
             {
+              "inner": "URL der Config Datei (leer lassen, wenn nicht vorhanden):<br>http://localhost:5000/resources/test_components/configs.js"
+            },
+            {
+              "tag": "input",
+              "id": "componentConfigURL",
+              "size": "70",
+              "value": ""
+            },
+            {
+              "inner": "Schlüssel aus der Config Datei (leer lassen, wenn keine Config Datei angegeben wurde):<br>Demo"
+            },
+            {
+              "tag": "input",
+              "id": "componentConfigKeyURL",
+              "size": "70",
+              "value": ""
+            },
+            {
               "tag": "button",
               "inner": "Komponente laden",
               "onclick": "%loadComponentClick%"
@@ -220,8 +238,24 @@
           self.ccm.load({url: urlToComponent}, function (loadedComponent) {
             newComponent = loadedComponent;
 
-            displayEditingOptions();
+            const urlToComponentConfig = mainElement.querySelector('#componentConfigURL').value;
+            const componentConfigKey = mainElement.querySelector('#componentConfigKeyURL').value;
+            if (urlToComponentConfig !== '' && componentConfigKey !== '') {
+              self.ccm.load({url: urlToComponentConfig}, function (data) {
+                //console.log(data[componentConfigKey.toLowerCase()]);
+
+                Object.keys(data[componentConfigKey.toLowerCase()]).forEach((key) => {
+                  newComponent.config[key] = data[componentConfigKey.toLowerCase()][key];
+                });
+
+                displayEditingOptions();
+              });
+            } else {
+              displayEditingOptions();
+            }
+
           });
+
         }
 
         /**
@@ -589,11 +623,12 @@
         function generateNewComponentCode(newComponentObject) {
           /**
            * 1.replace: Newlines will be visible in the textarea
-           * 2. and 3.replace: Removes quotation marks from functions
-           * 4.replace: Fixes broken regular expressions
+           * 2.replace: Removes quotation marks from functions
+           * 3.replace: Fixes broken regular expressions
            * 4.replace: Fixes broken strings (\" to ")
            */
-          const innerPartOfCompoment = JSONfn.stringify(newComponentObject).replace(/\\n/g, '\r\n').replace(/"function/g, 'function').replace(/}"/g, '}').replace(/\\\\\//g, '\\/').replace(/\\"/g, '"');
+          let innerPartOfCompoment = JSONfn.stringify(newComponentObject).replace(/\\n/g, '\r\n').replace(/"function([^]*)}"/g, 'function$1}').replace(/\\\\\//g, '\\/').replace(/\\"/g, '"');
+
           const componentBeginning = '{\n' +
             '\n' +
             '  const component = ';
