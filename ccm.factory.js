@@ -177,12 +177,30 @@
               "tag": "br"
             },
             {
+              "id": "newComponentDisplayLabel",
+              "inner": "Vollständiger Komponentencode:",
+              "style": "display: none;",
+            },
+            {
               "tag": "textarea",
               "id": "newComponentDisplay",
               "style": "display: none;",
               "rows": 20,
               "cols": 50,
               "inner": "Neue Komponente"
+            },
+            {
+              "id": "newComponentConfigDisplayLabel",
+              "inner": "Neue Konfiguration:",
+              "style": "display: none;",
+            },
+            {
+              "tag": "textarea",
+              "id": "newComponentConfigDisplay",
+              "style": "display: none;",
+              "rows": 20,
+              "cols": 50,
+              "inner": "Neue Konfiguration"
             },
             {
               "tag": "br"
@@ -195,6 +213,7 @@
         }
       },
       JSONfn:  [ 'ccm.load', 'jsonfn.js' ],
+      preview: true, // If set to true a preview of the modified component is displayed
     },
 
     /**
@@ -208,6 +227,12 @@
        * @type {Instance}
        */
       const self = this;
+
+      /**
+       * In here the newly generated component gets stored
+       * @type {object}
+       */
+      let newComponent;
 
       /**
        * starts the instance
@@ -226,9 +251,6 @@
 
         this.element.appendChild(mainElement);
 
-        // In here the newly generated component gets stored
-        let newComponent;
-
         /**
          * Downloads the component
          */
@@ -242,7 +264,6 @@
             const componentConfigKey = mainElement.querySelector('#componentConfigKeyURL').value;
             if (urlToComponentConfig !== '' && componentConfigKey !== '') {
               self.ccm.load({url: urlToComponentConfig}, function (data) {
-                //console.log(data[componentConfigKey.toLowerCase()]);
 
                 Object.keys(data[componentConfigKey.toLowerCase()]).forEach((key) => {
                   newComponent.config[key] = data[componentConfigKey.toLowerCase()][key];
@@ -603,16 +624,24 @@
 
           displayNewComponent();
 
-          demoNewComponent();
+          if (self.preview) {
+            demoNewComponent();
+          }
         }
 
         /**
          * The new component is displayed in a textarea
          */
         function displayNewComponent() {
+          mainElement.querySelector('#newComponentDisplayLabel').style.display = 'block';
           mainElement.querySelector('#newComponentDisplay').style.display = 'block';
+          mainElement.querySelector('#newComponentConfigDisplayLabel').style.display = 'block';
+          mainElement.querySelector('#newComponentConfigDisplay').style.display = 'block';
 
           mainElement.querySelector('#newComponentDisplay').value = generateNewComponentCode(newComponent);
+
+          // TODO: Diese Ausgabe könnte mit z.B. Funktionen probleme machen (Lösung: Auch hier JSONfn mit Regulären Ausdrücken verwenden)
+          mainElement.querySelector('#newComponentConfigDisplay').value = JSON.stringify(newComponent.config, null, 2);
         }
 
         /**
@@ -692,6 +721,14 @@
 
         if ( callback ) callback();
       };
+
+      /**
+       * Returns the new configuration for the component
+       * @returns {object} configuration for component
+       */
+      this.getValue = () => {
+        return newComponent.config;
+      }
     }
   };
 
