@@ -427,8 +427,7 @@
          * @param value
          */
         function generateNewBooleanField(key, value) {
-          let caption = document.createElement('div');
-          caption.innerHTML = key + ':';
+          generateCaptionForComponentSpecificField(key, value, 'boolean');
           let select = document.createElement('select');
           select.id = 'guidedConfParameterBoolean_' + key;
           let optionT = document.createElement('option');
@@ -441,7 +440,6 @@
           optionF.value = 'false';
           if (!value) optionF.selected = 'selected';
           select.appendChild(optionF);
-          mainElement.querySelector('#guided_componentSpecificConfiguration').appendChild(caption);
           mainElement.querySelector('#guided_componentSpecificConfiguration').appendChild(select);
         }
 
@@ -451,12 +449,10 @@
          * @param value
          */
         function generateNewStringField(key, value) {
-          let caption = document.createElement('div');
-          caption.innerHTML = key + ':';
+          generateCaptionForComponentSpecificField(key, value, 'string');
           let input = document.createElement('input');
           input.value = value;
           input.id = 'guidedConfParameterString_' + key;
-          mainElement.querySelector('#guided_componentSpecificConfiguration').appendChild(caption);
           mainElement.querySelector('#guided_componentSpecificConfiguration').appendChild(input);
         }
 
@@ -466,13 +462,11 @@
          * @param value
          */
         function generateNewNumberField(key, value) {
-          let caption = document.createElement('div');
-          caption.innerHTML = key + ':';
+          generateCaptionForComponentSpecificField(key, value, 'number');
           let input = document.createElement('input');
           input.value = value;
           input.id = 'guidedConfParameterNumber_' + key;
           input.type = 'number';
-          mainElement.querySelector('#guided_componentSpecificConfiguration').appendChild(caption);
           mainElement.querySelector('#guided_componentSpecificConfiguration').appendChild(input);
         }
 
@@ -545,8 +539,7 @@
          * @param array
          */
         function generateArrayEditorStrings(key, array) {
-          let caption = document.createElement('div');
-          caption.innerHTML = key + ':';
+          generateCaptionForComponentSpecificField(key, array, 'Array<string>');
           let stringArrayInputs = document.createElement('div');
           stringArrayInputs.id = 'GuidedArrayStringList_' + key;
           array.forEach(function (element) {
@@ -581,9 +574,61 @@
             this.previousElementSibling.appendChild(deleteButton);
             this.previousElementSibling.appendChild(htmlBreak);
           };
-          mainElement.querySelector('#guided_componentSpecificConfiguration').appendChild(caption);
           mainElement.querySelector('#guided_componentSpecificConfiguration').appendChild(stringArrayInputs);
           mainElement.querySelector('#guided_componentSpecificConfiguration').appendChild(addButton);
+        }
+
+        /**
+         * Generates a caption for component specific fields
+         * @param key
+         * @param value
+         * @param type  String of the datatype (eg. 'string')
+         */
+        function generateCaptionForComponentSpecificField(key, value, type) {
+          const caption = document.createElement('div');
+          caption.innerHTML = key + ':';
+
+          const helpButton = document.createElement('button');
+          helpButton.innerHTML = '?';
+          helpButton.onclick = () => {
+            const helpText = document.createElement('div');
+            helpText.style.width = '500px';
+            helpText.style.borderStyle = 'groove';
+            helpText.style.borderWidth = '2px';
+            helpText.innerHTML = generateDocumentationForConfigField(key, value, type);
+            caption.append(helpText);
+          };
+
+          caption.append(helpButton);
+          mainElement.querySelector('#guided_componentSpecificConfiguration').appendChild(caption);
+        }
+
+        /**
+         * Generates a documentation to help the user modify a field
+         * @param key
+         * @param value
+         * @param type  String of the datatype (eg. 'string')
+         * @returns {string}
+         */
+        function generateDocumentationForConfigField(key, value, type) {
+          let helpText = '';
+
+          // TODO: Erstmal noch schauen, ob für den key eine Doku existiert, dann erst über das switch den type auslesen
+
+          switch (type) {
+            /*case 'string':
+
+              break;
+            case 'number':
+
+              break;
+            case 'boolean':
+
+              break;*/
+            default:
+              helpText = "Keine Hilfe verfügbar."
+          }
+          return helpText;
         }
 
         /**
