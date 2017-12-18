@@ -590,7 +590,8 @@
 
           const helpButton = document.createElement('button');
           helpButton.innerHTML = '?';
-          helpButton.onclick = () => {
+          helpButton.onclick = function () {
+            if (this.nextElementSibling) return; // Only one help text should be displayed
             const helpText = document.createElement('div');
             helpText.style.width = '500px';
             helpText.style.borderStyle = 'groove';
@@ -614,17 +615,30 @@
           let helpText = '';
 
           // TODO: Erstmal noch schauen, ob für den key eine Doku existiert, dann erst über das switch den type auslesen
+          // Das Auslesen der Doku kann ich wieder mit der Hilfsfunktion "objectByString" erledigen. Ich brauche aber erstmal eine Komponente mit Doku um das zu testen
 
           switch (type) {
-            /*case 'string':
-
+            case 'string':
+              helpText = `
+                !Die Komponente hat dieses Feld nicht dokumentiert. Die folgenden Hinweise sind allgemein und beziehen sich nur auf den aktuellen Datentyp des Feldes. Orientieren Sie sich bei der Modifikation an dem aktuellen Wert!<br>
+                <b><u>Datentyp:</u></b> String<br>
+                <b><u>Beschreibung:</u></b> In diesem Feld kann ein beliebiger Text eingegeben werden.
+              `;
               break;
             case 'number':
-
+              helpText = `
+                !Die Komponente hat dieses Feld nicht dokumentiert. Die folgenden Hinweise sind allgemein und beziehen sich nur auf den aktuellen Datentyp des Feldes. Orientieren Sie sich bei der Modifikation an dem aktuellen Wert!<br>
+                <b><u>Datentyp:</u></b> Number<br>
+                <b><u>Beschreibung:</u></b> In diesem Feld kann eine beliebige Zahl eingegeben werden.
+              `;
               break;
             case 'boolean':
-
-              break;*/
+              helpText = `
+                !Die Komponente hat dieses Feld nicht dokumentiert. Die folgenden Hinweise sind allgemein und beziehen sich nur auf den aktuellen Datentyp des Feldes. Orientieren Sie sich bei der Modifikation an dem aktuellen Wert!<br>
+                <b><u>Datentyp:</u></b> Boolean<br>
+                <b><u>Beschreibung:</u></b> Über das Drop-Down Menü können die Werte <em>true</em> und <em>false</em> eingestellt werden.
+              `;
+              break;
             default:
               helpText = "Keine Hilfe verfügbar."
           }
