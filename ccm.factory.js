@@ -120,6 +120,8 @@
                   "inner": "Geführter Modus zum Editieren der Konfiguration"
                 },
                 {
+                  "id": "ccmDefaulConfigArea",
+                  "style": "display: none;",
                   "inner": [
                     {
                       "tag": "h4",
@@ -216,8 +218,9 @@
         }
       },
       JSONfn:  [ 'ccm.load', 'jsonfn.js' ],
-      quilleditor: [ 'ccm.load', 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/darcula.min.css', 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js', 'https://tkless.github.io/ccm-components/editor/resources/quill.js', '//cdn.quilljs.com/1.2.0/quill.snow.css' ],
+      quilleditor: [ 'ccm.load', 'resources/darcula.min.css', 'resources/highlight.min.js', 'resources/quill.min.js', 'resources/quill.snow.css' ],
       preview: true, // If set to true a preview of the modified component is displayed
+      show_ccm_fields: true, // If set to false the default ccm fields like 'name' are not modifiable
     },
 
     /**
@@ -341,7 +344,10 @@
         function guidedEditingChosen() {
           mainElement.querySelector('#chooseEditingStyle').style.display = 'none';
           mainElement.querySelector('#areaForGuidedEditing').style.display = 'block';
-          fillInCCMGuidedFields();
+          if (self.show_ccm_fields) {
+            mainElement.querySelector('#ccmDefaulConfigArea').style.display = 'block';
+            fillInCCMGuidedFields();
+          }
           generateComponentSpecificFields('');
         }
 
@@ -584,10 +590,12 @@
          * Generates a new component from the guided process
          */
         function generateNewComponentFromGuided() {
-          // name
-          newComponent.name = mainElement.querySelector('#guided_nameOfNewComponent').value;
-          // ccm url
-          newComponent.ccm = mainElement.querySelector('#guided_ccmURL').value;
+          if (self.show_ccm_fields) {
+            // name
+            newComponent.name = mainElement.querySelector('#guided_nameOfNewComponent').value;
+            // ccm url
+            newComponent.ccm = mainElement.querySelector('#guided_ccmURL').value;
+          }
           // html template
           newComponent.config.html = JSON.parse(quillEditors.htmlEditor.getText());
           // custom fields can be inputs
