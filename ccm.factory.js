@@ -102,13 +102,6 @@
                   "id": "nameOfNewComponentInput",
                   "inner": [
                     {
-                      "inner": "Name der neuen Komponente: "
-                    },
-                    {
-                      "tag": "input",
-                      "id": "nameOfNewComponent"
-                    },
-                    {
                       "tag": "button",
                       "inner": "Neue Komponente generieren",
                       "onclick": "%generateFromEditorClick%"
@@ -163,6 +156,16 @@
                     {
                       "tag": "h4",
                       "inner": "Komponenten spezifische Konfiguration"
+                    },
+                    {
+                      "tag": "div",
+                      "id": "htmlEditorCaption",
+                      "inner": "HTML:",
+                      "style": "display: none;"
+                    },
+                    {
+                      "tag": "div",
+                      "id": "htmlEditor"
                     }
                   ]
                 },
@@ -179,7 +182,7 @@
             {
               "id": "newComponentDisplayLabel",
               "inner": "Vollständiger Komponentencode:",
-              "style": "display: none;",
+              "style": "display: none;"
             },
             {
               "tag": "textarea",
@@ -192,7 +195,7 @@
             {
               "id": "newComponentConfigDisplayLabel",
               "inner": "Neue Konfiguration:",
-              "style": "display: none;",
+              "style": "display: none;"
             },
             {
               "tag": "textarea",
@@ -213,6 +216,7 @@
         }
       },
       JSONfn:  [ 'ccm.load', 'jsonfn.js' ],
+      quilleditor: [ 'ccm.load', 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/darcula.min.css', 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js', 'https://tkless.github.io/ccm-components/editor/resources/quill.js', '//cdn.quilljs.com/1.2.0/quill.snow.css' ],
       preview: true, // If set to true a preview of the modified component is displayed
     },
 
@@ -235,10 +239,27 @@
       let newComponent;
 
       /**
+       * Holds references to the Quill editors used
+       * @type {{htmlEditor: Quill}}
+       */
+      let quillEditors = {
+        htmlEditor: null
+      };
+
+      /**
        * starts the instance
        * @param {function} [callback] - called after all synchronous and asynchronous operations are complete
        */
       this.start = callback => {
+
+        const quillSettings = {
+          modules: {
+            syntax: true,
+            toolbar: false
+          },
+          placeholder: '',
+          theme: 'snow'
+        };
 
         // !ANMERKUNG!: Die Funktionszuweisungen müssen in der richtigen Reihenfolge, entsprechend dem Vorkommen im Json auftauchen
         let mainElement = this.ccm.helper.html(this.html.main, {
@@ -292,7 +313,6 @@
         function configEditorChosen() {
           mainElement.querySelector('#chooseEditingStyle').style.display = 'none';
           displayConfigInEditor();
-          displayName();
         }
 
         /**
@@ -304,19 +324,15 @@
         }
 
         /**
-         * Displays the name of the new Component
-         */
-        function displayName() {
-          mainElement.querySelector('#nameOfNewComponent').value = newComponent.name + '-new';
-        }
-
-        /**
          * Uses the modified config from the editor to generate a new component
          */
         function generateNewComponentFromEditor() {
-          newComponent.name = mainElement.querySelector('#nameOfNewComponent').value;
           newComponent.config = JSON.parse(mainElement.querySelector('#configEditor').value);
           displayNewComponent();
+
+          if (self.preview) {
+            demoNewComponent();
+          }
         }
 
         /**
@@ -376,13 +392,12 @@
                   } else {
                     generateArrayEditor(displayBufferForKey + key, currentConfigPoint[key]);
                   }
+                } else if (currentConfigPoint[key] === null) {
+                  console.log(String(currentConfigPoint[key][0]) + ' detected !Parsing not implemented! ' + key + ' -> ' + currentConfigPoint[key] + ' (null)');
+                } else if (key === 'html') { // Check if the object is the html template
+                  generateHTMLEditor();
                 } else {
-                  // Check if the object is the html template
-                  if (key === 'html') {
-                    generateHTMLEditor();
-                  } else {
-                    generateComponentSpecificFields(displayBufferForKey + key);
-                  }
+                  generateComponentSpecificFields(displayBufferForKey + key);
                 }
                 break;
               default:
@@ -393,18 +408,11 @@
         }
 
         /**
-         * Generates a text area in which the html template can be edited
+         * Generates an area in which the html template can be edited
          */
         function generateHTMLEditor() {
-          let caption = document.createElement('div');
-          caption.innerHTML = 'HTML:';
-          let htmlEditorTextArea = document.createElement('textarea');
-          htmlEditorTextArea.id = 'htmlEditor';
-          htmlEditorTextArea.rows = 20;
-          htmlEditorTextArea.cols = 50;
-          htmlEditorTextArea.value = JSON.stringify(newComponent.config.html, null, 2);
-          mainElement.querySelector('#guided_componentSpecificConfiguration').appendChild(caption);
-          mainElement.querySelector('#guided_componentSpecificConfiguration').appendChild(htmlEditorTextArea);
+          mainElement.querySelector('#htmlEditorCaption').style.display = 'block';
+          quillEditors.htmlEditor = generateQuillEditor('htmlEditor', JSON.stringify(newComponent.config.html, null, 2), 500, 300);
         }
 
         /**
@@ -581,7 +589,7 @@
           // ccm url
           newComponent.ccm = mainElement.querySelector('#guided_ccmURL').value;
           // html template
-          newComponent.config.html = JSON.parse(mainElement.querySelector('#htmlEditor').value);
+          newComponent.config.html = JSON.parse(quillEditors.htmlEditor.getText());
           // custom fields can be inputs
           let customFields = mainElement.querySelectorAll('input');
           for (let i = 0; i < customFields.length; i++) {
@@ -687,6 +695,26 @@
           document.body.appendChild(demoHtmlTag);
 
           eval(generateNewComponentCode(demoNewComponent));
+        }
+
+        /**
+         * Generates a Quill Editor for code
+         * @param divID   Id of the div, where the editor should be placed
+         * @param content String of content to place inside the editor
+         * @param width   Width of the editor
+         * @param height  Height of the editor
+         * @returns {Quill} Returns a reference to the editor
+         */
+        function generateQuillEditor(divID, content, width, height) {
+          mainElement.querySelector('#' + divID).style.width = width + "px";
+          mainElement.querySelector('#' + divID).style.height = height + "px";
+
+          const quillEditor = new Quill(mainElement.querySelector('#' + divID), quillSettings);
+
+          quillEditor.setText(content);
+          quillEditor.formatText(0, content.length + 1, 'code-block', true);
+
+          return quillEditor;
         }
 
         // https://stackoverflow.com/questions/6491463/accessing-nested-javascript-objects-with-string-key
