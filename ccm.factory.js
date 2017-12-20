@@ -32,7 +32,7 @@
           "id": "main",
           "inner": [
             {
-              "inner": "URL der Komponente:<br>http://localhost:5000/resources/test_components/ccm.navmenu.js<br>http://localhost:5000/resources/test_components/ccm.kanban_card.js<br>http://localhost:5000/resources/test_components/ccm.game_chooser.js<br>http://localhost:5000/resources/test_components/ccm.form.js<br>http://localhost:5000/resources/test_components/ccm.teambuild_builder.js<br>"
+              "inner": "URL der Komponente:<br>http://localhost:5000/resources/test_components/ccm.navmenu.js<br>http://localhost:5000/resources/test_components/ccm.kanban_card.js<br>http://localhost:5000/resources/test_components/ccm.game_chooser.js<br>http://localhost:5000/resources/test_components/ccm.form.js<br>http://localhost:5000/resources/test_components/ccm.teambuild_builder.js<br>http://localhost:5000/resources/test_components/ccm.radar_chart.js<br>http://localhost:5000/resources/test_components/ccm.solutions_view.js<br>"
             },
             {
               "tag": "input",
