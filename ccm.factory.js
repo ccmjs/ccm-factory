@@ -218,7 +218,8 @@
         }
       },
       JSONfn:  [ 'ccm.load', 'jsonfn.js' ],
-      quilleditor: [ 'ccm.load', 'resources/darcula.min.css', 'resources/highlight.min.js', 'resources/quill.min.js', 'resources/quill.snow.css' ],
+      // quilleditor: [ 'ccm.load', 'resources/darcula.min.css', 'resources/highlight.min.js', 'resources/quill.min.js', 'resources/quill.snow.css' ],
+      quilleditor: [ 'ccm.load', 'resources/quill.js', 'resources/quill.snow.css' ],
       preview: true, // If set to true a preview of the modified component is displayed
       show_ccm_fields: true, // If set to false the default ccm fields like 'name' are not modifiable
     },
@@ -258,9 +259,19 @@
        */
       this.start = callback => {
 
+        /*
         const quillSettings = {
           modules: {
             syntax: true,
+            toolbar: false
+          },
+          placeholder: '',
+          theme: 'snow'
+        };
+         */
+
+        const quillSettings = {
+          modules: {
             toolbar: false
           },
           placeholder: '',
