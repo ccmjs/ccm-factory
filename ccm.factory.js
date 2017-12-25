@@ -487,6 +487,12 @@
                 generateComponentSpecificFields(key + `[${i}]`);
               }
               break;
+            case 'number':
+              generateArrayEditorNumbers(key, value);
+              break;
+            case 'boolean':
+              generateArrayEditorBooleans(key, value);
+              break;
             default:
               console.log('Array editor for ' + typeInArray + ' not yet implemented.');
               break;
@@ -581,6 +587,114 @@
             this.previousElementSibling.appendChild(htmlBreak);
           };
           mainElement.querySelector('#guided_componentSpecificConfiguration').appendChild(stringArrayInputs);
+          mainElement.querySelector('#guided_componentSpecificConfiguration').appendChild(addButton);
+        }
+
+        /**
+         * Generates an editor for arrays containing numbers
+         * @param key
+         * @param array
+         */
+        function generateArrayEditorNumbers(key, array) {
+          generateCaptionForComponentSpecificField(key, array, 'Array<number>');
+          let numberArrayInputs = document.createElement('div');
+          numberArrayInputs.id = 'GuidedArrayNumberList_' + key;
+          array.forEach(function (element) {
+            let input = document.createElement('input');
+            input.value = element;
+            input.type = 'number';
+            let deleteButton = document.createElement('button');
+            deleteButton.innerHTML = 'X';
+            deleteButton.onclick = function () {
+              this.nextElementSibling.outerHTML = '';
+              this.previousElementSibling.outerHTML = '';
+              this.outerHTML = '';
+            };
+            let htmlBreak = document.createElement('br');
+            numberArrayInputs.appendChild(input);
+            numberArrayInputs.appendChild(deleteButton);
+            numberArrayInputs.appendChild(htmlBreak);
+          });
+          let addButton = document.createElement('button');
+          addButton.innerHTML = '+';
+          addButton.onclick = function () {
+            let input = document.createElement('input');
+            input.value = '';
+            input.type = 'number';
+            let deleteButton = document.createElement('button');
+            deleteButton.innerHTML = 'X';
+            deleteButton.onclick = function () {
+              this.nextElementSibling.outerHTML = '';
+              this.previousElementSibling.outerHTML = '';
+              this.outerHTML = '';
+            };
+            let htmlBreak = document.createElement('br');
+            this.previousElementSibling.appendChild(input);
+            this.previousElementSibling.appendChild(deleteButton);
+            this.previousElementSibling.appendChild(htmlBreak);
+          };
+          mainElement.querySelector('#guided_componentSpecificConfiguration').appendChild(numberArrayInputs);
+          mainElement.querySelector('#guided_componentSpecificConfiguration').appendChild(addButton);
+        }
+
+        /**
+         * Generates an editor for arrays containing booleans
+         * @param key
+         * @param array
+         */
+        function generateArrayEditorBooleans(key, array) {
+          generateCaptionForComponentSpecificField(key, array, 'Array<boolean>');
+          let booleanArrayInputs = document.createElement('div');
+          booleanArrayInputs.id = 'GuidedArrayBooleanList_' + key;
+          array.forEach(function (element) {
+            let select = document.createElement('select');
+            let optionT = document.createElement('option');
+            optionT.text = 'true';
+            optionT.value = 'true';
+            if (element) optionT.selected = 'selected';
+            select.appendChild(optionT);
+            let optionF = document.createElement('option');
+            optionF.text = 'false';
+            optionF.value = 'false';
+            if (!element) optionF.selected = 'selected';
+            select.appendChild(optionF);
+            let deleteButton = document.createElement('button');
+            deleteButton.innerHTML = 'X';
+            deleteButton.onclick = function () {
+              this.nextElementSibling.outerHTML = '';
+              this.previousElementSibling.outerHTML = '';
+              this.outerHTML = '';
+            };
+            let htmlBreak = document.createElement('br');
+            booleanArrayInputs.appendChild(select);
+            booleanArrayInputs.appendChild(deleteButton);
+            booleanArrayInputs.appendChild(htmlBreak);
+          });
+          let addButton = document.createElement('button');
+          addButton.innerHTML = '+';
+          addButton.onclick = function () {
+            let select = document.createElement('select');
+            let optionT = document.createElement('option');
+            optionT.text = 'true';
+            optionT.value = 'true';
+            select.appendChild(optionT);
+            let optionF = document.createElement('option');
+            optionF.text = 'false';
+            optionF.value = 'false';
+            select.appendChild(optionF);
+            let deleteButton = document.createElement('button');
+            deleteButton.innerHTML = 'X';
+            deleteButton.onclick = function () {
+              this.nextElementSibling.outerHTML = '';
+              this.previousElementSibling.outerHTML = '';
+              this.outerHTML = '';
+            };
+            let htmlBreak = document.createElement('br');
+            this.previousElementSibling.appendChild(select);
+            this.previousElementSibling.appendChild(deleteButton);
+            this.previousElementSibling.appendChild(htmlBreak);
+          };
+          mainElement.querySelector('#guided_componentSpecificConfiguration').appendChild(booleanArrayInputs);
           mainElement.querySelector('#guided_componentSpecificConfiguration').appendChild(addButton);
         }
 
@@ -697,6 +811,26 @@
               for (let j = 0; j < children.length; j++) {
                 if (children[j].nodeName === 'INPUT') {
                   newConfigArray.push(children[j].value);
+                }
+              }
+              setNewConfigValue(keyToChange, newConfigArray);
+            } else if (potentialCustomArrays[i].id.startsWith('GuidedArrayNumberList_')) {
+              let keyToChange = potentialCustomArrays[i].id.slice(22);
+              let newConfigArray = [];
+              let children = potentialCustomArrays[i].children;
+              for (let j = 0; j < children.length; j++) {
+                if (children[j].nodeName === 'INPUT') {
+                  newConfigArray.push(parseInt(children[j].value));
+                }
+              }
+              setNewConfigValue(keyToChange, newConfigArray);
+            } else if (potentialCustomArrays[i].id.startsWith('GuidedArrayBooleanList_')) {
+              let keyToChange = potentialCustomArrays[i].id.slice(23);
+              let newConfigArray = [];
+              let children = potentialCustomArrays[i].children;
+              for (let j = 0; j < children.length; j++) {
+                if (children[j].nodeName === 'SELECT') {
+                  newConfigArray.push(children[j].value === 'true');
                 }
               }
               setNewConfigValue(keyToChange, newConfigArray);
