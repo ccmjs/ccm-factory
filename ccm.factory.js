@@ -246,7 +246,10 @@
        * @type {{htmlEditor: Quill}}
        */
       let quillEditors = {
-        htmlEditor: null
+        htmlEditor: null,
+        functionEditors: {
+
+        }
       };
 
       /**
@@ -400,12 +403,15 @@
                     generateArrayEditor(displayBufferForKey + key, currentConfigPoint[key]);
                   }
                 } else if (currentConfigPoint[key] === null) {
-                  console.log(String(currentConfigPoint[key][0]) + ' detected !Parsing not implemented! ' + key + ' -> ' + currentConfigPoint[key] + ' (null)');
+                  console.log(String(currentConfigPoint[key]) + ' detected !Parsing not implemented! ' + key + ' -> ' + currentConfigPoint[key] + ' (null)');
                 } else if (key === 'html') { // Check if the object is the html template
                   generateHTMLEditor();
                 } else {
                   generateComponentSpecificFields(displayBufferForKey + key);
                 }
+                break;
+              case 'function':
+                generateNewFunctionField(displayBufferForKey + key, currentConfigPoint[key]);
                 break;
               default:
                 console.log('!Parsing not implemented! ' + key + ' -> ' + currentConfigPoint[key] + ' (' + typeof(newComponent.config[key])+ ')');
@@ -420,6 +426,23 @@
         function generateHTMLEditor() {
           mainElement.querySelector('#htmlEditorCaption').style.display = 'block';
           quillEditors.htmlEditor = generateQuillEditor('htmlEditor', JSON.stringify(newComponent.config.html, null, 2), 500, 300);
+        }
+
+        /**
+         * Generates an input to modify functions
+         * @param key
+         * @param value
+         */
+        function generateNewFunctionField(key, value) {
+          generateCaptionForComponentSpecificField(key, value, 'function');
+          const newDiv = document.createElement('div');
+          newDiv.id = 'guidedConfParameterFunction_' + key;
+          mainElement.querySelector('#guided_componentSpecificConfiguration').appendChild(newDiv);
+          const functionEditor = generateQuillEditor('guidedConfParameterFunction_' + key, value.toString(), 500, 300);
+          quillEditors.functionEditors['guidedConfParameterFunction_' + key] = functionEditor;
+
+          //console.log(JSONfn.stringify(value)); // TODO: Funktion zu String -> In Editor -> Wieder aus Editor raus -> In Funktion umwandeln -> Testen
+          //console.log(JSONfn.parse(JSONfn.stringify(value)));
         }
 
         /**
@@ -800,40 +823,44 @@
               setNewConfigValue(keyToChange, (customFieldsSelect[i].value === 'true'));
             }
           }
-          // search for custom arrays in divs
-          let potentialCustomArrays = mainElement.querySelectorAll('div');
-          for (let i = 0; i < potentialCustomArrays.length; i ++) {
+          // search for custom config editors in divs
+          let potentialCustomConfig = mainElement.querySelectorAll('div');
+          for (let i = 0; i < potentialCustomConfig.length; i ++) {
             // Set new string array in config
-            if (potentialCustomArrays[i].id.startsWith('GuidedArrayStringList_')) {
-              let keyToChange = potentialCustomArrays[i].id.slice(22);
+            if (potentialCustomConfig[i].id.startsWith('GuidedArrayStringList_')) {
+              let keyToChange = potentialCustomConfig[i].id.slice(22);
               let newConfigArray = [];
-              let children = potentialCustomArrays[i].children;
+              let children = potentialCustomConfig[i].children;
               for (let j = 0; j < children.length; j++) {
                 if (children[j].nodeName === 'INPUT') {
                   newConfigArray.push(children[j].value);
                 }
               }
               setNewConfigValue(keyToChange, newConfigArray);
-            } else if (potentialCustomArrays[i].id.startsWith('GuidedArrayNumberList_')) {
-              let keyToChange = potentialCustomArrays[i].id.slice(22);
+            } else if (potentialCustomConfig[i].id.startsWith('GuidedArrayNumberList_')) {
+              let keyToChange = potentialCustomConfig[i].id.slice(22);
               let newConfigArray = [];
-              let children = potentialCustomArrays[i].children;
+              let children = potentialCustomConfig[i].children;
               for (let j = 0; j < children.length; j++) {
                 if (children[j].nodeName === 'INPUT') {
                   newConfigArray.push(parseInt(children[j].value));
                 }
               }
               setNewConfigValue(keyToChange, newConfigArray);
-            } else if (potentialCustomArrays[i].id.startsWith('GuidedArrayBooleanList_')) {
-              let keyToChange = potentialCustomArrays[i].id.slice(23);
+            } else if (potentialCustomConfig[i].id.startsWith('GuidedArrayBooleanList_')) {
+              let keyToChange = potentialCustomConfig[i].id.slice(23);
               let newConfigArray = [];
-              let children = potentialCustomArrays[i].children;
+              let children = potentialCustomConfig[i].children;
               for (let j = 0; j < children.length; j++) {
                 if (children[j].nodeName === 'SELECT') {
                   newConfigArray.push(children[j].value === 'true');
                 }
               }
               setNewConfigValue(keyToChange, newConfigArray);
+            } else if (potentialCustomConfig[i].id.startsWith('guidedConfParameterFunction_')) {
+              let keyToChange = potentialCustomConfig[i].id.slice(28);
+              const newFunction = quillEditors.functionEditors[potentialCustomConfig[i].id].getText();
+              setNewConfigValue(keyToChange, eval('(' + newFunction + ')'));
             }
           }
 
@@ -855,8 +882,7 @@
 
           mainElement.querySelector('#newComponentDisplay').value = generateNewComponentCode(newComponent);
 
-          // TODO: Diese Ausgabe könnte mit z.B. Funktionen probleme machen (Lösung: Auch hier JSONfn mit Regulären Ausdrücken verwenden)
-          mainElement.querySelector('#newComponentConfigDisplay').value = JSON.stringify(newComponent.config, null, 2);
+          mainElement.querySelector('#newComponentConfigDisplay').value = fixJSONOutput(JSONfn.stringify(newComponent.config));
         }
 
         /**
@@ -865,13 +891,7 @@
          * @returns {string}
          */
         function generateNewComponentCode(newComponentObject) {
-          /**
-           * 1.replace: Newlines will be visible in the textarea
-           * 2.replace: Removes quotation marks from functions
-           * 3.replace: Fixes broken regular expressions
-           * 4.replace: Fixes broken strings (\" to ")
-           */
-          let innerPartOfCompoment = JSONfn.stringify(newComponentObject).replace(/\\n/g, '\r\n').replace(/"function([^]*)}"/g, 'function$1}').replace(/\\\\\//g, '\\/').replace(/\\"/g, '"');
+          let innerPartOfCompoment = fixJSONOutput(JSONfn.stringify(newComponentObject));
 
           const componentBeginning = '{\n' +
             '\n' +
@@ -882,6 +902,21 @@
             '}';
 
           return componentBeginning + innerPartOfCompoment + componentEnding;
+        }
+
+        /**
+         * Fixes uncompatible JSON Strings, that would not work in ccm components
+         * @param brokenJSONString
+         * @returns {string}
+         */
+        function fixJSONOutput(brokenJSONString) {
+          return brokenJSONString
+            .replace(/\\n/g, '\r\n') // Newlines will be visible in the textarea
+            .replace(/function([^]*)}"/g, 'function$1}') // Removes quotation marks from functions
+            .replace(/"function([^]*)}"/g, 'function$1}') // Removes quotation marks from functions
+            .replace(/"function/g, 'function') // Removes quotation marks from functions
+            .replace(/\\\\\//g, '\\/') // Fixes broken regular expressions
+            .replace(/\\"/g, '"'); // Fixes broken strings (\" to ")
         }
 
         /**
