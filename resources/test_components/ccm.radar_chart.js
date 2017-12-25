@@ -18,7 +18,7 @@
      * @type {string}
      */
     name: 'radar_chart',
-    
+
     /**
      * recommended used framework version
      * @type {string}
@@ -81,25 +81,25 @@
      * @constructor
      */
     Instance: function () {
-    
+
       /**
        * own reference for inner functions
        * @type {Instance}
        */
       const self = this;
-      
+
       /**
        * shortcut to help functions
        * @type {Object}
        */
       let $;
-      
+
       /**
        * init is called once after all dependencies are solved and is then deleted
        * @param {function} callback - called after all synchronous and asynchronous operations are complete
        */
       this.init = callback => {
-      
+
         //  Is content given via LightDOM (inner HTML of Custom Element)?
         //  Then use it with higher priority
         if ( self.inner && self.inner.innerHTML.trim() ) self.text = self.inner.innerHTML;
@@ -108,7 +108,7 @@
 
         callback();
       };
-      
+
       /**
        * is called once after the initialization and is then deleted
        * @param {function} callback - called after all synchronous and asynchronous operations are complete
@@ -117,16 +117,16 @@
 
         // set shortcut to help functions
         $ = self.ccm.helper;
-        
+
         callback();
-      };  
-        
+      };
+
       /**
        * starts the instance
        * @param {function} [callback] - called after all synchronous and asynchronous operations are complete
        */
       this.start = callback => {
-      
+
         // has logger instance? => log 'render' event
         if ( self.logger ) self.logger.log( 'render' );
 
@@ -171,10 +171,10 @@
         [50,100].map( radius => {
           list.push({ tag: 'circle', cx: 100, cy: 100, r: radius, fill:"none", "stroke-width":"1", stroke:"black", "stroke-dasharray":"5, 2" });
         });
-        
+
         // prepare main HTML structure
         const main_elem = $.html( self.html.main );
-        
+
         // set content of own website area
         $.setContent( self.element, main_elem );
 
