@@ -50,7 +50,7 @@
         return '_PxEgEr_' + value;
       }
       return value;
-    });
+    }, 2);
   };
 
   exports.parse = function (str, date2obj) {
