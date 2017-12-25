@@ -409,7 +409,7 @@
                 if (Array.isArray(currentConfigPoint[key])) {
                   // check if the array is a ccm specific instruction, because those will be handled separately
                   if (String(currentConfigPoint[key][0]).startsWith('ccm.')) {
-                    console.log(String(currentConfigPoint[key][0]) + ' detected !Parsing not implemented! ' + key + ' -> ' + currentConfigPoint[key] + ' (' + typeof(currentConfigPoint[key])+ ')');
+                    generateCCMTypeField(displayBufferForKey + key, currentConfigPoint[key]);
                   } else {
                     generateArrayEditor(displayBufferForKey + key, currentConfigPoint[key]);
                   }
@@ -440,6 +440,62 @@
         }
 
         /**
+         * Generates an input to modify ccms own types
+         * @param key
+         * @param value
+         */
+        function generateCCMTypeField(key, value) {
+          const ccmDataType = value[0];
+          switch (ccmDataType) {
+            case 'ccm.load':
+              generateAdvancedEditorForCCMDataTypes(key, value, ccmDataType);
+              break;
+            case 'ccm.module':
+              generateAdvancedEditorForCCMDataTypes(key, value, ccmDataType);
+              break;
+            case 'ccm.component':
+              generateAdvancedEditorForCCMDataTypes(key, value, ccmDataType);
+              break;
+            case 'ccm.instance':
+              generateAdvancedEditorForCCMDataTypes(key, value, ccmDataType);
+              break;
+            case 'ccm.proxy':
+              generateAdvancedEditorForCCMDataTypes(key, value, ccmDataType);
+              break;
+            case 'ccm.store':
+              generateAdvancedEditorForCCMDataTypes(key, value, ccmDataType);
+              break;
+            case 'ccm.get':
+              generateAdvancedEditorForCCMDataTypes(key, value, ccmDataType);
+              break;
+            case 'ccm.set':
+              generateAdvancedEditorForCCMDataTypes(key, value, ccmDataType);
+              break;
+            case 'ccm.del':
+              generateAdvancedEditorForCCMDataTypes(key, value, ccmDataType);
+              break;
+            default:
+              console.log('Parsing of the ccm datatype ' + ccmDataType + ' not implemented!');
+          }
+        }
+
+        /**
+         * Generates an input to freely modify ccm datatypes
+         * @param key
+         * @param value
+         * @param ccmDataType
+         */
+        function generateAdvancedEditorForCCMDataTypes(key, value, ccmDataType) {
+          generateCaptionForComponentSpecificField(key, value, ccmDataType);
+          const textAreaForEditing = document.createElement('textarea');
+          textAreaForEditing.id = 'guidedConfParameterCCMTypeAdvanced_' + key;
+          textAreaForEditing.rows = 5;
+          textAreaForEditing.cols = 50;
+          textAreaForEditing.value = JSON.stringify(value, null, 2);
+          mainElement.querySelector('#guided_componentSpecificConfiguration').appendChild(textAreaForEditing);
+        }
+
+        /**
          * Generates an input to modify functions
          * @param key
          * @param value
@@ -451,9 +507,6 @@
           mainElement.querySelector('#guided_componentSpecificConfiguration').appendChild(newDiv);
           const functionEditor = generateQuillEditor('guidedConfParameterFunction_' + key, value.toString(), 500, 300);
           quillEditors.functionEditors['guidedConfParameterFunction_' + key] = functionEditor;
-
-          //console.log(JSONfn.stringify(value)); // TODO: Funktion zu String -> In Editor -> Wieder aus Editor raus -> In Funktion umwandeln -> Testen
-          //console.log(JSONfn.parse(JSONfn.stringify(value)));
         }
 
         /**
@@ -832,6 +885,15 @@
             if (customFieldsSelect[i].id.startsWith('guidedConfParameterBoolean_')) {
               let keyToChange = customFieldsSelect[i].id.slice(27);
               setNewConfigValue(keyToChange, (customFieldsSelect[i].value === 'true'));
+            }
+          }
+          // custom fields can be textareas
+          let customFieldsTextarea = mainElement.querySelectorAll('textarea');
+          for (let i = 0; i < customFieldsTextarea.length; i++) {
+            // set ccm datatype parameters
+            if (customFieldsTextarea[i].id.startsWith('guidedConfParameterCCMTypeAdvanced_')) {
+              let keyToChange = customFieldsTextarea[i].id.slice(35);
+              setNewConfigValue(keyToChange, JSON.parse(customFieldsTextarea[i].value));
             }
           }
           // search for custom config editors in divs
