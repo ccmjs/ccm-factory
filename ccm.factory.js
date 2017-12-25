@@ -363,6 +363,7 @@
 
         /**
          * Analyses the config of a given component and generates fields to edit it
+         * @param currentKey  Current key as string when called recursively
          */
         function generateComponentSpecificFields(currentKey) {
           let currentConfigPoint;
@@ -392,7 +393,7 @@
               case 'object':
                 // Check if the object is an array
                 if (Array.isArray(currentConfigPoint[key])) {
-                  // check if the array is a ccm load instruction, because those will be handled separately
+                  // check if the array is a ccm specific instruction, because those will be handled separately
                   if (String(currentConfigPoint[key][0]).startsWith('ccm.')) {
                     console.log(String(currentConfigPoint[key][0]) + ' detected !Parsing not implemented! ' + key + ' -> ' + currentConfigPoint[key] + ' (' + typeof(currentConfigPoint[key])+ ')');
                   } else {
@@ -480,6 +481,11 @@
           switch (typeInArray) {
             case 'string':
               generateArrayEditorStrings(key, value);
+              break;
+            case 'object':
+              for (let i = 0; i < value.length; i++) {
+                generateComponentSpecificFields(key + `[${i}]`);
+              }
               break;
             default:
               console.log('Array editor for ' + typeInArray + ' not yet implemented.');
@@ -807,8 +813,7 @@
           let len = pList.length;
           for(let i = 0; i < len-1; i++) {
             let elem = pList[i];
-            if( !schema[elem] ) schema[elem] = {};
-            schema = schema[elem];
+            schema = objectByString(schema, elem);
           }
 
           schema[pList[len-1]] = value;
