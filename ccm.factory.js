@@ -32,13 +32,13 @@
           "id": "main",
           "inner": [
             {
-              "inner": "URL der Komponente:<br>http://localhost:5000/resources/test_components/ccm.navmenu.js<br>http://localhost:5000/resources/test_components/ccm.kanban_card.js<br>http://localhost:5000/resources/test_components/ccm.game_chooser.js<br>http://localhost:5000/resources/test_components/ccm.form.js<br>http://localhost:5000/resources/test_components/ccm.teambuild_builder.js<br>http://localhost:5000/resources/test_components/ccm.radar_chart.js<br>http://localhost:5000/resources/test_components/ccm.solutions_view.js<br>"
+              "inner": "URL der Komponente:<br>http://localhost:5000/resources/test_components/ccm.navmenu.js<br>http://localhost:5000/resources/test_components/ccm.kanban_card.js<br>http://localhost:5000/resources/test_components/ccm.game_chooser.js<br>http://localhost:5000/resources/test_components/ccm.form.js<br>http://localhost:5000/resources/test_components/ccm.teambuild_builder.js<br>http://localhost:5000/resources/test_components/ccm.radar_chart.js<br>http://localhost:5000/resources/test_components/ccm.radar_chart_documented.js<br>http://localhost:5000/resources/test_components/ccm.solutions_view.js<br>"
             },
             {
               "tag": "input",
               "id": "componentURL",
               "size": "70",
-              "value": "http://localhost:5000/resources/test_components/ccm.kanban_card.js"
+              "value": "http://localhost:5000/resources/test_components/ccm.radar_chart_documented.js"
             },
             {
               "inner": "URL der Config Datei (leer lassen, wenn nicht vorhanden):<br>http://localhost:5000/resources/test_components/configs.js"
@@ -821,28 +821,43 @@
         function generateDocumentationForConfigField(key, value, type) {
           let helpText = '';
 
-          // TODO: Erstmal noch schauen, ob für den key eine Doku existiert, dann erst über das switch den type auslesen
-          // Das Auslesen der Doku kann ich wieder mit der Hilfsfunktion "objectByString" erledigen. Ich brauche aber erstmal eine Komponente mit Doku um das zu testen
+          if (newComponent.hasOwnProperty('meta') && newComponent.meta.hasOwnProperty('config')) {
+            let helpObject = objectByString(newComponent.meta.config, key);
+            if (helpObject) {
+              helpText = constructHelpText(helpObject.ccm_doc_type, helpObject.ccm_doc_desc, helpObject.ccm_doc_examples);
+              return helpText
+            } else {
+              // Try to find documentation that is available for an object higher up
+              while (key.indexOf('.') > -1) {
+                key = key.substr(0, key.lastIndexOf('.'));
+                helpObject = objectByString(newComponent.meta.config, key);
+                if (helpObject) {
+                  helpText = constructHelpText(helpObject.ccm_doc_type, helpObject.ccm_doc_desc, helpObject.ccm_doc_examples);
+                  return helpText;
+                }
+              }
+            }
+          }
 
           switch (type) {
             case 'string':
               helpText = `
                 !Die Komponente hat dieses Feld nicht dokumentiert. Die folgenden Hinweise sind allgemein und beziehen sich nur auf den aktuellen Datentyp des Feldes. Orientieren Sie sich bei der Modifikation an dem aktuellen Wert!<br>
-                <b><u>Datentyp:</u></b> String<br>
+                <b><u>Datentyp:</u></b> string<br>
                 <b><u>Beschreibung:</u></b> In diesem Feld kann ein beliebiger Text eingegeben werden.
               `;
               break;
             case 'number':
               helpText = `
                 !Die Komponente hat dieses Feld nicht dokumentiert. Die folgenden Hinweise sind allgemein und beziehen sich nur auf den aktuellen Datentyp des Feldes. Orientieren Sie sich bei der Modifikation an dem aktuellen Wert!<br>
-                <b><u>Datentyp:</u></b> Number<br>
+                <b><u>Datentyp:</u></b> number<br>
                 <b><u>Beschreibung:</u></b> In diesem Feld kann eine beliebige Zahl eingegeben werden.
               `;
               break;
             case 'boolean':
               helpText = `
                 !Die Komponente hat dieses Feld nicht dokumentiert. Die folgenden Hinweise sind allgemein und beziehen sich nur auf den aktuellen Datentyp des Feldes. Orientieren Sie sich bei der Modifikation an dem aktuellen Wert!<br>
-                <b><u>Datentyp:</u></b> Boolean<br>
+                <b><u>Datentyp:</u></b> boolean<br>
                 <b><u>Beschreibung:</u></b> Über das Drop-Down Menü können die Werte <em>true</em> und <em>false</em> eingestellt werden.
               `;
               break;
@@ -850,6 +865,32 @@
               helpText = "Keine Hilfe verfügbar."
           }
           return helpText;
+        }
+
+        /**
+         * Construct a help text from the component documentation
+         * @param type
+         * @param desc
+         * @param examples
+         * @returns {string}
+         */
+        function constructHelpText(type, desc, examples) {
+          let exampleText = '';
+
+          if (examples) {
+            examples.forEach(element => {
+              Object.keys(element).forEach(key => {
+                exampleText += `<i>${escapeHTML(key)}: </i> ${escapeHTML(element[key])} <br>`;
+              });
+            });
+          }
+
+          return `
+            <b><u>Datentyp(en):</u></b> ${escapeHTML(type.join(', '))}<br>
+            <b><u>Beschreibung:</u></b> ${escapeHTML(desc)}<br>
+            <b><u>Beispiele:</u></b><br>
+            ${exampleText}
+          `;
         }
 
         /**
@@ -1059,6 +1100,11 @@
           }
 
           schema[pList[len-1]] = value;
+        }
+
+        // https://coderwall.com/p/ostduq/escape-html-with-javascript
+        function escapeHTML(input) {
+          return input.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
         }
 
         if ( callback ) callback();
