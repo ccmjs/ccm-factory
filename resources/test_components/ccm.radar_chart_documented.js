@@ -1,0 +1,306 @@
+/**
+ * @overview ccm component for radar_chart
+ * @author Manfred Kaul <manfred.kaul@h-brs.de> 2017
+ * @license The MIT License (MIT)
+ * @version latest (1.0.0)
+ * TODO: docu comments -> API
+ * TODO: unit tests
+ * TODO: builder component
+ * TODO: i18n
+ */
+
+{
+
+  const component  = {
+
+    /**
+     * unique component name
+     * @type {string}
+     */
+    name: 'radar_chart_documented',
+
+    /**
+     * recommended used framework version
+     * @type {string}
+     */
+    ccm: 'https://akless.github.io/ccm/version/ccm-12.8.0.min.js',
+    // ccm: '//akless.github.io/ccm/ccm.js',
+
+    meta: {
+      "config": {
+        "html": {
+          "ccm_doc_type": ["object"],
+          "ccm_doc_desc": "HTML Template"
+        },
+        "dimensions": {
+          "ccm_doc_type": ["Array<string>"],
+          "ccm_doc_desc": "Dimensions of the graph",
+          "ccm_doc_examples": [
+            {
+              "Array<string>": "[ 'pünktlich', 'zuverlässig', 'kooperativ', 'erreichbar', 'effektiv', 'hilfsbereit', 'durchsetzungsstark' ]"
+            }
+          ]
+        },
+        "candidates": {
+          "first": {
+            "ccm_doc_type": ["Array<number>"],
+            "ccm_doc_desc": "Values for each dimension (0 to 100)",
+            "ccm_doc_examples": [
+              {
+                "Array<number>": "[ 10, 20, 30, 40, 50, 60, 70 ]"
+              }
+            ]
+          },
+          "second": {
+            "ccm_doc_type": ["Array<number>"],
+            "ccm_doc_desc": "Values for each dimension (0 to 100)",
+            "ccm_doc_examples": [
+              {
+                "Array<number>": "[ 70, 60, 50, 40, 30, 20, 10 ]"
+              }
+            ]
+          }
+        },
+        "styles": {
+          "first": {
+            "ccm_doc_type": ["string"],
+            "ccm_doc_desc": "Style of this dimension",
+            "ccm_doc_examples": [
+              {
+                "string": "fill:orange;stroke:red;stroke-width:3;"
+              }
+            ]
+          },
+          "second": {
+            "ccm_doc_type": ["string"],
+            "ccm_doc_desc": "Style of this dimension",
+            "ccm_doc_examples": [
+              {
+                "string": "fill:lime;stroke:purple;stroke-width:3;"
+              }
+            ]
+          }
+        },
+        "css_styles": {
+          "first": {
+            "fill-opacity": {
+              "ccm_doc_type": ["number"],
+              "ccm_doc_desc": "Opacity",
+              "ccm_doc_examples": [
+                {
+                  "number": "0.5"
+                }
+              ]
+            }
+          },
+          "second": {
+            "fill-opacity": {
+              "ccm_doc_type": ["number"],
+              "ccm_doc_desc": "Opacity",
+              "ccm_doc_examples": [
+                {
+                  "number": "0.5"
+                }
+              ]
+            }
+          }
+        },
+        "css_classes": {
+          "ccm_doc_type": ["object"],
+          "ccm_doc_desc": "Additional css classes"
+        }
+      }
+    },
+
+    /*
+      "radiant_text": {
+        "ccm_doc_type": ["number"],
+        "ccm_doc_desc": "Add text after x data points (1 = every)",
+        "ccm_doc_examples": [
+          {
+            "number": "1"
+          }
+        ]
+      }
+     */
+
+    /**
+     * default instance configuration
+     * @type {object}
+     */
+    config: {
+      dimensions: [ 'pünktlich', 'zuverlässig', 'kooperativ', 'erreichbar', 'effektiv', 'hilfsbereit', 'durchsetzungsstark' ],
+      candidates: { // values between 0 and 100
+        first:  [ 10, 20, 30, 40, 50, 60, 70 ],  // one value per dimension
+        second: [ 70, 60, 50, 40, 30, 20, 10 ]
+      },
+      styles: {  // choose color here
+        first: 'fill:orange;stroke:red;stroke-width:3;',
+        second: 'fill:lime;stroke:purple;stroke-width:3;'
+      },
+      css_styles: {  // choose opacity here
+        first: {
+          "fill-opacity": 0.5
+        },
+        second: {
+          "fill-opacity": 0.5
+        }
+      },
+      css_classes: {
+        radiant_text: {
+          "font-family": "Verdana",
+          "font-size": "10"
+        }
+      },
+
+      radiant_text: 1, // add text after x data points; 1 = every
+
+      html: {  // size of SVG image
+        main:  {
+          tag: 'svg',
+          style: 'padding: 15px;',
+          width:"230",
+          height:"200",
+          viewport: "0 0 200 200",
+          // transform: "translate(10, 10)",
+          inner: []
+          }
+      },
+
+      // css: [ 'ccm.load',  '//kaul.inf.h-brs.de/data/ccm/radar_chart/resources/default.css' ],
+      // css: [ 'ccm.load',  'https://mkaul.github.io/ccm-components/radar_chart/resources/default.css' ],
+      // user:   [ 'ccm.instance', 'https://akless.github.io/ccm-components/user/versions/ccm.user-2.0.0.min.js' ],
+      // logger: [ 'ccm.instance', 'https://akless.github.io/ccm-components/log/versions/ccm.log-1.0.0.min.js', [ 'ccm.get', 'https://akless.github.io/ccm-components/log/resources/log_configs.min.js', 'greedy' ] ],
+      // onfinish: function( instance, results ){ console.log( results ); }
+    },
+
+    /**
+     * for creating instances of this component
+     * @constructor
+     */
+    Instance: function () {
+
+      /**
+       * own reference for inner functions
+       * @type {Instance}
+       */
+      const self = this;
+
+      /**
+       * shortcut to help functions
+       * @type {Object}
+       */
+      let $;
+
+      /**
+       * init is called once after all dependencies are solved and is then deleted
+       * @param {function} callback - called after all synchronous and asynchronous operations are complete
+       */
+      this.init = callback => {
+
+        //  Is content given via LightDOM (inner HTML of Custom Element)?
+        //  Then use it with higher priority
+        if ( self.inner && self.inner.innerHTML.trim() ) self.text = self.inner.innerHTML;
+
+        // ToDo interprete LightDOM
+
+        callback();
+      };
+
+      /**
+       * is called once after the initialization and is then deleted
+       * @param {function} callback - called after all synchronous and asynchronous operations are complete
+       */
+      this.ready = callback => {
+
+        // set shortcut to help functions
+        $ = self.ccm.helper;
+
+        callback();
+      };
+
+      /**
+       * starts the instance
+       * @param {function} [callback] - called after all synchronous and asynchronous operations are complete
+       */
+      this.start = callback => {
+
+        // has logger instance? => log 'render' event
+        if ( self.logger ) self.logger.log( 'render' );
+
+        const dim_count = self.dimensions.length;
+        let list = self.html.main.inner;
+        let radiants = [];
+        let polygons = {};
+        Object.keys(self.candidates).map( candidate => { polygons[candidate]=[] });
+
+        self.dimensions.map( ( dim, index ) => {
+          // 100,100 is the center
+          // 200, 200 is the most outer point
+
+          // divide full circle by the number of dimensions
+          const angle = ( Math.PI / 2 ) - ( index * ( 2 * Math.PI / dim_count ) );
+          const endx  = 100+100*Math.cos( angle ), endy = 100+100*Math.sin( angle );
+
+          // add a radiant for every dimension
+          radiants.push({ tag: 'line', x1: 100, y1: 100, x2: endx, y2: endy, class: 'radiants', "stroke-width":"0.1", stroke:"black", "stroke-dasharray":"5, 2"  });
+          if ( index % self.radiant_text === 0 ){
+            radiants.push({ tag: 'circle', cx: endx, cy: endy, r: 2, fill:"black", "stroke-width":"0.1", stroke:"black" });
+            radiants.push({ tag: 'text', x: endx-10, y: endy-5, class: 'radiant_text', inner: self.dimensions[ index ] });
+          }
+
+          // calculate polygons for all candidates
+          Object.keys(self.candidates).map( candidate => {
+            polygons[candidate].push(
+                 ' ' + (100+self.candidates[candidate][index]*Math.cos( angle )).toFixed(2)
+               + ',' + (100+self.candidates[candidate][index]*Math.sin( angle )).toFixed(2)
+               );
+          });
+        });
+
+        // draw polygons for all candidates
+        Object.keys(self.candidates).map( candidate => {
+          list.push({ tag: 'polygon', id: candidate, points: polygons[candidate].join(' '), style: self.styles[candidate]});
+        });
+
+        // draw radiants
+        list.push(...radiants);
+
+        [50,100].map( radius => {
+          list.push({ tag: 'circle', cx: 100, cy: 100, r: radius, fill:"none", "stroke-width":"1", stroke:"black", "stroke-dasharray":"5, 2" });
+        });
+
+        // prepare main HTML structure
+        const main_elem = $.html( self.html.main );
+
+        // set content of own website area
+        $.setContent( self.element, main_elem );
+
+        // Hack in order to get SVG rendered inside the shadow root
+        self.element.innerHTML += '';
+
+        // set CSS styles for elements with id-s from config JSON settings
+        if ( self.css_styles ) Object.keys(self.css_styles).map(selector=>{
+          Object.keys(self.css_styles[selector]).map(key=>{
+            self.element.querySelector('#'+selector).style.setProperty(key, self.css_styles[selector][key]);
+          });
+        });
+
+        // set CSS styles for elements with CSS classes from config JSON settings
+        if ( self.css_classes ) Object.keys(self.css_classes).map(selector=>{
+          Object.keys(self.css_classes[selector]).map(key=>{
+            [...self.element.querySelectorAll('.'+selector)].map( elem => {
+              elem.style.setProperty(key, self.css_classes[selector][key]);
+            });
+           });
+        });
+
+        if ( callback ) callback();
+      };
+
+    }
+
+  };
+
+  function p(){window.ccm[v].component(component)}const f="ccm."+component.name+(component.version?"-"+component.version.join("."):"")+".js";if(window.ccm&&null===window.ccm.files[f])window.ccm.files[f]=component;else{const n=window.ccm&&window.ccm.components[component.name];n&&n.ccm&&(component.ccm=n.ccm),"string"===typeof component.ccm&&(component.ccm={url:component.ccm});var v=component.ccm.url.split("/").pop().split("-");if(v.length>1?(v=v[1].split("."),v.pop(),"min"===v[v.length-1]&&v.pop(),v=v.join(".")):v="latest",window.ccm&&window.ccm[v])p();else{const e=document.createElement("script");document.head.appendChild(e),component.ccm.integrity&&e.setAttribute("integrity",component.ccm.integrity),component.ccm.crossorigin&&e.setAttribute("crossorigin",component.ccm.crossorigin),e.onload=function(){p(),document.head.removeChild(e)},e.src=component.ccm.url}}
+}
