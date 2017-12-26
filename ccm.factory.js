@@ -38,7 +38,7 @@
               "tag": "input",
               "id": "componentURL",
               "size": "70",
-              "value": "http://localhost:5000/resources/test_components/ccm.radar_chart_documented.js"
+              "value": "http://localhost:5000/resources/test_components/ccm.kanban_card.js"
             },
             {
               "inner": "URL der Config Datei (leer lassen, wenn nicht vorhanden):<br>http://localhost:5000/resources/test_components/configs.js"
@@ -448,7 +448,11 @@
           const ccmDataType = value[0];
           switch (ccmDataType) {
             case 'ccm.load':
-              generateAdvancedEditorForCCMDataTypes(key, value, ccmDataType);
+              if (value.length === 2) { // The ccm load editor only supports editing of one load element
+                generateCCMLoadEditor(key, value);
+              } else {
+                generateAdvancedEditorForCCMDataTypes(key, value, ccmDataType);
+              }
               break;
             case 'ccm.module':
               generateAdvancedEditorForCCMDataTypes(key, value, ccmDataType);
@@ -487,12 +491,54 @@
          */
         function generateAdvancedEditorForCCMDataTypes(key, value, ccmDataType) {
           generateCaptionForComponentSpecificField(key, value, ccmDataType);
+          const textAreaForEditing = createTextAreaForEditingAdvancedCCMTypes(key, value);
+          mainElement.querySelector('#guided_componentSpecificConfiguration').appendChild(textAreaForEditing);
+        }
+
+        /**
+         * Generates an input for ccm load
+         * @param key
+         * @param value
+         */
+        function generateCCMLoadEditor(key, value) {
+          generateCaptionForComponentSpecificField(key, value, 'ccm.load');
+          const caption = document.createElement('span');
+          caption.innerHTML = 'Value: ';
+          const input = document.createElement('input');
+          input.id = 'guidedConfParameterCCMTypeLoad_' + key;
+          input.value = value[1];
+          const advancedButton = document.createElement('button');
+          advancedButton.innerHTML = 'Advanced Editor';
+          advancedButton.onclick = function () {
+            caption.outerHTML = '';
+            input.outerHTML = '';
+            input.id = input.id.slice(5); // invalidates id
+
+            const textAreaForEditing = createTextAreaForEditingAdvancedCCMTypes(key, value);
+            advancedButton.previousElementSibling.appendChild(document.createElement('br'));
+            advancedButton.previousElementSibling.appendChild(textAreaForEditing);
+            advancedButton.outerHTML = '';
+          };
+
+          mainElement.querySelector('#guided_componentSpecificConfiguration').appendChild(caption);
+          mainElement.querySelector('#guided_componentSpecificConfiguration').appendChild(input);
+          mainElement.querySelector('#guided_componentSpecificConfiguration').appendChild(advancedButton);
+        }
+
+        /**
+         * Creates a text area to edit ccm datatypes
+         * @param key
+         * @param value
+         * @returns {HTMLTextAreaElement}
+         */
+        function createTextAreaForEditingAdvancedCCMTypes(key, value) {
           const textAreaForEditing = document.createElement('textarea');
           textAreaForEditing.id = 'guidedConfParameterCCMTypeAdvanced_' + key;
           textAreaForEditing.rows = 5;
           textAreaForEditing.cols = 50;
           textAreaForEditing.value = JSON.stringify(value, null, 2);
-          mainElement.querySelector('#guided_componentSpecificConfiguration').appendChild(textAreaForEditing);
+
+          return textAreaForEditing;
         }
 
         /**
@@ -917,6 +963,11 @@
             if (customFields[i].id.startsWith('guidedConfParameterNumber_')) {
               let keyToChange = customFields[i].id.slice(26);
               setNewConfigValue(keyToChange, parseInt(customFields[i].value));
+            }
+            // set ccm datatypes from simple editor
+            if (customFields[i].id.startsWith('guidedConfParameterCCMTypeLoad_')) {
+              let keyToChange = customFields[i].id.slice(31);
+              setNewConfigValue(keyToChange, ['ccm.load', customFields[i].value]);
             }
           }
           // custom fields can be selects
