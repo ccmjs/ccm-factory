@@ -626,10 +626,29 @@
             case 'boolean':
               generateArrayEditorBooleans(key, value);
               break;
+            case 'undefined':
+              // Array probably consist of multiple types
+              generateArrayEditorMultipleTypes(key, value);
+              break;
             default:
               console.log('Array editor for ' + typeInArray + ' not yet implemented.');
               break;
           }
+        }
+
+        /**
+         * Generates an editor for arrays with multiple types
+         * @param key
+         * @param value
+         */
+        function generateArrayEditorMultipleTypes(key, value) {
+          generateCaptionForComponentSpecificField(key, value, 'Array');
+          const textAreaForEditing = document.createElement('textarea');
+          textAreaForEditing.id = 'guidedConfParameterArrayMultipleTypes_' + key;
+          textAreaForEditing.rows = 8;
+          textAreaForEditing.cols = 50;
+          textAreaForEditing.value = JSON.stringify(value, null, 2);
+          mainElement.querySelector('#guided_componentSpecificConfiguration').appendChild(textAreaForEditing);
         }
 
         /**
@@ -985,6 +1004,11 @@
             // set ccm datatype parameters
             if (customFieldsTextarea[i].id.startsWith('guidedConfParameterCCMTypeAdvanced_')) {
               let keyToChange = customFieldsTextarea[i].id.slice(35);
+              setNewConfigValue(keyToChange, JSON.parse(customFieldsTextarea[i].value));
+            }
+            // set arrays with multiple types
+            if (customFieldsTextarea[i].id.startsWith('guidedConfParameterArrayMultipleTypes_')) {
+              let keyToChange = customFieldsTextarea[i].id.slice(38);
               setNewConfigValue(keyToChange, JSON.parse(customFieldsTextarea[i].value));
             }
           }
