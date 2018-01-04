@@ -40,7 +40,8 @@
         }
       },
       title: '',
-      css_layout: [ 'ccm.load', 'https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css' ]
+      css_layout: [ 'ccm.load', 'https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css' ],
+      test_array: [1, 2, 3, false, 'test', 4]
     },
 
     Instance: function () {
