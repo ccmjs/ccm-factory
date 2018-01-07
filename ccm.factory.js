@@ -415,7 +415,7 @@
                     generateArrayEditor(displayBufferForKey + key, currentConfigPoint[key]);
                   }
                 } else if (currentConfigPoint[key] === null) {
-                  console.log(String(currentConfigPoint[key]) + ' detected !Parsing not implemented! ' + key + ' -> ' + currentConfigPoint[key] + ' (null)');
+                  generateNullField(displayBufferForKey + key, currentConfigPoint[key]);
                 } else if (key === 'html') { // Check if the object is the html template
                   generateHTMLEditor();
                 } else {
@@ -588,6 +588,20 @@
           let input = document.createElement('input');
           input.value = value;
           input.id = 'guidedConfParameterString_' + key;
+          mainElement.querySelector('#guided_componentSpecificConfiguration').appendChild(input);
+        }
+
+        /**
+         * Generates an input to display null values but not to modify them
+         * @param key
+         * @param value
+         */
+        function generateNullField(key, value) {
+          generateCaptionForComponentSpecificField(key, value, 'null');
+          const input = document.createElement('input');
+          input.value = 'null';
+          input.disabled = true;
+          input.id = 'guidedConfParameterNull_' + key;
           mainElement.querySelector('#guided_componentSpecificConfiguration').appendChild(input);
         }
 
@@ -978,6 +992,11 @@
             if (customFields[i].id.startsWith('guidedConfParameterString_')) {
               let keyToChange = customFields[i].id.slice(26);
               setNewConfigValue(keyToChange, customFields[i].value);
+            }
+            // set null parameters
+            if (customFields[i].id.startsWith('guidedConfParameterNull_')) {
+              let keyToChange = customFields[i].id.slice(24);
+              setNewConfigValue(keyToChange, null);
             }
             // set number parameters
             if (customFields[i].id.startsWith('guidedConfParameterNumber_')) {
