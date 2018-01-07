@@ -32,16 +32,16 @@
           "id": "main",
           "inner": [
             {
-              "inner": "URL der Komponente:<br>/resources/test_components/ccm.navmenu.js<br>/resources/test_components/ccm.kanban_card.js<br>/resources/test_components/ccm.game_chooser.js<br>/resources/test_components/ccm.form.js<br>/resources/test_components/ccm.teambuild_builder.js<br>/resources/test_components/ccm.radar_chart.js<br>/resources/test_components/ccm.radar_chart_documented.js<br>/resources/test_components/ccm.solutions_view.js<br>"
+              "inner": "URL der Komponente:<br>%currentUrl%resources/test_components/ccm.navmenu.js<br>%currentUrl%resources/test_components/ccm.kanban_card.js<br>%currentUrl%resources/test_components/ccm.game_chooser.js<br>%currentUrl%resources/test_components/ccm.form.js<br>%currentUrl%resources/test_components/ccm.teambuild_builder.js<br>%currentUrl%resources/test_components/ccm.radar_chart.js<br>%currentUrl%resources/test_components/ccm.radar_chart_documented.js<br>%currentUrl%resources/test_components/ccm.solutions_view.js<br>"
             },
             {
               "tag": "input",
               "id": "componentURL",
               "size": "70",
-              "value": "/resources/test_components/ccm.kanban_card.js"
+              "value": "%currentUrl%resources/test_components/ccm.kanban_card.js"
             },
             {
-              "inner": "URL der Config Datei (leer lassen, wenn nicht vorhanden):<br>/resources/test_components/configs.js"
+              "inner": "URL der Config Datei (leer lassen, wenn nicht vorhanden):<br>%currentUrl%resources/test_components/configs.js"
             },
             {
               "tag": "input",
@@ -280,6 +280,7 @@
 
         // !ANMERKUNG!: Die Funktionszuweisungen müssen in der richtigen Reihenfolge, entsprechend dem Vorkommen im Json auftauchen
         let mainElement = this.ccm.helper.html(this.html.main, {
+          currentUrl: window.location.href,
           loadComponentClick: loadComponent,
           configEditorChosenClick: configEditorChosen,
           guidedEditingChosenClick: guidedEditingChosen,
