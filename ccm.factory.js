@@ -32,16 +32,16 @@
           "id": "main",
           "inner": [
             {
-              "inner": "URL der Komponente:<br>http://localhost:5000/resources/test_components/ccm.navmenu.js<br>http://localhost:5000/resources/test_components/ccm.kanban_card.js<br>http://localhost:5000/resources/test_components/ccm.game_chooser.js<br>http://localhost:5000/resources/test_components/ccm.form.js<br>http://localhost:5000/resources/test_components/ccm.teambuild_builder.js<br>http://localhost:5000/resources/test_components/ccm.radar_chart.js<br>http://localhost:5000/resources/test_components/ccm.radar_chart_documented.js<br>http://localhost:5000/resources/test_components/ccm.solutions_view.js<br>"
+              "inner": "URL der Komponente:<br>/resources/test_components/ccm.navmenu.js<br>/resources/test_components/ccm.kanban_card.js<br>/resources/test_components/ccm.game_chooser.js<br>/resources/test_components/ccm.form.js<br>/resources/test_components/ccm.teambuild_builder.js<br>/resources/test_components/ccm.radar_chart.js<br>/resources/test_components/ccm.radar_chart_documented.js<br>/resources/test_components/ccm.solutions_view.js<br>"
             },
             {
               "tag": "input",
               "id": "componentURL",
               "size": "70",
-              "value": "http://localhost:5000/resources/test_components/ccm.kanban_card.js"
+              "value": "/resources/test_components/ccm.kanban_card.js"
             },
             {
-              "inner": "URL der Config Datei (leer lassen, wenn nicht vorhanden):<br>http://localhost:5000/resources/test_components/configs.js"
+              "inner": "URL der Config Datei (leer lassen, wenn nicht vorhanden):<br>/resources/test_components/configs.js"
             },
             {
               "tag": "input",
