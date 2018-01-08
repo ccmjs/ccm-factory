@@ -141,7 +141,15 @@
                     {
                       "inner": [
                         {
-                          "inner": "URL von CCM: "
+                          "id": "ccmUrlEditor",
+                          "inner": [
+                            "URL von CCM: ",
+                            {
+                              "tag": "button",
+                              "inner": "?",
+                              "onclick": "%showHelpForCCMURL%"
+                            },
+                          ]
                         },
                         {
                           "tag": "input",
@@ -285,6 +293,7 @@
           configEditorChosenClick: configEditorChosen,
           guidedEditingChosenClick: guidedEditingChosen,
           generateFromEditorClick: generateNewComponentFromEditor,
+          showHelpForCCMURL: showHelpForCCMURL,
           generateFromGuidedClick: generateNewComponentFromGuided
         });
 
@@ -884,11 +893,25 @@
             helpText.style.borderStyle = 'groove';
             helpText.style.borderWidth = '2px';
             helpText.innerHTML = generateDocumentationForConfigField(key, value, type);
-            caption.append(helpText);
+            caption.appendChild(helpText);
           };
 
-          caption.append(helpButton);
+          caption.appendChild(helpButton);
           mainElement.querySelector('#guided_componentSpecificConfiguration').appendChild(caption);
+        }
+
+        function showHelpForCCMURL() {
+          if (this.nextElementSibling) return; // Only one help text should be displayed
+          const helpText = document.createElement('div');
+          helpText.style.width = '500px';
+          helpText.style.borderStyle = 'groove';
+          helpText.style.borderWidth = '2px';
+          helpText.innerHTML = `<a href="https://github.com/akless/ccm/tree/master/version">Verfügbare CCM Versionen</a><br>
+                                Die dort aufgeführten Dateien können über das folgende URL-Schema erreicht werden:<br>
+                                https://akless.github.io/ccm/version/&lt;Dateiname&gt;`;
+          mainElement.querySelector('#ccmUrlEditor').appendChild(helpText);
+
+          // ccmUrlEditor
         }
 
         /**
