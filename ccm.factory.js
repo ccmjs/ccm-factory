@@ -919,31 +919,50 @@
             }
           }
 
+          let helpDescription = '';
+
+
           switch (type) {
             case 'string':
-              helpText = `
-                !Die Komponente hat dieses Feld nicht dokumentiert. Die folgenden Hinweise sind allgemein und beziehen sich nur auf den aktuellen Datentyp des Feldes. Orientieren Sie sich bei der Modifikation an dem aktuellen Wert!<br>
-                <b><u>Datentyp:</u></b> string<br>
-                <b><u>Beschreibung:</u></b> In diesem Feld kann ein beliebiger Text eingegeben werden.
-              `;
+              helpDescription = 'In diesem Feld kann ein beliebiger Text eingegeben werden.';
               break;
             case 'number':
-              helpText = `
-                !Die Komponente hat dieses Feld nicht dokumentiert. Die folgenden Hinweise sind allgemein und beziehen sich nur auf den aktuellen Datentyp des Feldes. Orientieren Sie sich bei der Modifikation an dem aktuellen Wert!<br>
-                <b><u>Datentyp:</u></b> number<br>
-                <b><u>Beschreibung:</u></b> In diesem Feld kann eine beliebige Zahl eingegeben werden.
-              `;
+              helpDescription = 'In diesem Feld kann eine beliebige Zahl eingegeben werden.';
               break;
             case 'boolean':
-              helpText = `
-                !Die Komponente hat dieses Feld nicht dokumentiert. Die folgenden Hinweise sind allgemein und beziehen sich nur auf den aktuellen Datentyp des Feldes. Orientieren Sie sich bei der Modifikation an dem aktuellen Wert!<br>
-                <b><u>Datentyp:</u></b> boolean<br>
-                <b><u>Beschreibung:</u></b> Über das Drop-Down Menü können die Werte <em>true</em> und <em>false</em> eingestellt werden.
-              `;
+              helpDescription = 'Über das Drop-Down Menü können die Werte <em>true</em> und <em>false</em> eingestellt werden.';
+              break;
+            case 'ccm.load':
+              helpDescription = '<a href="https://github.com/akless/ccm/wiki/Loading-of-Resources">Wiki</a>';
+              break;
+            case 'Array<boolean>':
+              helpDescription = 'Über die X Buttons, können Elemente aus dem Array entfernt werden. Mit dem + Button am Ende, können neue Elemente hinzugefügt werden.<br>Über die Drop-Down Menüs können die Werte <em>true</em> und <em>false</em> für jedes Element eingestellt werden.';
+              break;
+            case 'Array<number>':
+              helpDescription = 'Über die X Buttons, können Elemente aus dem Array entfernt werden. Mit dem + Button am Ende, können neue Elemente hinzugefügt werden.<br>In den Feldern kann eine beliebige Zahl eingegeben werden.';
+              break;
+            case 'Array<string>':
+              helpDescription = 'Über die X Buttons, können Elemente aus dem Array entfernt werden. Mit dem + Button am Ende, können neue Elemente hinzugefügt werden.<br>In den Feldern kann ein beliebiger Text eingegeben werden.';
+              break;
+            case 'Array':
+              helpDescription = 'In diesem Array können verschiedene Datentypen gemischt werden.';
+              break;
+            case 'function':
+              helpDescription = 'Der Code der Funktion kann bearbeitet werden.';
+              break;
+            case 'null':
+              helpDescription = 'Dieser Wert kann nicht bearbeitet werden.';
               break;
             default:
-              helpText = "Keine Hilfe verfügbar."
+              helpText = 'Keine Hilfe verfügbar.';
+              return helpText;
           }
+
+          helpText = `
+                !Die Komponente hat dieses Feld nicht dokumentiert. Die folgenden Hinweise sind allgemein und beziehen sich nur auf den aktuellen Datentyp des Feldes. Orientieren Sie sich bei der Modifikation an dem aktuellen Wert!<br>
+                <b><u>Datentyp:</u></b> ${type}<br>
+                <b><u>Beschreibung:</u></b> ${helpDescription}`;
+
           return helpText;
         }
 
