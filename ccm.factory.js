@@ -88,11 +88,16 @@
               "style": "display: none;",
               "inner": [
                 {
-                  "tag": "textarea",
-                  "id": "configEditor",
-                  "rows": 20,
-                  "cols": 50,
-                  "inner": "Config"
+                  "inner": [
+                    {
+                      "inner": "Config"
+                    },
+                    {
+                      "tag": "juicy-ace-editor",
+                      "id": "configEditor",
+                      "style": "height: 350px; width: 600px;"
+                    }
+                  ]
                 },
                 {
                   "tag": "br"
@@ -226,8 +231,6 @@
         }
       },
       JSONfn:  [ 'ccm.load', 'jsonfn.js' ],
-      // quilleditor: [ 'ccm.load', 'resources/darcula.min.css', 'resources/highlight.min.js', 'resources/quill.min.js', 'resources/quill.snow.css' ],
-      quilleditor: [ 'ccm.load', 'resources/quill.js', 'resources/quill.snow.css' ],
       preview: true, // If set to true a preview of the modified component is displayed
       show_ccm_fields: true, // If set to false the default ccm fields like 'name' are not modifiable
     },
@@ -237,6 +240,21 @@
      * @constructor
      */
     Instance: function() {
+
+      /**
+       * Polyfills webcomponent support if necessary
+       * Source: https://www.webcomponents.org/polyfills
+       */
+      if ('registerElement' in document
+        && 'import' in document.createElement('link')
+        && 'content' in document.createElement('template')) {
+        // platform is good!
+      } else {
+        // polyfill the platform!
+        let e = document.createElement('script');
+        e.src = '/resources/webcomponents-lite.js';
+        document.body.appendChild(e);
+      }
 
       /**
        * own reference for inner functions
@@ -251,10 +269,10 @@
       let newComponent;
 
       /**
-       * Holds references to the Quill editors used
-       * @type {{htmlEditor: Quill}}
+       * Holds references to the code editors used
        */
-      let quillEditors = {
+      let codeEditors = {
+        configEditor: null,
         htmlEditor: null,
         functionEditors: {
 
@@ -262,29 +280,19 @@
       };
 
       /**
+       * Import ace editor as custom element
+       * @type {HTMLLinkElement}
+       */
+      let aceImportLink = document.createElement('link');
+      aceImportLink.rel = 'import';
+      aceImportLink.href = 'resources/juicy-ace-editor.html';
+      document.head.appendChild(aceImportLink);
+
+      /**
        * starts the instance
        * @param {function} [callback] - called after all synchronous and asynchronous operations are complete
        */
       this.start = callback => {
-
-        /*
-        const quillSettings = {
-          modules: {
-            syntax: true,
-            toolbar: false
-          },
-          placeholder: '',
-          theme: 'snow'
-        };
-         */
-
-        const quillSettings = {
-          modules: {
-            toolbar: false
-          },
-          placeholder: '',
-          theme: 'snow'
-        };
 
         // !ANMERKUNG!: Die Funktionszuweisungen müssen in der richtigen Reihenfolge, entsprechend dem Vorkommen im Json auftauchen
         let mainElement = this.ccm.helper.html(this.html.main, {
@@ -347,14 +355,20 @@
          */
         function displayConfigInEditor() {
           mainElement.querySelector('#areaForConfigEditing').style.display = 'block';
-          mainElement.querySelector('#configEditor').value = JSON.stringify(newComponent.config, null, 2);
+          codeEditors.configEditor = mainElement.querySelector('#configEditor').editor;
+          codeEditors.configEditor.setTheme("ace/theme/tomorrow");
+          codeEditors.configEditor.getSession().setMode("ace/mode/json");
+          codeEditors.configEditor.getSession().setTabSize(2);
+          codeEditors.configEditor.getSession().setUseWrapMode(true);
+          codeEditors.configEditor.$blockScrolling = Infinity;
+          codeEditors.configEditor.setValue(JSON.stringify(newComponent.config, null, 2), 1);
         }
 
         /**
          * Uses the modified config from the editor to generate a new component
          */
         function generateNewComponentFromEditor() {
-          newComponent.config = JSON.parse(mainElement.querySelector('#configEditor').value);
+          newComponent.config = JSON.parse(codeEditors.configEditor.getValue());
           displayNewComponent();
 
           if (self.preview) {
@@ -446,7 +460,7 @@
          */
         function generateHTMLEditor() {
           mainElement.querySelector('#htmlEditorCaption').style.display = 'block';
-          quillEditors.htmlEditor = generateQuillEditor('htmlEditor', JSON.stringify(newComponent.config.html, null, 2), 500, 300);
+          codeEditors.htmlEditor = generateCodeEditor('htmlEditor', JSON.stringify(newComponent.config.html, null, 2), 500, 300, 'json');
         }
 
         /**
@@ -561,8 +575,8 @@
           const newDiv = document.createElement('div');
           newDiv.id = 'guidedConfParameterFunction_' + key;
           mainElement.querySelector('#guided_componentSpecificConfiguration').appendChild(newDiv);
-          const functionEditor = generateQuillEditor('guidedConfParameterFunction_' + key, value.toString(), 500, 300);
-          quillEditors.functionEditors['guidedConfParameterFunction_' + key] = functionEditor;
+          const functionEditor = generateCodeEditor('guidedConfParameterFunction_' + key, value.toString(), 500, 300, 'javascript');
+          codeEditors.functionEditors['guidedConfParameterFunction_' + key] = functionEditor;
         }
 
         /**
@@ -1026,7 +1040,7 @@
             newComponent.ccm = mainElement.querySelector('#guided_ccmURL').value;
           }
           // html template
-          newComponent.config.html = JSON.parse(quillEditors.htmlEditor.getText());
+          newComponent.config.html = JSON.parse(codeEditors.htmlEditor.getValue());
           // custom fields can be inputs
           let customFields = mainElement.querySelectorAll('input');
           for (let i = 0; i < customFields.length; i++) {
@@ -1110,7 +1124,7 @@
               setNewConfigValue(keyToChange, newConfigArray);
             } else if (potentialCustomConfig[i].id.startsWith('guidedConfParameterFunction_')) {
               let keyToChange = potentialCustomConfig[i].id.slice(28);
-              const newFunction = quillEditors.functionEditors[potentialCustomConfig[i].id].getText();
+              const newFunction = codeEditors.functionEditors[potentialCustomConfig[i].id].getValue();
               setNewConfigValue(keyToChange, eval('(' + newFunction + ')'));
             }
           }
@@ -1191,23 +1205,31 @@
         }
 
         /**
-         * Generates a Quill Editor for code
+         * Generates an editor for code
          * @param divID   Id of the div, where the editor should be placed
          * @param content String of content to place inside the editor
          * @param width   Width of the editor
          * @param height  Height of the editor
-         * @returns {Quill} Returns a reference to the editor
+         * @param type    Type of the content. Possibilities: {'javascript', 'json'}
+         * @returns       Returns a reference to the editor
          */
-        function generateQuillEditor(divID, content, width, height) {
-          mainElement.querySelector('#' + divID).style.width = width + "px";
-          mainElement.querySelector('#' + divID).style.height = height + "px";
+        function generateCodeEditor(divID, content, width, height, type) {
+          const editorElement = document.createElement('juicy-ace-editor');
+          editorElement.id = divID + 'attachedEditor';
+          editorElement.style.width = width + 'px';
+          editorElement.style.height = height + 'px';
+          mainElement.querySelector('#' + divID).appendChild(editorElement);
 
-          const quillEditor = new Quill(mainElement.querySelector('#' + divID), quillSettings);
+          const editorReference = mainElement.querySelector('#' + divID + 'attachedEditor').editor;
 
-          quillEditor.setText(content);
-          quillEditor.formatText(0, content.length + 1, 'code-block', true);
+          editorReference.setTheme('ace/theme/tomorrow');
+          editorReference.getSession().setMode('ace/mode/' + type);
+          editorReference.getSession().setTabSize(2);
+          editorReference.getSession().setUseWrapMode(true);
+          editorReference.$blockScrolling = Infinity;
+          editorReference.setValue(content, 1);
 
-          return quillEditor;
+          return editorReference;
         }
 
         // https://stackoverflow.com/questions/6491463/accessing-nested-javascript-objects-with-string-key
