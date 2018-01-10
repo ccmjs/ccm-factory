@@ -656,7 +656,8 @@
           let typeInArray = checkTypeOfArray(value);
           switch (typeInArray) {
             case 'string':
-              generateArrayEditorStrings(key, value);
+              generateCaptionForComponentSpecificField(key, value, 'Array<string>');
+              generateGeneralArrayEditor(key, value, 'string');
               break;
             case 'object':
               for (let i = 0; i < value.length; i++) {
@@ -664,10 +665,12 @@
               }
               break;
             case 'number':
-              generateArrayEditorNumbers(key, value);
+              generateCaptionForComponentSpecificField(key, value, 'Array<number>');
+              generateGeneralArrayEditor(key, value, 'number');
               break;
             case 'boolean':
-              generateArrayEditorBooleans(key, value);
+              generateCaptionForComponentSpecificField(key, value, 'Array<boolean>');
+              generateGeneralArrayEditor(key, value, 'boolean');
               break;
             case 'undefined':
               // Array probably consist of multiple types
@@ -739,119 +742,45 @@
         }
 
         /**
-         * Generates an editor for arrays containing strings
+         * Generates an array editor for the specified type
          * @param key
          * @param array
+         * @param type  Options: ['string', 'number', 'boolean']
          */
-        function generateArrayEditorStrings(key, array) {
-          generateCaptionForComponentSpecificField(key, array, 'Array<string>');
-          let stringArrayInputs = document.createElement('div');
-          stringArrayInputs.id = 'GuidedArrayStringList_' + key;
-          array.forEach(function (element) {
-            let input = document.createElement('input');
-            input.value = element;
-            let deleteButton = document.createElement('button');
-            deleteButton.innerHTML = 'X';
-            deleteButton.onclick = function () {
-              this.nextElementSibling.outerHTML = '';
-              this.previousElementSibling.outerHTML = '';
-              this.outerHTML = '';
-            };
-            let htmlBreak = document.createElement('br');
-            stringArrayInputs.appendChild(input);
-            stringArrayInputs.appendChild(deleteButton);
-            stringArrayInputs.appendChild(htmlBreak);
-          });
-          let addButton = document.createElement('button');
-          addButton.innerHTML = '+';
-          addButton.onclick = function () {
-            let input = document.createElement('input');
-            input.value = '';
-            let deleteButton = document.createElement('button');
-            deleteButton.innerHTML = 'X';
-            deleteButton.onclick = function () {
-              this.nextElementSibling.outerHTML = '';
-              this.previousElementSibling.outerHTML = '';
-              this.outerHTML = '';
-            };
-            let htmlBreak = document.createElement('br');
-            this.previousElementSibling.appendChild(input);
-            this.previousElementSibling.appendChild(deleteButton);
-            this.previousElementSibling.appendChild(htmlBreak);
-          };
-          mainElement.querySelector('#guided_componentSpecificConfiguration').appendChild(stringArrayInputs);
-          mainElement.querySelector('#guided_componentSpecificConfiguration').appendChild(addButton);
-        }
+        function generateGeneralArrayEditor(key, array, type) {
+          const arrayInputWrapper = document.createElement('div');
+          if (type === 'string') {
+            arrayInputWrapper.id = 'GuidedArrayStringList_' + key;
+          } else if (type === 'number') {
+            arrayInputWrapper.id = 'GuidedArrayNumberList_' + key;
+          } else if (type === 'boolean') {
+            arrayInputWrapper.id = 'GuidedArrayBooleanList_' + key;
+          }
 
-        /**
-         * Generates an editor for arrays containing numbers
-         * @param key
-         * @param array
-         */
-        function generateArrayEditorNumbers(key, array) {
-          generateCaptionForComponentSpecificField(key, array, 'Array<number>');
-          let numberArrayInputs = document.createElement('div');
-          numberArrayInputs.id = 'GuidedArrayNumberList_' + key;
           array.forEach(function (element) {
-            let input = document.createElement('input');
-            input.value = element;
-            input.type = 'number';
-            let deleteButton = document.createElement('button');
-            deleteButton.innerHTML = 'X';
-            deleteButton.onclick = function () {
-              this.nextElementSibling.outerHTML = '';
-              this.previousElementSibling.outerHTML = '';
-              this.outerHTML = '';
-            };
-            let htmlBreak = document.createElement('br');
-            numberArrayInputs.appendChild(input);
-            numberArrayInputs.appendChild(deleteButton);
-            numberArrayInputs.appendChild(htmlBreak);
-          });
-          let addButton = document.createElement('button');
-          addButton.innerHTML = '+';
-          addButton.onclick = function () {
-            let input = document.createElement('input');
-            input.value = '';
-            input.type = 'number';
-            let deleteButton = document.createElement('button');
-            deleteButton.innerHTML = 'X';
-            deleteButton.onclick = function () {
-              this.nextElementSibling.outerHTML = '';
-              this.previousElementSibling.outerHTML = '';
-              this.outerHTML = '';
-            };
-            let htmlBreak = document.createElement('br');
-            this.previousElementSibling.appendChild(input);
-            this.previousElementSibling.appendChild(deleteButton);
-            this.previousElementSibling.appendChild(htmlBreak);
-          };
-          mainElement.querySelector('#guided_componentSpecificConfiguration').appendChild(numberArrayInputs);
-          mainElement.querySelector('#guided_componentSpecificConfiguration').appendChild(addButton);
-        }
+            let inputElement = null;
+            if (type === 'string') {
+              inputElement = document.createElement('input');
+              inputElement.value = element;
+            } else if (type === 'number') {
+              inputElement = document.createElement('input');
+              inputElement.value = element;
+              inputElement.type = 'number';
+            } else if (type === 'boolean') {
+              inputElement = document.createElement('select');
+              const optionT = document.createElement('option');
+              optionT.text = 'true';
+              optionT.value = 'true';
+              if (element) optionT.selected = 'selected';
+              inputElement.appendChild(optionT);
+              const optionF = document.createElement('option');
+              optionF.text = 'false';
+              optionF.value = 'false';
+              if (!element) optionF.selected = 'selected';
+              inputElement.appendChild(optionF);
+            }
 
-        /**
-         * Generates an editor for arrays containing booleans
-         * @param key
-         * @param array
-         */
-        function generateArrayEditorBooleans(key, array) {
-          generateCaptionForComponentSpecificField(key, array, 'Array<boolean>');
-          let booleanArrayInputs = document.createElement('div');
-          booleanArrayInputs.id = 'GuidedArrayBooleanList_' + key;
-          array.forEach(function (element) {
-            let select = document.createElement('select');
-            let optionT = document.createElement('option');
-            optionT.text = 'true';
-            optionT.value = 'true';
-            if (element) optionT.selected = 'selected';
-            select.appendChild(optionT);
-            let optionF = document.createElement('option');
-            optionF.text = 'false';
-            optionF.value = 'false';
-            if (!element) optionF.selected = 'selected';
-            select.appendChild(optionF);
-            let deleteButton = document.createElement('button');
+            const deleteButton = document.createElement('button');
             deleteButton.innerHTML = 'X';
             deleteButton.onclick = function () {
               this.nextElementSibling.outerHTML = '';
@@ -859,23 +788,35 @@
               this.outerHTML = '';
             };
             let htmlBreak = document.createElement('br');
-            booleanArrayInputs.appendChild(select);
-            booleanArrayInputs.appendChild(deleteButton);
-            booleanArrayInputs.appendChild(htmlBreak);
+            arrayInputWrapper.appendChild(inputElement);
+            arrayInputWrapper.appendChild(deleteButton);
+            arrayInputWrapper.appendChild(htmlBreak);
           });
-          let addButton = document.createElement('button');
+          const addButton = document.createElement('button');
           addButton.innerHTML = '+';
           addButton.onclick = function () {
-            let select = document.createElement('select');
-            let optionT = document.createElement('option');
-            optionT.text = 'true';
-            optionT.value = 'true';
-            select.appendChild(optionT);
-            let optionF = document.createElement('option');
-            optionF.text = 'false';
-            optionF.value = 'false';
-            select.appendChild(optionF);
-            let deleteButton = document.createElement('button');
+            let inputElement = null;
+
+            if (type === 'string') {
+              inputElement = document.createElement('input');
+              inputElement.value = '';
+            } else if (type === 'number') {
+              inputElement = document.createElement('input');
+              inputElement.value = '';
+              inputElement.type = 'number';
+            } else if (type === 'boolean') {
+              inputElement = document.createElement('select');
+              const optionT = document.createElement('option');
+              optionT.text = 'true';
+              optionT.value = 'true';
+              inputElement.appendChild(optionT);
+              const optionF = document.createElement('option');
+              optionF.text = 'false';
+              optionF.value = 'false';
+              inputElement.appendChild(optionF);
+            }
+
+            const deleteButton = document.createElement('button');
             deleteButton.innerHTML = 'X';
             deleteButton.onclick = function () {
               this.nextElementSibling.outerHTML = '';
@@ -883,11 +824,11 @@
               this.outerHTML = '';
             };
             let htmlBreak = document.createElement('br');
-            this.previousElementSibling.appendChild(select);
+            this.previousElementSibling.appendChild(inputElement);
             this.previousElementSibling.appendChild(deleteButton);
             this.previousElementSibling.appendChild(htmlBreak);
           };
-          mainElement.querySelector('#guided_componentSpecificConfiguration').appendChild(booleanArrayInputs);
+          mainElement.querySelector('#guided_componentSpecificConfiguration').appendChild(arrayInputWrapper);
           mainElement.querySelector('#guided_componentSpecificConfiguration').appendChild(addButton);
         }
 
