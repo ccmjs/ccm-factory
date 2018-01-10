@@ -88,14 +88,10 @@
               "style": "display: none;",
               "inner": [
                 {
+                  "id": "innerConfigEditorArea",
                   "inner": [
                     {
                       "inner": "Config"
-                    },
-                    {
-                      "tag": "juicy-ace-editor",
-                      "id": "configEditor",
-                      "style": "height: 350px; width: 600px;"
                     }
                   ]
                 },
@@ -233,6 +229,7 @@
       JSONfn:  [ 'ccm.load', 'jsonfn.js' ],
       preview: true, // If set to true a preview of the modified component is displayed
       show_ccm_fields: true, // If set to false the default ccm fields like 'name' are not modifiable
+      use_ace_for_editing: true // If set to false, textareas are used for editing
     },
 
     /**
@@ -240,21 +237,6 @@
      * @constructor
      */
     Instance: function() {
-
-      /**
-       * Polyfills webcomponent support if necessary
-       * Source: https://www.webcomponents.org/polyfills
-       */
-      if ('registerElement' in document
-        && 'import' in document.createElement('link')
-        && 'content' in document.createElement('template')) {
-        // platform is good!
-      } else {
-        // polyfill the platform!
-        let e = document.createElement('script');
-        e.src = '/resources/webcomponents-lite.js';
-        document.body.appendChild(e);
-      }
 
       /**
        * own reference for inner functions
@@ -280,19 +262,45 @@
       };
 
       /**
-       * Import ace editor as custom element
-       * @type {HTMLLinkElement}
-       */
-      let aceImportLink = document.createElement('link');
-      aceImportLink.rel = 'import';
-      aceImportLink.href = 'resources/juicy-ace-editor.html';
-      document.head.appendChild(aceImportLink);
-
-      /**
        * starts the instance
        * @param {function} [callback] - called after all synchronous and asynchronous operations are complete
        */
       this.start = callback => {
+
+        /**
+         * Detect if Firefox is used and switch of ace editor, due to a Bug, that the editor is not displayed in Firefox
+         */
+        if(navigator.userAgent.toLowerCase().indexOf('firefox') > -1){
+          self.use_ace_for_editing = false;
+        }
+
+        /**
+         * Polyfills webcomponent support if necessary and only if they are used
+         * Source: https://www.webcomponents.org/polyfills
+         */
+        if (self.use_ace_for_editing) {
+          if ('registerElement' in document
+            && 'import' in document.createElement('link')
+            && 'content' in document.createElement('template')) {
+            // platform is good!
+          } else {
+            // polyfill the platform!
+            let e = document.createElement('script');
+            e.src = '/resources/webcomponents-lite.js';
+            document.body.appendChild(e);
+          }
+        }
+
+        /**
+         * Import ace editor as custom element
+         * @type {HTMLLinkElement}
+         */
+        if (self.use_ace_for_editing) {
+          let aceImportLink = document.createElement('link');
+          aceImportLink.rel = 'import';
+          aceImportLink.href = 'resources/juicy-ace-editor.html';
+          document.head.appendChild(aceImportLink);
+        }
 
         // !ANMERKUNG!: Die Funktionszuweisungen müssen in der richtigen Reihenfolge, entsprechend dem Vorkommen im Json auftauchen
         let mainElement = this.ccm.helper.html(this.html.main, {
@@ -355,13 +363,7 @@
          */
         function displayConfigInEditor() {
           mainElement.querySelector('#areaForConfigEditing').style.display = 'block';
-          codeEditors.configEditor = mainElement.querySelector('#configEditor').editor;
-          codeEditors.configEditor.setTheme("ace/theme/tomorrow");
-          codeEditors.configEditor.getSession().setMode("ace/mode/json");
-          codeEditors.configEditor.getSession().setTabSize(2);
-          codeEditors.configEditor.getSession().setUseWrapMode(true);
-          codeEditors.configEditor.$blockScrolling = Infinity;
-          codeEditors.configEditor.setValue(JSON.stringify(newComponent.config, null, 2), 1);
+          codeEditors.configEditor = generateCodeEditor('innerConfigEditorArea', JSON.stringify(newComponent.config, null, 2), 600, 350, 'json');
         }
 
         /**
@@ -1214,22 +1216,40 @@
          * @returns       Returns a reference to the editor
          */
         function generateCodeEditor(divID, content, width, height, type) {
-          const editorElement = document.createElement('juicy-ace-editor');
-          editorElement.id = divID + 'attachedEditor';
-          editorElement.style.width = width + 'px';
-          editorElement.style.height = height + 'px';
-          mainElement.querySelector('#' + divID).appendChild(editorElement);
+          if (self.use_ace_for_editing) {
+            const editorElement = document.createElement('juicy-ace-editor');
+            editorElement.id = divID + 'attachedEditor';
+            editorElement.style.width = width + 'px';
+            editorElement.style.height = height + 'px';
+            mainElement.querySelector('#' + divID).appendChild(editorElement);
 
-          const editorReference = mainElement.querySelector('#' + divID + 'attachedEditor').editor;
+            const editorReference = mainElement.querySelector('#' + divID + 'attachedEditor').editor;
 
-          editorReference.setTheme('ace/theme/tomorrow');
-          editorReference.getSession().setMode('ace/mode/' + type);
-          editorReference.getSession().setTabSize(2);
-          editorReference.getSession().setUseWrapMode(true);
-          editorReference.$blockScrolling = Infinity;
-          editorReference.setValue(content, 1);
+            editorReference.setTheme('ace/theme/tomorrow');
+            editorReference.getSession().setMode('ace/mode/' + type);
+            editorReference.getSession().setTabSize(2);
+            editorReference.getSession().setUseWrapMode(true);
+            editorReference.$blockScrolling = Infinity;
+            editorReference.setValue(content, 1);
 
-          return editorReference;
+            return editorReference;
+          } else {
+            // Fallback to textareas
+            const editorElement = document.createElement('textarea');
+            editorElement.id = divID + 'attachedEditor';
+            editorElement.style.width = width + 'px';
+            editorElement.style.height = height + 'px';
+            editorElement.value = content;
+            mainElement.querySelector('#' + divID).appendChild(editorElement);
+
+            const editorReference = {
+              getValue: function () {
+                return editorElement.value;
+              }
+            };
+
+            return editorReference;
+          }
         }
 
         // https://stackoverflow.com/questions/6491463/accessing-nested-javascript-objects-with-string-key
