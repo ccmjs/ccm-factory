@@ -258,6 +258,9 @@
         htmlEditor: null,
         functionEditors: {
 
+        },
+        arrayMultipleTypesEditors: {
+
         }
       };
 
@@ -683,12 +686,10 @@
          */
         function generateArrayEditorMultipleTypes(key, value) {
           generateCaptionForComponentSpecificField(key, value, 'Array');
-          const textAreaForEditing = document.createElement('textarea');
-          textAreaForEditing.id = 'guidedConfParameterArrayMultipleTypes_' + key;
-          textAreaForEditing.rows = 8;
-          textAreaForEditing.cols = 50;
-          textAreaForEditing.value = JSON.stringify(value, null, 2);
-          mainElement.querySelector('#guided_componentSpecificConfiguration').appendChild(textAreaForEditing);
+          const wrapperDiv = document.createElement('div');
+          wrapperDiv.id = 'guidedConfParameterArrayMultipleTypes_' + key;
+          mainElement.querySelector('#guided_componentSpecificConfiguration').appendChild(wrapperDiv);
+          codeEditors.arrayMultipleTypesEditors['guidedConfParameterArrayMultipleTypes_' + key] = generateCodeEditor('guidedConfParameterArrayMultipleTypes_' + key, JSON.stringify(value, null, 2), 500, 300, 'json');
         }
 
         /**
@@ -1084,11 +1085,6 @@
               let keyToChange = customFieldsTextarea[i].id.slice(35);
               setNewConfigValue(keyToChange, JSON.parse(customFieldsTextarea[i].value));
             }
-            // set arrays with multiple types
-            if (customFieldsTextarea[i].id.startsWith('guidedConfParameterArrayMultipleTypes_')) {
-              let keyToChange = customFieldsTextarea[i].id.slice(38);
-              setNewConfigValue(keyToChange, JSON.parse(customFieldsTextarea[i].value));
-            }
           }
           // search for custom config editors in divs
           let potentialCustomConfig = mainElement.querySelectorAll('div');
@@ -1128,6 +1124,10 @@
               let keyToChange = potentialCustomConfig[i].id.slice(28);
               const newFunction = codeEditors.functionEditors[potentialCustomConfig[i].id].getValue();
               setNewConfigValue(keyToChange, eval('(' + newFunction + ')'));
+            } else if (potentialCustomConfig[i].id.startsWith('guidedConfParameterArrayMultipleTypes_')) {
+              let keyToChange = potentialCustomConfig[i].id.slice(38);
+              const newArray = codeEditors.arrayMultipleTypesEditors[potentialCustomConfig[i].id].getValue();
+              setNewConfigValue(keyToChange, JSON.parse(newArray));
             }
           }
 
