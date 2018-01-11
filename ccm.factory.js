@@ -783,18 +783,64 @@
             const deleteButton = document.createElement('button');
             deleteButton.innerHTML = 'X';
             deleteButton.onclick = function () {
+              this.nextElementSibling.nextElementSibling.outerHTML = '';
               this.nextElementSibling.outerHTML = '';
               this.previousElementSibling.outerHTML = '';
               this.outerHTML = '';
             };
+
+            const addButtonInline = document.createElement('button');
+            addButtonInline.innerHTML = '+';
+            addButtonInline.onclick = function () {
+              let inputElement = null;
+
+              if (type === 'string') {
+                inputElement = document.createElement('input');
+                inputElement.value = '';
+              } else if (type === 'number') {
+                inputElement = document.createElement('input');
+                inputElement.value = '';
+                inputElement.type = 'number';
+              } else if (type === 'boolean') {
+                inputElement = document.createElement('select');
+                const optionT = document.createElement('option');
+                optionT.text = 'true';
+                optionT.value = 'true';
+                inputElement.appendChild(optionT);
+                const optionF = document.createElement('option');
+                optionF.text = 'false';
+                optionF.value = 'false';
+                inputElement.appendChild(optionF);
+              }
+
+              const deleteButton = document.createElement('button');
+              deleteButton.innerHTML = 'X';
+              deleteButton.onclick = function () {
+                this.nextElementSibling.nextElementSibling.outerHTML = '';
+                this.nextElementSibling.outerHTML = '';
+                this.previousElementSibling.outerHTML = '';
+                this.outerHTML = '';
+              };
+              let htmlBreak = document.createElement('br');
+              this.parentNode.insertBefore(htmlBreak, this.nextSibling);
+              const newAddButtonInline = document.createElement('button');
+              newAddButtonInline.innerHTML = '+';
+              newAddButtonInline.onclick = addButtonInline.onclick;
+              this.parentNode.insertBefore(newAddButtonInline, this.nextSibling);
+              this.parentNode.insertBefore(deleteButton, this.nextSibling);
+              this.parentNode.insertBefore(inputElement, this.nextSibling);
+              this.parentNode.insertBefore(htmlBreak, this.nextSibling);
+            };
+
             let htmlBreak = document.createElement('br');
             arrayInputWrapper.appendChild(inputElement);
             arrayInputWrapper.appendChild(deleteButton);
+            arrayInputWrapper.appendChild(addButtonInline);
             arrayInputWrapper.appendChild(htmlBreak);
           });
-          const addButton = document.createElement('button');
-          addButton.innerHTML = '+';
-          addButton.onclick = function () {
+          const addButtonTop = document.createElement('button');
+          addButtonTop.innerHTML = '+';
+          addButtonTop.onclick = function () {
             let inputElement = null;
 
             if (type === 'string') {
@@ -819,17 +865,146 @@
             const deleteButton = document.createElement('button');
             deleteButton.innerHTML = 'X';
             deleteButton.onclick = function () {
+              this.nextElementSibling.nextElementSibling.outerHTML = '';
               this.nextElementSibling.outerHTML = '';
               this.previousElementSibling.outerHTML = '';
               this.outerHTML = '';
             };
+
+            const addButtonInline = document.createElement('button');
+            addButtonInline.innerHTML = '+';
+            addButtonInline.onclick = function () {
+              let inputElement = null;
+
+              if (type === 'string') {
+                inputElement = document.createElement('input');
+                inputElement.value = '';
+              } else if (type === 'number') {
+                inputElement = document.createElement('input');
+                inputElement.value = '';
+                inputElement.type = 'number';
+              } else if (type === 'boolean') {
+                inputElement = document.createElement('select');
+                const optionT = document.createElement('option');
+                optionT.text = 'true';
+                optionT.value = 'true';
+                inputElement.appendChild(optionT);
+                const optionF = document.createElement('option');
+                optionF.text = 'false';
+                optionF.value = 'false';
+                inputElement.appendChild(optionF);
+              }
+
+              const deleteButton = document.createElement('button');
+              deleteButton.innerHTML = 'X';
+              deleteButton.onclick = function () {
+                this.nextElementSibling.nextElementSibling.outerHTML = '';
+                this.nextElementSibling.outerHTML = '';
+                this.previousElementSibling.outerHTML = '';
+                this.outerHTML = '';
+              };
+              let htmlBreak = document.createElement('br');
+              this.parentNode.insertBefore(htmlBreak, this.nextSibling);
+              const newAddButtonInline = document.createElement('button');
+              newAddButtonInline.innerHTML = '+';
+              newAddButtonInline.onclick = addButtonInline.onclick;
+              this.parentNode.insertBefore(newAddButtonInline, this.nextSibling);
+              this.parentNode.insertBefore(deleteButton, this.nextSibling);
+              this.parentNode.insertBefore(inputElement, this.nextSibling);
+              this.parentNode.insertBefore(htmlBreak, this.nextSibling);
+            };
+
+            let htmlBreak = document.createElement('br');
+            this.nextElementSibling.insertBefore(htmlBreak, this.nextElementSibling.childNodes[0]);
+            this.nextElementSibling.insertBefore(addButtonInline, this.nextElementSibling.childNodes[0]);
+            this.nextElementSibling.insertBefore(deleteButton, this.nextElementSibling.childNodes[0]);
+            this.nextElementSibling.insertBefore(inputElement, this.nextElementSibling.childNodes[0]);
+          };
+          const addButtonBottom = document.createElement('button');
+          addButtonBottom.innerHTML = '+';
+          addButtonBottom.onclick = function () {
+            let inputElement = null;
+
+            if (type === 'string') {
+              inputElement = document.createElement('input');
+              inputElement.value = '';
+            } else if (type === 'number') {
+              inputElement = document.createElement('input');
+              inputElement.value = '';
+              inputElement.type = 'number';
+            } else if (type === 'boolean') {
+              inputElement = document.createElement('select');
+              const optionT = document.createElement('option');
+              optionT.text = 'true';
+              optionT.value = 'true';
+              inputElement.appendChild(optionT);
+              const optionF = document.createElement('option');
+              optionF.text = 'false';
+              optionF.value = 'false';
+              inputElement.appendChild(optionF);
+            }
+
+            const deleteButton = document.createElement('button');
+            deleteButton.innerHTML = 'X';
+            deleteButton.onclick = function () {
+              this.nextElementSibling.nextElementSibling.outerHTML = '';
+              this.nextElementSibling.outerHTML = '';
+              this.previousElementSibling.outerHTML = '';
+              this.outerHTML = '';
+            };
+
+            const addButtonInline = document.createElement('button');
+            addButtonInline.innerHTML = '+';
+            addButtonInline.onclick = function () {
+              let inputElement = null;
+
+              if (type === 'string') {
+                inputElement = document.createElement('input');
+                inputElement.value = '';
+              } else if (type === 'number') {
+                inputElement = document.createElement('input');
+                inputElement.value = '';
+                inputElement.type = 'number';
+              } else if (type === 'boolean') {
+                inputElement = document.createElement('select');
+                const optionT = document.createElement('option');
+                optionT.text = 'true';
+                optionT.value = 'true';
+                inputElement.appendChild(optionT);
+                const optionF = document.createElement('option');
+                optionF.text = 'false';
+                optionF.value = 'false';
+                inputElement.appendChild(optionF);
+              }
+
+              const deleteButton = document.createElement('button');
+              deleteButton.innerHTML = 'X';
+              deleteButton.onclick = function () {
+                this.nextElementSibling.nextElementSibling.outerHTML = '';
+                this.nextElementSibling.outerHTML = '';
+                this.previousElementSibling.outerHTML = '';
+                this.outerHTML = '';
+              };
+              let htmlBreak = document.createElement('br');
+              this.parentNode.insertBefore(htmlBreak, this.nextSibling);
+              const newAddButtonInline = document.createElement('button');
+              newAddButtonInline.innerHTML = '+';
+              newAddButtonInline.onclick = addButtonInline.onclick;
+              this.parentNode.insertBefore(newAddButtonInline, this.nextSibling);
+              this.parentNode.insertBefore(deleteButton, this.nextSibling);
+              this.parentNode.insertBefore(inputElement, this.nextSibling);
+              this.parentNode.insertBefore(htmlBreak, this.nextSibling);
+            };
+
             let htmlBreak = document.createElement('br');
             this.previousElementSibling.appendChild(inputElement);
             this.previousElementSibling.appendChild(deleteButton);
+            this.previousElementSibling.appendChild(addButtonInline);
             this.previousElementSibling.appendChild(htmlBreak);
           };
+          mainElement.querySelector('#guided_componentSpecificConfiguration').appendChild(addButtonTop);
           mainElement.querySelector('#guided_componentSpecificConfiguration').appendChild(arrayInputWrapper);
-          mainElement.querySelector('#guided_componentSpecificConfiguration').appendChild(addButton);
+          mainElement.querySelector('#guided_componentSpecificConfiguration').appendChild(addButtonBottom);
         }
 
         /**
@@ -858,6 +1033,9 @@
           mainElement.querySelector('#guided_componentSpecificConfiguration').appendChild(caption);
         }
 
+        /**
+         * Generates help for the ccm url input
+         */
         function showHelpForCCMURL() {
           if (this.nextElementSibling) return; // Only one help text should be displayed
           const helpText = document.createElement('div');
@@ -868,8 +1046,6 @@
                                 Die dort aufgeführten Dateien können über das folgende URL-Schema erreicht werden:<br>
                                 https://akless.github.io/ccm/version/&lt;Dateiname&gt;`;
           mainElement.querySelector('#ccmUrlEditor').appendChild(helpText);
-
-          // ccmUrlEditor
         }
 
         /**
@@ -917,13 +1093,13 @@
               helpDescription = '<a href="https://github.com/akless/ccm/wiki/Loading-of-Resources">Wiki</a>';
               break;
             case 'Array<boolean>':
-              helpDescription = 'Über die X Buttons, können Elemente aus dem Array entfernt werden. Mit dem + Button am Ende, können neue Elemente hinzugefügt werden.<br>Über die Drop-Down Menüs können die Werte <em>true</em> und <em>false</em> für jedes Element eingestellt werden.';
+              helpDescription = 'Über die X Buttons, können Elemente aus dem Array entfernt werden. Mit den + Buttons, können neue Elemente hinzugefügt werden.<br>Über die Drop-Down Menüs können die Werte <em>true</em> und <em>false</em> für jedes Element eingestellt werden.';
               break;
             case 'Array<number>':
-              helpDescription = 'Über die X Buttons, können Elemente aus dem Array entfernt werden. Mit dem + Button am Ende, können neue Elemente hinzugefügt werden.<br>In den Feldern kann eine beliebige Zahl eingegeben werden.';
+              helpDescription = 'Über die X Buttons, können Elemente aus dem Array entfernt werden. Mit den + Buttons, können neue Elemente hinzugefügt werden.<br>In den Feldern kann eine beliebige Zahl eingegeben werden.';
               break;
             case 'Array<string>':
-              helpDescription = 'Über die X Buttons, können Elemente aus dem Array entfernt werden. Mit dem + Button am Ende, können neue Elemente hinzugefügt werden.<br>In den Feldern kann ein beliebiger Text eingegeben werden.';
+              helpDescription = 'Über die X Buttons, können Elemente aus dem Array entfernt werden. Mit den + Buttons, können neue Elemente hinzugefügt werden.<br>In den Feldern kann ein beliebiger Text eingegeben werden.';
               break;
             case 'Array':
               helpDescription = 'In diesem Array können verschiedene Datentypen gemischt werden.';
@@ -1001,7 +1177,7 @@
             // set number parameters
             if (customFields[i].id.startsWith('guidedConfParameterNumber_')) {
               let keyToChange = customFields[i].id.slice(26);
-              setNewConfigValue(keyToChange, parseInt(customFields[i].value));
+              setNewConfigValue(keyToChange, parseFloat(customFields[i].value));
             }
             // set ccm datatypes from simple editor
             if (customFields[i].id.startsWith('guidedConfParameterCCMTypeLoad_')) {
@@ -1047,7 +1223,7 @@
               let children = potentialCustomConfig[i].children;
               for (let j = 0; j < children.length; j++) {
                 if (children[j].nodeName === 'INPUT') {
-                  newConfigArray.push(parseInt(children[j].value));
+                  newConfigArray.push(parseFloat(children[j].value));
                 }
               }
               setNewConfigValue(keyToChange, newConfigArray);
