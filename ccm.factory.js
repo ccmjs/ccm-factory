@@ -226,10 +226,10 @@
           ]
         }
       },
-      JSONfn:  [ 'ccm.load', 'jsonfn.js' ],
+      JSONfn:  [ 'ccm.load', 'http://www.eslinstructor.net/jsonfn/jsonfn.min.js' ],
       preview: true, // If set to true a preview of the modified component is displayed
       show_ccm_fields: true, // If set to false the default ccm fields like 'name' are not modifiable
-      use_ace_for_editing: true, // If set to false, textareas are used for editing
+      use_ace_for_editing: false, // If set to false, textareas are used for editing
       url_to_modify: ''
     },
 
