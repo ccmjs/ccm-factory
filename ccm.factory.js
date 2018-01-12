@@ -32,39 +32,45 @@
           "id": "main",
           "inner": [
             {
-              "inner": "URL der Komponente:<br>%currentUrl%resources/test_components/ccm.navmenu.js<br>%currentUrl%resources/test_components/ccm.kanban_card.js<br>%currentUrl%resources/test_components/ccm.game_chooser.js<br>%currentUrl%resources/test_components/ccm.form.js<br>%currentUrl%resources/test_components/ccm.teambuild_builder.js<br>%currentUrl%resources/test_components/ccm.radar_chart.js<br>%currentUrl%resources/test_components/ccm.radar_chart_documented.js<br>%currentUrl%resources/test_components/ccm.solutions_view.js<br>"
-            },
-            {
-              "tag": "input",
-              "id": "componentURL",
-              "size": "70",
-              "value": "%currentUrl%resources/test_components/ccm.kanban_card.js"
-            },
-            {
-              "inner": "URL der Config Datei (leer lassen, wenn nicht vorhanden):<br>%currentUrl%resources/test_components/configs.js"
-            },
-            {
-              "tag": "input",
-              "id": "componentConfigURL",
-              "size": "70",
-              "value": ""
-            },
-            {
-              "inner": "Schlüssel aus der Config Datei (leer lassen, wenn keine Config Datei angegeben wurde):<br>Demo"
-            },
-            {
-              "tag": "input",
-              "id": "componentConfigKeyURL",
-              "size": "70",
-              "value": ""
-            },
-            {
-              "tag": "button",
-              "inner": "Komponente laden",
-              "onclick": "%loadComponentClick%"
-            },
-            {
-              "tag": "br"
+              "id": "componentSelector",
+              "style": "display: none;",
+              "inner": [
+                {
+                  "inner": "URL der Komponente:<br>%currentUrl%resources/test_components/ccm.navmenu.js<br>%currentUrl%resources/test_components/ccm.kanban_card.js<br>%currentUrl%resources/test_components/ccm.game_chooser.js<br>%currentUrl%resources/test_components/ccm.form.js<br>%currentUrl%resources/test_components/ccm.teambuild_builder.js<br>%currentUrl%resources/test_components/ccm.radar_chart.js<br>%currentUrl%resources/test_components/ccm.radar_chart_documented.js<br>%currentUrl%resources/test_components/ccm.solutions_view.js<br>"
+                },
+                {
+                  "tag": "input",
+                  "id": "componentURL",
+                  "size": "70",
+                  "value": "%currentUrl%resources/test_components/ccm.kanban_card.js"
+                },
+                {
+                  "inner": "URL der Config Datei (leer lassen, wenn nicht vorhanden):<br>%currentUrl%resources/test_components/configs.js"
+                },
+                {
+                  "tag": "input",
+                  "id": "componentConfigURL",
+                  "size": "70",
+                  "value": ""
+                },
+                {
+                  "inner": "Schlüssel aus der Config Datei (leer lassen, wenn keine Config Datei angegeben wurde):<br>Demo"
+                },
+                {
+                  "tag": "input",
+                  "id": "componentConfigKeyURL",
+                  "size": "70",
+                  "value": ""
+                },
+                {
+                  "tag": "button",
+                  "inner": "Komponente laden",
+                  "onclick": "%loadComponentClick%"
+                },
+                {
+                  "tag": "br"
+                }
+              ]
             },
             {
               "tag": "div",
@@ -226,11 +232,13 @@
           ]
         }
       },
-      JSONfn:  [ 'ccm.load', 'http://www.eslinstructor.net/jsonfn/jsonfn.min.js' ],
+      JSONfn:  [ 'ccm.load', 'jsonfn.js' ],
       preview: true, // If set to true a preview of the modified component is displayed
       show_ccm_fields: true, // If set to false the default ccm fields like 'name' are not modifiable
-      use_ace_for_editing: false, // If set to false, textareas are used for editing
-      url_to_modify: ''
+      use_ace_for_editing: true, // If set to false, textareas are used for editing
+      url_to_modify: '', // Specify a url to a component that should be modified
+      external_config: '', // Specify an external config file for the component that should be modified
+      key_in_external_config: '' // Specify the key in the external component that should be modified
     },
 
     /**
@@ -319,63 +327,49 @@
 
         this.element.appendChild(mainElement);
 
+        /**
+         * When a component is specified go directly to the load function otherwise show inputs to specify a component
+         */
         if (self.url_to_modify !== '') {
           loadComponent();
+        } else {
+          mainElement.querySelector('#componentSelector').style.display = 'block';
         }
-
 
         /**
          * Downloads the component
          */
         function loadComponent() {
+          let urlToComponent = '';
+          let urlToComponentConfig = '';
+          let componentConfigKey = '';
           if (self.url_to_modify) {
-            let urlToComponent = self.url_to_modify;
-
-            self.ccm.load({url: urlToComponent}, function (loadedComponent) {
-              newComponent = loadedComponent;
-
-              const urlToComponentConfig = '';
-              const componentConfigKey = '';
-              if (urlToComponentConfig !== '' && componentConfigKey !== '') {
-                self.ccm.load({url: urlToComponentConfig}, function (data) {
-
-                  Object.keys(data[componentConfigKey.toLowerCase()]).forEach((key) => {
-                    newComponent.config[key] = data[componentConfigKey.toLowerCase()][key];
-                  });
-
-                  displayEditingOptions();
-                });
-              } else {
-                displayEditingOptions();
-              }
-
-            });
+            urlToComponent = self.url_to_modify;
+            urlToComponentConfig = self.external_config;
+            componentConfigKey = self.key_in_external_config;
           } else {
-            let urlToComponent = mainElement.querySelector('#componentURL').value;
-
-            self.ccm.load({url: urlToComponent}, function (loadedComponent) {
-              newComponent = loadedComponent;
-
-              const urlToComponentConfig = mainElement.querySelector('#componentConfigURL').value;
-              const componentConfigKey = mainElement.querySelector('#componentConfigKeyURL').value;
-              if (urlToComponentConfig !== '' && componentConfigKey !== '') {
-                self.ccm.load({url: urlToComponentConfig}, function (data) {
-
-                  Object.keys(data[componentConfigKey.toLowerCase()]).forEach((key) => {
-                    newComponent.config[key] = data[componentConfigKey.toLowerCase()][key];
-                  });
-
-                  displayEditingOptions();
-                });
-              } else {
-                displayEditingOptions();
-              }
-
-            });
+            urlToComponent = mainElement.querySelector('#componentURL').value;
+            urlToComponentConfig = mainElement.querySelector('#componentConfigURL').value;
+            componentConfigKey = mainElement.querySelector('#componentConfigKeyURL').value;
           }
 
+          self.ccm.load({url: urlToComponent}, function (loadedComponent) {
+            newComponent = loadedComponent;
 
+            if (urlToComponentConfig !== '' && componentConfigKey !== '') {
+              self.ccm.load({url: urlToComponentConfig}, function (data) {
 
+                Object.keys(data[componentConfigKey.toLowerCase()]).forEach((key) => {
+                  newComponent.config[key] = data[componentConfigKey.toLowerCase()][key];
+                });
+
+                displayEditingOptions();
+              });
+            } else {
+              displayEditingOptions();
+            }
+
+          });
 
         }
 
@@ -383,6 +377,7 @@
          * Shows the options available for editing the config
          */
         function displayEditingOptions() {
+          mainElement.querySelector('#componentSelector').style.display = 'none';
           mainElement.querySelector('#chooseEditingStyle').style.display = 'block';
         }
 
