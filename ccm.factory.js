@@ -229,7 +229,8 @@
       JSONfn:  [ 'ccm.load', 'jsonfn.js' ],
       preview: true, // If set to true a preview of the modified component is displayed
       show_ccm_fields: true, // If set to false the default ccm fields like 'name' are not modifiable
-      use_ace_for_editing: true // If set to false, textareas are used for editing
+      use_ace_for_editing: true, // If set to false, textareas are used for editing
+      url_to_modify: ''
     },
 
     /**
@@ -318,31 +319,63 @@
 
         this.element.appendChild(mainElement);
 
+        if (self.url_to_modify !== '') {
+          loadComponent();
+        }
+
+
         /**
          * Downloads the component
          */
         function loadComponent() {
-          let urlToComponent = mainElement.querySelector('#componentURL').value;
+          if (self.url_to_modify) {
+            let urlToComponent = self.url_to_modify;
 
-          self.ccm.load({url: urlToComponent}, function (loadedComponent) {
-            newComponent = loadedComponent;
+            self.ccm.load({url: urlToComponent}, function (loadedComponent) {
+              newComponent = loadedComponent;
 
-            const urlToComponentConfig = mainElement.querySelector('#componentConfigURL').value;
-            const componentConfigKey = mainElement.querySelector('#componentConfigKeyURL').value;
-            if (urlToComponentConfig !== '' && componentConfigKey !== '') {
-              self.ccm.load({url: urlToComponentConfig}, function (data) {
+              const urlToComponentConfig = '';
+              const componentConfigKey = '';
+              if (urlToComponentConfig !== '' && componentConfigKey !== '') {
+                self.ccm.load({url: urlToComponentConfig}, function (data) {
 
-                Object.keys(data[componentConfigKey.toLowerCase()]).forEach((key) => {
-                  newComponent.config[key] = data[componentConfigKey.toLowerCase()][key];
+                  Object.keys(data[componentConfigKey.toLowerCase()]).forEach((key) => {
+                    newComponent.config[key] = data[componentConfigKey.toLowerCase()][key];
+                  });
+
+                  displayEditingOptions();
                 });
-
+              } else {
                 displayEditingOptions();
-              });
-            } else {
-              displayEditingOptions();
-            }
+              }
 
-          });
+            });
+          } else {
+            let urlToComponent = mainElement.querySelector('#componentURL').value;
+
+            self.ccm.load({url: urlToComponent}, function (loadedComponent) {
+              newComponent = loadedComponent;
+
+              const urlToComponentConfig = mainElement.querySelector('#componentConfigURL').value;
+              const componentConfigKey = mainElement.querySelector('#componentConfigKeyURL').value;
+              if (urlToComponentConfig !== '' && componentConfigKey !== '') {
+                self.ccm.load({url: urlToComponentConfig}, function (data) {
+
+                  Object.keys(data[componentConfigKey.toLowerCase()]).forEach((key) => {
+                    newComponent.config[key] = data[componentConfigKey.toLowerCase()][key];
+                  });
+
+                  displayEditingOptions();
+                });
+              } else {
+                displayEditingOptions();
+              }
+
+            });
+          }
+
+
+
 
         }
 
