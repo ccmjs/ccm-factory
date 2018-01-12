@@ -254,10 +254,15 @@
       const self = this;
 
       /**
-       * In here the newly generated component gets stored
+       * In here the newly generated component gets stored.
+       * This variable is initialized, so that the 'getValue' function returns a usable object
        * @type {object}
        */
-      let newComponent;
+      let newComponent = {
+        config: {
+
+        }
+      };
 
       /**
        * Holds references to the code editors used
@@ -385,6 +390,9 @@
          * The config is going to be edited with an editor
          */
         function configEditorChosen() {
+          // TODO: This is here to trigger a new height calculation in W2C. But this should not be necessary. W2C should automatically adjust the height. Also this doesn't work if new vertical space is dynamically added inside the factory e.g. when adding elements to arrays.
+          if (self.onchange) self.onchange(self);
+
           mainElement.querySelector('#chooseEditingStyle').style.display = 'none';
           displayConfigInEditor();
         }
@@ -413,6 +421,9 @@
          * Config is edited through a guided process
          */
         function guidedEditingChosen() {
+          // TODO: This is here to trigger a new height calculation in W2C. But this should not be necessary. W2C should automatically adjust the height. Also this doesn't work if new vertical space is dynamically added inside the factory e.g. when adding elements to arrays.
+          if (self.onchange) self.onchange(self);
+
           mainElement.querySelector('#chooseEditingStyle').style.display = 'none';
           mainElement.querySelector('#areaForGuidedEditing').style.display = 'block';
           if (self.show_ccm_fields) {
@@ -1278,6 +1289,9 @@
 
           displayNewComponent();
 
+          // Tell outside, that the config has changed
+          if (self.onchange) self.onchange(self);
+
           if (self.preview) {
             demoNewComponent();
           }
@@ -1439,7 +1453,7 @@
        * @returns {object} configuration for component
        */
       this.getValue = () => {
-        return newComponent.config;
+        return this.ccm.helper.clone(newComponent.config);
       }
     }
   };
