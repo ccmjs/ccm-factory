@@ -442,7 +442,11 @@
           // component name
           mainElement.querySelector('#guided_nameOfNewComponent').value = newComponent.name + '-new';
           // ccm url
-          mainElement.querySelector('#guided_ccmURL').value = newComponent.ccm;
+          if (typeof(newComponent.ccm) === 'object') {
+            mainElement.querySelector('#guided_ccmURL').value = newComponent.ccm.url;
+          } else {
+            mainElement.querySelector('#guided_ccmURL').value = newComponent.ccm;
+          }
         }
 
         /**
@@ -1198,7 +1202,12 @@
             // name
             newComponent.name = mainElement.querySelector('#guided_nameOfNewComponent').value;
             // ccm url
-            newComponent.ccm = mainElement.querySelector('#guided_ccmURL').value;
+            if (typeof(newComponent.ccm) === 'object') {
+              newComponent.ccm.url = mainElement.querySelector('#guided_ccmURL').value;
+              delete newComponent.ccm.integrity; // Integrity can't be guaranteed any more
+            } else {
+              newComponent.ccm = mainElement.querySelector('#guided_ccmURL').value;
+            }
           }
           // html template
           if (newComponent.config.html) {
