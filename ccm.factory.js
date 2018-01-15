@@ -1064,13 +1064,13 @@
           const helpButton = document.createElement('button');
           helpButton.innerHTML = '?';
           helpButton.onclick = function () {
-            if (this.nextElementSibling) return; // Only one help text should be displayed
+            if (this.nextElementSibling && this.nextSibling.nodeName !== 'BR') return; // Only one help text should be displayed
             const helpText = document.createElement('div');
             helpText.style.width = '500px';
             helpText.style.borderStyle = 'groove';
             helpText.style.borderWidth = '2px';
             helpText.innerHTML = generateDocumentationForConfigField(key, value, type);
-            caption.appendChild(helpText);
+            caption.insertBefore(helpText, caption.children[1]);
           };
 
           caption.appendChild(helpButton);
