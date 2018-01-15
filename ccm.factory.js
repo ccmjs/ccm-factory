@@ -359,6 +359,7 @@
 
           self.ccm.load({url: urlToComponent}, function (loadedComponent) {
             newComponent = self.ccm.helper.clone(loadedComponent);
+            if (!newComponent.config) newComponent.config = {};
             delete newComponent.config.ccm; //Removes ccm references from the configuration
 
 
@@ -1200,7 +1201,9 @@
             newComponent.ccm = mainElement.querySelector('#guided_ccmURL').value;
           }
           // html template
-          newComponent.config.html = JSON.parse(codeEditors.htmlEditor.getValue());
+          if (newComponent.config.html) {
+            newComponent.config.html = JSON.parse(codeEditors.htmlEditor.getValue());
+          }
           // custom fields can be inputs
           let customFields = mainElement.querySelectorAll('input');
           for (let i = 0; i < customFields.length; i++) {
