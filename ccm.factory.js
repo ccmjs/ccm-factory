@@ -36,7 +36,7 @@
               "style": "display: none;",
               "inner": [
                 {
-                  "inner": "URL der Komponente:<br>%currentUrl%resources/test_components/ccm.navmenu.js<br>%currentUrl%resources/test_components/ccm.kanban_card.js<br>%currentUrl%resources/test_components/ccm.game_chooser.js<br>%currentUrl%resources/test_components/ccm.form.js<br>%currentUrl%resources/test_components/ccm.teambuild_builder.js<br>%currentUrl%resources/test_components/ccm.radar_chart.js<br>%currentUrl%resources/test_components/ccm.radar_chart_documented.js<br>%currentUrl%resources/test_components/ccm.solutions_view.js<br>"
+                  "inner": "URL of the component:<br>%currentUrl%resources/test_components/ccm.navmenu.js<br>%currentUrl%resources/test_components/ccm.kanban_card.js<br>%currentUrl%resources/test_components/ccm.game_chooser.js<br>%currentUrl%resources/test_components/ccm.form.js<br>%currentUrl%resources/test_components/ccm.teambuild_builder.js<br>%currentUrl%resources/test_components/ccm.radar_chart.js<br>%currentUrl%resources/test_components/ccm.radar_chart_documented.js<br>%currentUrl%resources/test_components/ccm.solutions_view.js<br>"
                 },
                 {
                   "tag": "input",
@@ -45,7 +45,7 @@
                   "value": "%currentUrl%resources/test_components/ccm.kanban_card.js"
                 },
                 {
-                  "inner": "URL der Config Datei (leer lassen, wenn nicht vorhanden):<br>%currentUrl%resources/test_components/configs.js"
+                  "inner": "URL of an external config file (optional):<br>%currentUrl%resources/test_components/configs.js"
                 },
                 {
                   "tag": "input",
@@ -54,7 +54,7 @@
                   "value": ""
                 },
                 {
-                  "inner": "Schlüssel aus der Config Datei (leer lassen, wenn keine Config Datei angegeben wurde):<br>Demo"
+                  "inner": "Key inside the external config file (leave blank when no config file is used):<br>Demo"
                 },
                 {
                   "tag": "input",
@@ -64,7 +64,7 @@
                 },
                 {
                   "tag": "button",
-                  "inner": "Komponente laden",
+                  "inner": "Load component",
                   "onclick": "%loadComponentClick%"
                 },
                 {
@@ -79,11 +79,11 @@
               "inner": [
                 {
                   "tag": "button",
-                  "inner": "Config Editor",
+                  "inner": "Config editor",
                   "onclick": "%configEditorChosenClick%"
                 },{
                   "tag": "button",
-                  "inner": "Geführter Modus",
+                  "inner": "Guided editing mode",
                   "onclick": "%guidedEditingChosenClick%"
                 }
               ]
@@ -106,11 +106,10 @@
                 },
                 {
                   "tag": "div",
-                  "id": "nameOfNewComponentInput",
                   "inner": [
                     {
                       "tag": "button",
-                      "inner": "Neue Komponente generieren",
+                      "inner": "Generate new component",
                       "onclick": "%generateFromEditorClick%"
                     }
                   ]
@@ -124,7 +123,7 @@
               "inner": [
                 {
                   "tag": "h2",
-                  "inner": "Geführter Modus zum Editieren der Konfiguration"
+                  "inner": "Guided editing mode for modifying the component"
                 },
                 {
                   "id": "ccmDefaulConfigArea",
@@ -132,12 +131,12 @@
                   "inner": [
                     {
                       "tag": "h4",
-                      "inner": "CCM Konfiguration"
+                      "inner": "CCM configuration"
                     },
                     {
                       "inner": [
                         {
-                          "inner": "Name der neuen Komponente: "
+                          "inner": "Name of the new component: "
                         },
                         {
                           "tag": "input",
@@ -150,7 +149,7 @@
                         {
                           "id": "ccmUrlEditor",
                           "inner": [
-                            "URL von CCM: ",
+                            "URL of CCM: ",
                             {
                               "tag": "button",
                               "inner": "?",
@@ -172,7 +171,7 @@
                   "inner": [
                     {
                       "tag": "h4",
-                      "inner": "Komponenten spezifische Konfiguration"
+                      "inner": "Component specific configuration"
                     },
                     {
                       "tag": "div",
@@ -188,7 +187,7 @@
                 },
                 {
                   "tag": "button",
-                  "inner": "Neue Komponente generieren",
+                  "inner": "Generate new component",
                   "onclick": "%generateFromGuidedClick%"
                 }
               ]
@@ -198,7 +197,7 @@
             },
             {
               "id": "newComponentDisplayLabel",
-              "inner": "Vollständiger Komponentencode:",
+              "inner": "Code of the component:",
               "style": "display: none;"
             },
             {
@@ -207,11 +206,11 @@
               "style": "display: none;",
               "rows": 20,
               "cols": 50,
-              "inner": "Neue Komponente"
+              "inner": "New component"
             },
             {
               "id": "newComponentConfigDisplayLabel",
-              "inner": "Neue Konfiguration:",
+              "inner": "New configuration:",
               "style": "display: none;"
             },
             {
@@ -220,7 +219,7 @@
               "style": "display: none;",
               "rows": 20,
               "cols": 50,
-              "inner": "Neue Konfiguration"
+              "inner": "New configuration"
             },
             {
               "tag": "br"
@@ -582,7 +581,7 @@
           input.id = 'guidedConfParameterCCMTypeLoad_' + key;
           input.value = value[1];
           const advancedButton = document.createElement('button');
-          advancedButton.innerHTML = 'Advanced Editor';
+          advancedButton.innerHTML = 'Advanced editor';
           advancedButton.onclick = function () {
             caption.outerHTML = '';
             input.outerHTML = '';
@@ -1087,9 +1086,9 @@
           helpText.style.width = '500px';
           helpText.style.borderStyle = 'groove';
           helpText.style.borderWidth = '2px';
-          helpText.innerHTML = `<a href="https://github.com/akless/ccm/tree/master/version">Verfügbare CCM Versionen</a><br>
-                                Die dort aufgeführten Dateien können über das folgende URL-Schema erreicht werden:<br>
-                                https://akless.github.io/ccm/version/&lt;Dateiname&gt;`;
+          helpText.innerHTML = `<a href="https://github.com/akless/ccm/tree/master/version">Available ccm versions</a><br>
+                                Files seen there can be accessed via the following URL-Schema:<br>
+                                https://akless.github.io/ccm/version/&lt;Filename&gt;`;
           mainElement.querySelector('#ccmUrlEditor').appendChild(helpText);
         }
 
@@ -1126,44 +1125,44 @@
 
           switch (type) {
             case 'string':
-              helpDescription = 'In diesem Feld kann ein beliebiger Text eingegeben werden.';
+              helpDescription = 'In this field any form of text can be typed in.';
               break;
             case 'number':
-              helpDescription = 'In diesem Feld kann eine beliebige Zahl eingegeben werden.';
+              helpDescription = 'In this field any number can be typed in.';
               break;
             case 'boolean':
-              helpDescription = 'Über das Drop-Down Menü können die Werte <em>true</em> und <em>false</em> eingestellt werden.';
+              helpDescription = 'With the drop-down-menu either <em>true</em> or <em>false</em> can be selected.';
               break;
             case 'ccm.load':
               helpDescription = '<a href="https://github.com/akless/ccm/wiki/Loading-of-Resources">Wiki</a>';
               break;
             case 'Array<boolean>':
-              helpDescription = 'Über die X Buttons, können Elemente aus dem Array entfernt werden. Mit den + Buttons, können neue Elemente hinzugefügt werden.<br>Über die Drop-Down Menüs können die Werte <em>true</em> und <em>false</em> für jedes Element eingestellt werden.';
+              helpDescription = 'With the X buttons elements can be deleted. With the + buttons new Elements can be added.<br>Inside the field either <em>true</em> or <em>false</em> can be selected with the drop-down-menus.';
               break;
             case 'Array<number>':
-              helpDescription = 'Über die X Buttons, können Elemente aus dem Array entfernt werden. Mit den + Buttons, können neue Elemente hinzugefügt werden.<br>In den Feldern kann eine beliebige Zahl eingegeben werden.';
+              helpDescription = 'With the X buttons elements can be deleted. With the + buttons new Elements can be added.<br>Inside the fields any number can be typed in.';
               break;
             case 'Array<string>':
-              helpDescription = 'Über die X Buttons, können Elemente aus dem Array entfernt werden. Mit den + Buttons, können neue Elemente hinzugefügt werden.<br>In den Feldern kann ein beliebiger Text eingegeben werden.';
+              helpDescription = 'With the X buttons elements can be deleted. With the + buttons new Elements can be added.<br>Inside the fields any form of text can be typed in.';
               break;
             case 'Array':
-              helpDescription = 'In diesem Array können verschiedene Datentypen gemischt werden.';
+              helpDescription = 'In this array multiple data types can be mixed.';
               break;
             case 'function':
-              helpDescription = 'Der Code der Funktion kann bearbeitet werden.';
+              helpDescription = 'The code of the function can be edited.';
               break;
             case 'null':
-              helpDescription = 'Dieser Wert kann nicht bearbeitet werden.';
+              helpDescription = 'This value can not be changed.';
               break;
             default:
-              helpText = 'Keine Hilfe verfügbar.';
+              helpText = 'No help available.';
               return helpText;
           }
 
           helpText = `
-                !Die Komponente hat dieses Feld nicht dokumentiert. Die folgenden Hinweise sind allgemein und beziehen sich nur auf den aktuellen Datentyp des Feldes. Orientieren Sie sich bei der Modifikation an dem aktuellen Wert!<br>
-                <b><u>Datentyp:</u></b> ${type}<br>
-                <b><u>Beschreibung:</u></b> ${helpDescription}`;
+                !The component has not documented this field. The following are general indications for the current type of data in this field. Please orientate yourself by the current value of the field.!<br>
+                <b><u>Data type:</u></b> ${type}<br>
+                <b><u>Description:</u></b> ${helpDescription}`;
 
           return helpText;
         }
@@ -1187,9 +1186,9 @@
           }
 
           return `
-            <b><u>Datentyp(en):</u></b> ${escapeHTML(type.join(', '))}<br>
-            <b><u>Beschreibung:</u></b> ${escapeHTML(desc)}<br>
-            <b><u>Beispiele:</u></b><br>
+            <b><u>Data type(s):</u></b> ${escapeHTML(type.join(', '))}<br>
+            <b><u>Description:</u></b> ${escapeHTML(desc)}<br>
+            <b><u>Examples:</u></b><br>
             ${exampleText}
           `;
         }
