@@ -521,7 +521,7 @@
           const ccmDataType = value[0];
           switch (ccmDataType) {
             case 'ccm.load':
-              if (value.length === 2) { // The ccm load editor only supports editing of one load element
+              if (value.length === 2 && typeof(value[0]) === 'string' && typeof(value[1]) === 'string') { // The ccm load editor only supports editing of one load element
                 generateCCMLoadEditor(key, value);
               } else {
                 generateAdvancedEditorForCCMDataTypes(key, value, ccmDataType);
