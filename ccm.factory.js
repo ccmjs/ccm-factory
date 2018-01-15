@@ -1,6 +1,6 @@
 /**
  * @overview ccm component for factory
- * @author Leon Eck <leon.eck@smail.inf.h-brs.de> 2017
+ * @author Leon Eck <leon.eck@smail.inf.h-brs.de> 2018
  * @license The MIT License (MIT)
  * @version latest (0.1.0)
  */
@@ -232,7 +232,7 @@
           ]
         }
       },
-      JSONfn:  [ 'ccm.load', 'jsonfn.js' ],
+      JSONfn:  [ 'ccm.load', 'js/jsonfn.js' ],
       preview: true, // If set to true a preview of the modified component is displayed
       show_ccm_fields: true, // If set to false the default ccm fields like 'name' are not modifiable
       use_ace_for_editing: true, // If set to false, textareas are used for editing
@@ -303,7 +303,7 @@
           } else {
             // polyfill the platform!
             let e = document.createElement('script');
-            e.src = '/resources/webcomponents-lite.js';
+            e.src = '/js/webcomponents-lite.js';
             document.body.appendChild(e);
           }
         }
@@ -315,11 +315,10 @@
         if (self.use_ace_for_editing) {
           let aceImportLink = document.createElement('link');
           aceImportLink.rel = 'import';
-          aceImportLink.href = 'resources/juicy-ace-editor.html';
+          aceImportLink.href = 'js/juicy-ace-editor.html';
           document.head.appendChild(aceImportLink);
         }
 
-        // !ANMERKUNG!: Die Funktionszuweisungen müssen in der richtigen Reihenfolge, entsprechend dem Vorkommen im Json auftauchen
         let mainElement = this.ccm.helper.html(this.html.main, {
           currentUrl: window.location.href,
           loadComponentClick: loadComponent,
@@ -359,7 +358,9 @@
           }
 
           self.ccm.load({url: urlToComponent}, function (loadedComponent) {
-            newComponent = loadedComponent;
+            newComponent = self.ccm.helper.clone(loadedComponent);
+            delete newComponent.config.ccm; //Removes ccm references from the configuration
+
 
             if (urlToComponentConfig !== '' && componentConfigKey !== '') {
               self.ccm.load({url: urlToComponentConfig}, function (data) {
