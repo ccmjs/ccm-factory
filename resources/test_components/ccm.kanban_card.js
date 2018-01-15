@@ -18,7 +18,7 @@
 
     name: 'kanban_card',
 
-    ccm: 'https://akless.github.io/ccm/version/ccm-14.0.3.min.js',
+    ccm: 'https://akless.github.io/ccm/version/ccm-13.1.0.min.js',
 
     config: {
 

@@ -13,7 +13,7 @@
 
     name: 'game_chooser',
 
-    ccm: 'https://akless.github.io/ccm/version/ccm-11.2.1.min.js',
+    ccm: 'https://akless.github.io/ccm/version/ccm-11.5.0.min.js',
     // ccm: '//akless.github.io/ccm/ccm.js',
 
     config: {
