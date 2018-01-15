@@ -237,7 +237,7 @@
       use_ace_for_editing: true, // If set to false, textareas are used for editing
       url_to_modify: '', // Specify a url to a component that should be modified
       external_config: '', // Specify an external config file for the component that should be modified
-      key_in_external_config: '' // Specify the key in the external component that should be modified
+      key_in_external_config: '' // Specify the key in the external configuration that should be modified
     },
 
     /**
