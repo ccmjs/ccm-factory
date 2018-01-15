@@ -267,7 +267,7 @@
       /**
        * Holds references to the code editors used
        */
-      let codeEditors = {
+      const codeEditors = {
         configEditor: null,
         htmlEditor: null,
         functionEditors: {
@@ -302,7 +302,7 @@
             // platform is good!
           } else {
             // polyfill the platform!
-            let e = document.createElement('script');
+            const e = document.createElement('script');
             e.src = '/js/webcomponents-lite.js';
             document.body.appendChild(e);
           }
@@ -313,13 +313,13 @@
          * @type {HTMLLinkElement}
          */
         if (self.use_ace_for_editing) {
-          let aceImportLink = document.createElement('link');
+          const aceImportLink = document.createElement('link');
           aceImportLink.rel = 'import';
           aceImportLink.href = 'js/juicy-ace-editor.html';
           document.head.appendChild(aceImportLink);
         }
 
-        let mainElement = this.ccm.helper.html(this.html.main, {
+        const mainElement = this.ccm.helper.html(this.html.main, {
           currentUrl: window.location.href,
           loadComponentClick: loadComponent,
           configEditorChosenClick: configEditorChosen,
@@ -632,14 +632,14 @@
          */
         function generateNewBooleanField(key, value) {
           generateCaptionForComponentSpecificField(key, value, 'boolean');
-          let select = document.createElement('select');
+          const select = document.createElement('select');
           select.id = 'guidedConfParameterBoolean_' + key;
-          let optionT = document.createElement('option');
+          const optionT = document.createElement('option');
           optionT.text = 'true';
           optionT.value = 'true';
           if (value) optionT.selected = 'selected';
           select.appendChild(optionT);
-          let optionF = document.createElement('option');
+          const optionF = document.createElement('option');
           optionF.text = 'false';
           optionF.value = 'false';
           if (!value) optionF.selected = 'selected';
@@ -654,7 +654,7 @@
          */
         function generateNewStringField(key, value) {
           generateCaptionForComponentSpecificField(key, value, 'string');
-          let input = document.createElement('input');
+          const input = document.createElement('input');
           input.value = value;
           input.id = 'guidedConfParameterString_' + key;
           mainElement.querySelector('#guided_componentSpecificConfiguration').appendChild(input);
@@ -681,7 +681,7 @@
          */
         function generateNewNumberField(key, value) {
           generateCaptionForComponentSpecificField(key, value, 'number');
-          let input = document.createElement('input');
+          const input = document.createElement('input');
           input.value = value;
           input.id = 'guidedConfParameterNumber_' + key;
           input.type = 'number';
@@ -694,7 +694,7 @@
          * @param value
          */
         function generateArrayEditor(key, value) {
-          let typeInArray = checkTypeOfArray(value);
+          const typeInArray = checkTypeOfArray(value);
           switch (typeInArray) {
             case 'string':
               generateCaptionForComponentSpecificField(key, value, 'Array<string>');
@@ -742,9 +742,9 @@
          * @returns {string} Type
          */
         function checkTypeOfArray (array) {
-          let numberOfElements = array.length;
+          const numberOfElements = array.length;
           let returnType = 'undefined';
-          let typesInArray = {
+          const typesInArray = {
             "string": 0,
             "number": 0,
             "boolean": 0,
@@ -862,7 +862,7 @@
                 this.previousElementSibling.outerHTML = '';
                 this.outerHTML = '';
               };
-              let htmlBreak = document.createElement('br');
+              const htmlBreak = document.createElement('br');
               this.parentNode.insertBefore(htmlBreak, this.nextSibling);
               const newAddButtonInline = document.createElement('button');
               newAddButtonInline.innerHTML = '+';
@@ -873,7 +873,7 @@
               this.parentNode.insertBefore(htmlBreak, this.nextSibling);
             };
 
-            let htmlBreak = document.createElement('br');
+            const htmlBreak = document.createElement('br');
             arrayInputWrapper.appendChild(inputElement);
             arrayInputWrapper.appendChild(deleteButton);
             arrayInputWrapper.appendChild(addButtonInline);
@@ -944,7 +944,7 @@
                 this.previousElementSibling.outerHTML = '';
                 this.outerHTML = '';
               };
-              let htmlBreak = document.createElement('br');
+              const htmlBreak = document.createElement('br');
               this.parentNode.insertBefore(htmlBreak, this.nextSibling);
               const newAddButtonInline = document.createElement('button');
               newAddButtonInline.innerHTML = '+';
@@ -955,7 +955,7 @@
               this.parentNode.insertBefore(htmlBreak, this.nextSibling);
             };
 
-            let htmlBreak = document.createElement('br');
+            const htmlBreak = document.createElement('br');
             this.nextElementSibling.insertBefore(htmlBreak, this.nextElementSibling.childNodes[0]);
             this.nextElementSibling.insertBefore(addButtonInline, this.nextElementSibling.childNodes[0]);
             this.nextElementSibling.insertBefore(deleteButton, this.nextElementSibling.childNodes[0]);
@@ -1026,7 +1026,7 @@
                 this.previousElementSibling.outerHTML = '';
                 this.outerHTML = '';
               };
-              let htmlBreak = document.createElement('br');
+              const htmlBreak = document.createElement('br');
               this.parentNode.insertBefore(htmlBreak, this.nextSibling);
               const newAddButtonInline = document.createElement('button');
               newAddButtonInline.innerHTML = '+';
@@ -1037,7 +1037,7 @@
               this.parentNode.insertBefore(htmlBreak, this.nextSibling);
             };
 
-            let htmlBreak = document.createElement('br');
+            const htmlBreak = document.createElement('br');
             this.previousElementSibling.appendChild(inputElement);
             this.previousElementSibling.appendChild(deleteButton);
             this.previousElementSibling.appendChild(addButtonInline);
@@ -1205,55 +1205,55 @@
             newComponent.config.html = JSON.parse(codeEditors.htmlEditor.getValue());
           }
           // custom fields can be inputs
-          let customFields = mainElement.querySelectorAll('input');
+          const customFields = mainElement.querySelectorAll('input');
           for (let i = 0; i < customFields.length; i++) {
             // set string parameters
             if (customFields[i].id.startsWith('guidedConfParameterString_')) {
-              let keyToChange = customFields[i].id.slice(26);
+              const keyToChange = customFields[i].id.slice(26);
               setNewConfigValue(keyToChange, customFields[i].value);
             }
             // set null parameters
             if (customFields[i].id.startsWith('guidedConfParameterNull_')) {
-              let keyToChange = customFields[i].id.slice(24);
+              const keyToChange = customFields[i].id.slice(24);
               setNewConfigValue(keyToChange, null);
             }
             // set number parameters
             if (customFields[i].id.startsWith('guidedConfParameterNumber_')) {
-              let keyToChange = customFields[i].id.slice(26);
+              const keyToChange = customFields[i].id.slice(26);
               setNewConfigValue(keyToChange, parseFloat(customFields[i].value));
             }
             // set ccm datatypes from simple editor
             if (customFields[i].id.startsWith('guidedConfParameterCCMTypeLoad_')) {
-              let keyToChange = customFields[i].id.slice(31);
+              const keyToChange = customFields[i].id.slice(31);
               setNewConfigValue(keyToChange, ['ccm.load', customFields[i].value]);
             }
           }
           // custom fields can be selects
-          let customFieldsSelect = mainElement.querySelectorAll('select');
+          const customFieldsSelect = mainElement.querySelectorAll('select');
           for (let i = 0; i < customFieldsSelect.length; i++) {
             // set boolean parameters
             if (customFieldsSelect[i].id.startsWith('guidedConfParameterBoolean_')) {
-              let keyToChange = customFieldsSelect[i].id.slice(27);
+              const keyToChange = customFieldsSelect[i].id.slice(27);
               setNewConfigValue(keyToChange, (customFieldsSelect[i].value === 'true'));
             }
           }
           // custom fields can be textareas
-          let customFieldsTextarea = mainElement.querySelectorAll('textarea');
+          const customFieldsTextarea = mainElement.querySelectorAll('textarea');
           for (let i = 0; i < customFieldsTextarea.length; i++) {
             // set ccm datatype parameters
             if (customFieldsTextarea[i].id.startsWith('guidedConfParameterCCMTypeAdvanced_')) {
-              let keyToChange = customFieldsTextarea[i].id.slice(35);
+              const keyToChange = customFieldsTextarea[i].id.slice(35);
               setNewConfigValue(keyToChange, JSON.parse(customFieldsTextarea[i].value));
             }
           }
           // search for custom config editors in divs
-          let potentialCustomConfig = mainElement.querySelectorAll('div');
+          const potentialCustomConfig = mainElement.querySelectorAll('div');
           for (let i = 0; i < potentialCustomConfig.length; i ++) {
             // Set new string array in config
             if (potentialCustomConfig[i].id.startsWith('GuidedArrayStringList_')) {
-              let keyToChange = potentialCustomConfig[i].id.slice(22);
+              const keyToChange = potentialCustomConfig[i].id.slice(22);
               let newConfigArray = [];
-              let children = potentialCustomConfig[i].children;
+              const children = potentialCustomConfig[i].children;
               for (let j = 0; j < children.length; j++) {
                 if (children[j].nodeName === 'INPUT') {
                   newConfigArray.push(children[j].value);
@@ -1261,9 +1261,9 @@
               }
               setNewConfigValue(keyToChange, newConfigArray);
             } else if (potentialCustomConfig[i].id.startsWith('GuidedArrayNumberList_')) {
-              let keyToChange = potentialCustomConfig[i].id.slice(22);
+              const keyToChange = potentialCustomConfig[i].id.slice(22);
               let newConfigArray = [];
-              let children = potentialCustomConfig[i].children;
+              const children = potentialCustomConfig[i].children;
               for (let j = 0; j < children.length; j++) {
                 if (children[j].nodeName === 'INPUT') {
                   newConfigArray.push(parseFloat(children[j].value));
@@ -1271,9 +1271,9 @@
               }
               setNewConfigValue(keyToChange, newConfigArray);
             } else if (potentialCustomConfig[i].id.startsWith('GuidedArrayBooleanList_')) {
-              let keyToChange = potentialCustomConfig[i].id.slice(23);
+              const keyToChange = potentialCustomConfig[i].id.slice(23);
               let newConfigArray = [];
-              let children = potentialCustomConfig[i].children;
+              const children = potentialCustomConfig[i].children;
               for (let j = 0; j < children.length; j++) {
                 if (children[j].nodeName === 'SELECT') {
                   newConfigArray.push(children[j].value === 'true');
@@ -1281,11 +1281,11 @@
               }
               setNewConfigValue(keyToChange, newConfigArray);
             } else if (potentialCustomConfig[i].id.startsWith('guidedConfParameterFunction_')) {
-              let keyToChange = potentialCustomConfig[i].id.slice(28);
+              const keyToChange = potentialCustomConfig[i].id.slice(28);
               const newFunction = codeEditors.functionEditors[potentialCustomConfig[i].id].getValue();
               setNewConfigValue(keyToChange, eval('(' + newFunction + ')'));
             } else if (potentialCustomConfig[i].id.startsWith('guidedConfParameterArrayMultipleTypes_')) {
-              let keyToChange = potentialCustomConfig[i].id.slice(38);
+              const keyToChange = potentialCustomConfig[i].id.slice(38);
               const newArray = codeEditors.arrayMultipleTypesEditors[potentialCustomConfig[i].id].getValue();
               setNewConfigValue(keyToChange, JSON.parse(newArray));
             }
@@ -1321,7 +1321,7 @@
          * @returns {string}
          */
         function generateNewComponentCode(newComponentObject) {
-          let innerPartOfCompoment = fixJSONOutput(JSONfn.stringify(newComponentObject));
+          const innerPartOfCompoment = fixJSONOutput(JSONfn.stringify(newComponentObject));
 
           const componentBeginning = '{\n' +
             '\n' +
