@@ -214,6 +214,7 @@
             },
             {
               "tag": "textarea",
+              "class": "form-control",
               "id": "newComponentDisplay",
               "style": "display: none;",
               "rows": 20,
@@ -227,6 +228,7 @@
             },
             {
               "tag": "textarea",
+              "class": "form-control",
               "id": "newComponentConfigDisplay",
               "style": "display: none;",
               "rows": 20,
@@ -622,6 +624,7 @@
          */
         function createTextAreaForEditingAdvancedCCMTypes(key, value) {
           const textAreaForEditing = document.createElement('textarea');
+          textAreaForEditing.className = 'form-control';
           textAreaForEditing.id = 'guidedConfParameterCCMTypeAdvanced_' + key;
           textAreaForEditing.rows = 5;
           textAreaForEditing.cols = 50;
@@ -1447,6 +1450,7 @@
           } else {
             // Fallback to textareas
             const editorElement = document.createElement('textarea');
+            editorElement.className = 'form-control';
             editorElement.id = divID + 'attachedEditor';
             editorElement.style.width = width + 'px';
             editorElement.style.height = height + 'px';
