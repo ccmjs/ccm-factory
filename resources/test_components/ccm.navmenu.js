@@ -40,6 +40,41 @@
         }
       },
       title: '',
+      number: 123,
+      boolean: false,
+      test_funct: function () {
+        console.log('Hallo Welt');
+      },
+      string_array: [
+        'A',
+        'B',
+        'C'
+      ],
+      number_array: [
+        1,
+        2,
+        3
+      ],
+      boolean_array: [
+        false,
+        true,
+        false
+      ],
+      nested_object: {
+        depth1: {
+          depth2: 'a'
+        }
+      },
+      nested_array: [
+        [
+          1,
+          2,
+          3
+        ],
+        {
+          nested: 'nested'
+        }
+      ],
       css_layout: [ 'ccm.load', 'https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css' ],
       test_array: [1, 2, 3, false, 'test', 4]
     },
