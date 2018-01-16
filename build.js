@@ -5,8 +5,12 @@ fs.readFile('ccm.factory.js', 'utf8', function (err, data) {
   if (err) {
     return console.log(err);
   }
-  
-  const result = data.replace(/js\/jsonfn.js/g, 'https://leoneck.github.io/ccm-factory/js/jsonfn.js').replace(/\/js\/webcomponents-lite.js/g, 'https://leoneck.github.io/ccm-factory/js/webcomponents-lite.js').replace(/js\/juicy-ace-editor.html/g, 'https://leoneck.github.io/ccm-factory/js/juicy-ace-editor.html');
+
+  const result = data
+    .replace(/js\/jsonfn.js/g, 'https://leoneck.github.io/ccm-factory/js/jsonfn.js')
+    .replace(/\/js\/webcomponents-lite.js/g, 'https://leoneck.github.io/ccm-factory/js/webcomponents-lite.js')
+    .replace(/js\/juicy-ace-editor.html/g, 'https://leoneck.github.io/ccm-factory/js/juicy-ace-editor.html')
+    .replace(/\/css\/default.css/g, 'https://leoneck.github.io/ccm-factory/css/default.css');
 
   const {code, map} = minify(result);
 

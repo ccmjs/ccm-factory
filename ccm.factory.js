@@ -30,6 +30,7 @@
       html: {
         "main": {
           "id": "main",
+          "class": "container",
           "inner": [
             {
               "id": "componentSelector",
@@ -40,6 +41,7 @@
                 },
                 {
                   "tag": "input",
+                  "class": "form-control",
                   "id": "componentURL",
                   "size": "70",
                   "value": "%currentUrl%resources/test_components/ccm.kanban_card.js"
@@ -49,6 +51,7 @@
                 },
                 {
                   "tag": "input",
+                  "class": "form-control",
                   "id": "componentConfigURL",
                   "size": "70",
                   "value": ""
@@ -58,12 +61,14 @@
                 },
                 {
                   "tag": "input",
+                  "class": "form-control",
                   "id": "componentConfigKeyURL",
                   "size": "70",
                   "value": ""
                 },
                 {
                   "tag": "button",
+                  "class": "btn btn-default",
                   "inner": "Load component",
                   "onclick": "%loadComponentClick%"
                 },
@@ -79,10 +84,12 @@
               "inner": [
                 {
                   "tag": "button",
+                  "class": "btn btn-default",
                   "inner": "Config editor",
                   "onclick": "%configEditorChosenClick%"
                 },{
                   "tag": "button",
+                  "class": "btn btn-default",
                   "inner": "Guided editing mode",
                   "onclick": "%guidedEditingChosenClick%"
                 }
@@ -109,6 +116,7 @@
                   "inner": [
                     {
                       "tag": "button",
+                      "class": "btn btn-default",
                       "inner": "Generate new component",
                       "onclick": "%generateFromEditorClick%"
                     }
@@ -140,6 +148,7 @@
                         },
                         {
                           "tag": "input",
+                          "class": "form-control",
                           "id": "guided_nameOfNewComponent"
                         }
                       ]
@@ -152,6 +161,7 @@
                             "URL of CCM: ",
                             {
                               "tag": "button",
+                              "class": "btn btn-default btn-circle",
                               "inner": "?",
                               "onclick": "%showHelpForCCMURL%"
                             },
@@ -159,6 +169,7 @@
                         },
                         {
                           "tag": "input",
+                          "class": "form-control",
                           "size": "50",
                           "id": "guided_ccmURL"
                         }
@@ -187,6 +198,7 @@
                 },
                 {
                   "tag": "button",
+                  "class": "btn btn-default",
                   "inner": "Generate new component",
                   "onclick": "%generateFromGuidedClick%"
                 }
@@ -231,6 +243,7 @@
           ]
         }
       },
+      css: [ 'ccm.load', 'https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css', '/css/default.css' ],
       JSONfn:  [ 'ccm.load', 'js/jsonfn.js' ],
       preview: true, // If set to true a preview of the modified component is displayed
       show_ccm_fields: true, // If set to false the default ccm fields like 'name' are not modifiable
@@ -578,9 +591,11 @@
           const caption = document.createElement('span');
           caption.innerHTML = 'Value: ';
           const input = document.createElement('input');
+          input.className = 'form-control form-control-inline';
           input.id = 'guidedConfParameterCCMTypeLoad_' + key;
           input.value = value[1];
           const advancedButton = document.createElement('button');
+          advancedButton.className = 'btn btn-default';
           advancedButton.innerHTML = 'Advanced editor';
           advancedButton.onclick = function () {
             caption.outerHTML = '';
@@ -636,6 +651,7 @@
         function generateNewBooleanField(key, value) {
           generateCaptionForComponentSpecificField(key, value, 'boolean');
           const select = document.createElement('select');
+          select.className = 'form-control';
           select.id = 'guidedConfParameterBoolean_' + key;
           const optionT = document.createElement('option');
           optionT.text = 'true';
@@ -658,6 +674,7 @@
         function generateNewStringField(key, value) {
           generateCaptionForComponentSpecificField(key, value, 'string');
           const input = document.createElement('input');
+          input.className = 'form-control';
           input.value = value;
           input.id = 'guidedConfParameterString_' + key;
           mainElement.querySelector('#guided_componentSpecificConfiguration').appendChild(input);
@@ -671,6 +688,7 @@
         function generateNullField(key, value) {
           generateCaptionForComponentSpecificField(key, value, 'null');
           const input = document.createElement('input');
+          input.className = 'form-control';
           input.value = 'null';
           input.disabled = true;
           input.id = 'guidedConfParameterNull_' + key;
@@ -685,6 +703,7 @@
         function generateNewNumberField(key, value) {
           generateCaptionForComponentSpecificField(key, value, 'number');
           const input = document.createElement('input');
+          input.className = 'form-control';
           input.value = value;
           input.id = 'guidedConfParameterNumber_' + key;
           input.type = 'number';
@@ -823,8 +842,10 @@
               if (!element) optionF.selected = 'selected';
               inputElement.appendChild(optionF);
             }
+            inputElement.className = 'form-control form-control-inline';
 
             const deleteButton = document.createElement('button');
+            deleteButton.className = 'btn btn-default';
             deleteButton.innerHTML = 'X';
             deleteButton.onclick = function () {
               this.nextElementSibling.nextElementSibling.outerHTML = '';
@@ -834,6 +855,7 @@
             };
 
             const addButtonInline = document.createElement('button');
+            addButtonInline.className = 'btn btn-default';
             addButtonInline.innerHTML = '+';
             addButtonInline.onclick = function () {
               let inputElement = null;
@@ -856,8 +878,10 @@
                 optionF.value = 'false';
                 inputElement.appendChild(optionF);
               }
+              inputElement.className = 'form-control form-control-inline';
 
               const deleteButton = document.createElement('button');
+              deleteButton.className = 'btn btn-default';
               deleteButton.innerHTML = 'X';
               deleteButton.onclick = function () {
                 this.nextElementSibling.nextElementSibling.outerHTML = '';
@@ -868,6 +892,7 @@
               const htmlBreak = document.createElement('br');
               this.parentNode.insertBefore(htmlBreak, this.nextSibling);
               const newAddButtonInline = document.createElement('button');
+              newAddButtonInline.className = 'btn btn-default';
               newAddButtonInline.innerHTML = '+';
               newAddButtonInline.onclick = addButtonInline.onclick;
               this.parentNode.insertBefore(newAddButtonInline, this.nextSibling);
@@ -883,6 +908,7 @@
             arrayInputWrapper.appendChild(htmlBreak);
           });
           const addButtonTop = document.createElement('button');
+          addButtonTop.className = 'btn btn-default';
           addButtonTop.innerHTML = '+';
           addButtonTop.onclick = function () {
             let inputElement = null;
@@ -905,8 +931,10 @@
               optionF.value = 'false';
               inputElement.appendChild(optionF);
             }
+            inputElement.className = 'form-control form-control-inline';
 
             const deleteButton = document.createElement('button');
+            deleteButton.className = 'btn btn-default';
             deleteButton.innerHTML = 'X';
             deleteButton.onclick = function () {
               this.nextElementSibling.nextElementSibling.outerHTML = '';
@@ -916,6 +944,7 @@
             };
 
             const addButtonInline = document.createElement('button');
+            addButtonInline.className = 'btn btn-default';
             addButtonInline.innerHTML = '+';
             addButtonInline.onclick = function () {
               let inputElement = null;
@@ -938,8 +967,10 @@
                 optionF.value = 'false';
                 inputElement.appendChild(optionF);
               }
+              inputElement.className = 'form-control form-control-inline';
 
               const deleteButton = document.createElement('button');
+              deleteButton.className = 'btn btn-default';
               deleteButton.innerHTML = 'X';
               deleteButton.onclick = function () {
                 this.nextElementSibling.nextElementSibling.outerHTML = '';
@@ -950,6 +981,7 @@
               const htmlBreak = document.createElement('br');
               this.parentNode.insertBefore(htmlBreak, this.nextSibling);
               const newAddButtonInline = document.createElement('button');
+              newAddButtonInline.className = 'btn btn-default';
               newAddButtonInline.innerHTML = '+';
               newAddButtonInline.onclick = addButtonInline.onclick;
               this.parentNode.insertBefore(newAddButtonInline, this.nextSibling);
@@ -965,6 +997,7 @@
             this.nextElementSibling.insertBefore(inputElement, this.nextElementSibling.childNodes[0]);
           };
           const addButtonBottom = document.createElement('button');
+          addButtonBottom.className = 'btn btn-default';
           addButtonBottom.innerHTML = '+';
           addButtonBottom.onclick = function () {
             let inputElement = null;
@@ -987,8 +1020,10 @@
               optionF.value = 'false';
               inputElement.appendChild(optionF);
             }
+            inputElement.className = 'form-control form-control-inline';
 
             const deleteButton = document.createElement('button');
+            deleteButton.className = 'btn btn-default';
             deleteButton.innerHTML = 'X';
             deleteButton.onclick = function () {
               this.nextElementSibling.nextElementSibling.outerHTML = '';
@@ -998,6 +1033,7 @@
             };
 
             const addButtonInline = document.createElement('button');
+            addButtonInline.className = 'btn btn-default';
             addButtonInline.innerHTML = '+';
             addButtonInline.onclick = function () {
               let inputElement = null;
@@ -1020,8 +1056,10 @@
                 optionF.value = 'false';
                 inputElement.appendChild(optionF);
               }
+              inputElement.className = 'form-control form-control-inline';
 
               const deleteButton = document.createElement('button');
+              deleteButton.className = 'btn btn-default';
               deleteButton.innerHTML = 'X';
               deleteButton.onclick = function () {
                 this.nextElementSibling.nextElementSibling.outerHTML = '';
@@ -1032,6 +1070,7 @@
               const htmlBreak = document.createElement('br');
               this.parentNode.insertBefore(htmlBreak, this.nextSibling);
               const newAddButtonInline = document.createElement('button');
+              newAddButtonInline.className = 'btn btn-default';
               newAddButtonInline.innerHTML = '+';
               newAddButtonInline.onclick = addButtonInline.onclick;
               this.parentNode.insertBefore(newAddButtonInline, this.nextSibling);
@@ -1062,13 +1101,13 @@
           caption.innerHTML = key + ':';
 
           const helpButton = document.createElement('button');
+          helpButton.className = 'btn btn-default btn-circle';
           helpButton.innerHTML = '?';
           helpButton.onclick = function () {
             if (this.nextElementSibling && this.nextSibling.nodeName !== 'BR') return; // Only one help text should be displayed
             const helpText = document.createElement('div');
+            helpText.className = 'bs-callout bs-callout-primary';
             helpText.style.width = '500px';
-            helpText.style.borderStyle = 'groove';
-            helpText.style.borderWidth = '2px';
             helpText.innerHTML = generateDocumentationForConfigField(key, value, type);
             caption.insertBefore(helpText, caption.children[1]);
           };
@@ -1083,9 +1122,8 @@
         function showHelpForCCMURL() {
           if (this.nextElementSibling) return; // Only one help text should be displayed
           const helpText = document.createElement('div');
+          helpText.className = 'bs-callout bs-callout-primary';
           helpText.style.width = '500px';
-          helpText.style.borderStyle = 'groove';
-          helpText.style.borderWidth = '2px';
           helpText.innerHTML = `<a href="https://github.com/akless/ccm/tree/master/version">Available ccm versions</a><br>
                                 Files seen there can be accessed via the following URL-Schema:<br>
                                 https://akless.github.io/ccm/version/&lt;Filename&gt;`;
@@ -1161,7 +1199,7 @@
 
           helpText = `
                 !The component has not documented this field. The following are general indications for the current type of data in this field. Please orientate yourself by the current value of the field.!<br>
-                <b><u>Data type:</u></b> ${type}<br>
+                <b><u>Data type:</u></b> <code>${type}</code><br>
                 <b><u>Description:</u></b> ${helpDescription}`;
 
           return helpText;
@@ -1186,7 +1224,7 @@
           }
 
           return `
-            <b><u>Data type(s):</u></b> ${escapeHTML(type.join(', '))}<br>
+            <b><u>Data type(s):</u></b> <code>${escapeHTML(type.join(', '))}</code><br>
             <b><u>Description:</u></b> ${escapeHTML(desc)}<br>
             <b><u>Examples:</u></b><br>
             ${exampleText}
