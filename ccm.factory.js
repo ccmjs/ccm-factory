@@ -20,7 +20,7 @@
      * recommended used framework version
      * @type {string}
      */
-    ccm: 'https://akless.github.io/ccm/version/ccm-13.1.0.js',
+    ccm: 'js/ccm-13.1.0.js',
 
     /**
      * default instance configuration
@@ -243,7 +243,7 @@
           ]
         }
       },
-      css: [ 'ccm.load', 'https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css', '/css/default.css' ],
+      css: [ 'ccm.load', 'css/bootstrap.min.css', 'css/default.css' ],
       JSONfn:  [ 'ccm.load', 'js/jsonfn.js' ],
       preview: true, // If set to true a preview of the modified component is displayed
       show_ccm_fields: true, // If set to false the default ccm fields like 'name' are not modifiable
