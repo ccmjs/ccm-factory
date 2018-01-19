@@ -33,6 +33,11 @@
           "class": "container",
           "inner": [
             {
+              "id": "alertMessage",
+              "class": "alert alert-danger",
+              "style": "display: none;",
+            },
+            {
               "id": "componentSelector",
               "style": "display: none;",
               "inner": [
@@ -74,6 +79,22 @@
                 },
                 {
                   "tag": "br"
+                }
+              ]
+            },
+            {
+              "id": "loadSpinner",
+              "class": "spinner",
+              "style": "display: none;",
+              "inner": [
+                {
+                  "class": "bounce1"
+                },
+                {
+                  "class": "bounce2"
+                },
+                {
+                  "class": "bounce3"
                 }
               ]
             },
@@ -197,6 +218,9 @@
                   ]
                 },
                 {
+                  "tag": "br"
+                },
+                {
                   "tag": "button",
                   "class": "btn btn-default",
                   "inner": "Generate new component",
@@ -253,7 +277,8 @@
       url_to_modify: '', // Specify a url to a component that should be modified
       external_config: '', // Specify an external config file for the component that should be modified
       key_in_external_config: '', // Specify the key in the external configuration that should be modified
-      display_final_component_and_config: true // If set to false, nothing will be displayed after generating the new component
+      display_final_component_and_config: true, // If set to false, nothing will be displayed after generating the new component
+      no_bootstrap_container: false // Set to true if embedded on a site that already has a bootstrap container div
     },
 
     /**
@@ -325,13 +350,19 @@
 
         /**
          * Import ace editor as custom element
-         * @type {HTMLLinkElement}
          */
         if (self.use_ace_for_editing) {
           const aceImportLink = document.createElement('link');
           aceImportLink.rel = 'import';
           aceImportLink.href = 'js/juicy-ace-editor.html';
           document.head.appendChild(aceImportLink);
+        }
+
+        /**
+         * Remove the bootstrap container class if config value no_bootstrap_container is true
+         */
+        if (self.no_bootstrap_container) {
+          this.html.main.class = '';
         }
 
         const mainElement = this.ccm.helper.html(this.html.main, {
@@ -359,6 +390,8 @@
          * Downloads the component
          */
         function loadComponent() {
+          mainElement.querySelector('#alertMessage').style.display = 'none';
+
           let urlToComponent = '';
           let urlToComponentConfig = '';
           let componentConfigKey = '';
@@ -374,6 +407,12 @@
 
           self.ccm.load({url: urlToComponent}, function (loadedComponent) {
             newComponent = self.ccm.helper.clone(loadedComponent);
+            if (typeof(newComponent) !== 'object') {
+              // No ccm component was detected
+              mainElement.querySelector('#alertMessage').innerHTML = 'The loaded file does not contain a valid ccm component';
+              mainElement.querySelector('#alertMessage').style.display = 'block';
+              return;
+            }
             if (!newComponent.config) newComponent.config = {};
             delete newComponent.config.ccm; //Removes ccm references from the configuration
 
@@ -385,10 +424,18 @@
                   newComponent.config[key] = data[componentConfigKey.toLowerCase()][key];
                 });
 
-                displayEditingOptions();
+                if (self.use_ace_for_editing) {
+                  // Delay start to give ace time to load
+                  mainElement.querySelector('#loadSpinner').style.display = 'block';
+                  setTimeout(displayEditingOptions, 1000);
+                }
               });
             } else {
-              displayEditingOptions();
+              if (self.use_ace_for_editing) {
+                // Delay start to give ace time to load
+                mainElement.querySelector('#loadSpinner').style.display = 'block';
+                setTimeout(displayEditingOptions, 1000);
+              }
             }
 
           });
@@ -399,8 +446,13 @@
          * Shows the options available for editing the config
          */
         function displayEditingOptions() {
+          mainElement.querySelector('#loadSpinner').style.display = 'none';
           mainElement.querySelector('#componentSelector').style.display = 'none';
           mainElement.querySelector('#chooseEditingStyle').style.display = 'block';
+          if (document.createElement('juicy-ace-editor').constructor === HTMLElement) {
+            // Ace was not loaded. Use fallback
+            self.use_ace_for_editing = false;
+          }
         }
 
         /**
