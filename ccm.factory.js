@@ -417,40 +417,55 @@
             componentConfigKey = mainElement.querySelector('#componentConfigKeyURL').value;
           }
 
-          self.ccm.load({url: urlToComponent}, function (loadedComponent) {
-            newComponent = self.ccm.helper.clone(loadedComponent);
-            if (typeof(newComponent) !== 'object') {
-              // No ccm component was detected
-              mainElement.querySelector('#alertMessage').innerHTML = 'The loaded file does not contain a valid ccm component';
-              mainElement.querySelector('#alertMessage').style.display = 'block';
-              return;
-            }
-            if (!newComponent.config) newComponent.config = {};
-            delete newComponent.config.ccm; //Removes ccm references from the configuration
+          const xhrToLoadComponent = new XMLHttpRequest();
+          xhrToLoadComponent.open('GET', urlToComponent);
+          xhrToLoadComponent.onreadystatechange = function() {
+            if(xhrToLoadComponent.readyState === XMLHttpRequest.DONE && xhrToLoadComponent.status === 200) {
+              /**
+               * Store the loaded component at a different location than normal to prevent collisions
+               * @type {string}
+               */
+              const modifiedComponentCode = xhrToLoadComponent.responseText
+                .replace('window.ccm&&null===window.ccm.files[f])window.ccm.files[f]', 'true)window.loadedForFactory') // minified
+                .replace('window.ccm && window.ccm.files[ f ] === null', 'true') // not minified
+                .replace('window.ccm.files[ f ] = component;', 'window.loadedForFactory = component;'); // not minified
+
+              eval(modifiedComponentCode);
+
+              newComponent = self.ccm.helper.clone(window.loadedForFactory);
+              if (typeof(newComponent) !== 'object') {
+                // No ccm component was detected
+                mainElement.querySelector('#alertMessage').innerHTML = 'The loaded file does not contain a valid ccm component';
+                mainElement.querySelector('#alertMessage').style.display = 'block';
+                return;
+              }
+              if (!newComponent.config) newComponent.config = {};
+              delete newComponent.config.ccm; //Removes ccm references from the configuration
 
 
-            if (urlToComponentConfig !== '' && componentConfigKey !== '') {
-              self.ccm.load({url: urlToComponentConfig}, function (data) {
+              if (urlToComponentConfig !== '' && componentConfigKey !== '') {
+                self.ccm.load({url: urlToComponentConfig}, function (data) {
 
-                Object.keys(data[componentConfigKey.toLowerCase()]).forEach((key) => {
-                  newComponent.config[key] = data[componentConfigKey.toLowerCase()][key];
+                  Object.keys(data[componentConfigKey.toLowerCase()]).forEach((key) => {
+                    newComponent.config[key] = data[componentConfigKey.toLowerCase()][key];
+                  });
+
+                  if (self.use_ace_for_editing) {
+                    // Delay start to give ace time to load
+                    mainElement.querySelector('#loadSpinner').style.display = 'block';
+                    setTimeout(displayEditingOptions, 1000);
+                  }
                 });
-
+              } else {
                 if (self.use_ace_for_editing) {
                   // Delay start to give ace time to load
                   mainElement.querySelector('#loadSpinner').style.display = 'block';
                   setTimeout(displayEditingOptions, 1000);
                 }
-              });
-            } else {
-              if (self.use_ace_for_editing) {
-                // Delay start to give ace time to load
-                mainElement.querySelector('#loadSpinner').style.display = 'block';
-                setTimeout(displayEditingOptions, 1000);
               }
             }
-
-          });
+          };
+          xhrToLoadComponent.send();
 
         }
 
