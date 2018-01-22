@@ -1520,20 +1520,9 @@
          * Creates a demo of the new component
          */
         function demoNewComponent() {
-          // delete current demo
-          const oldDemoComponent = document.querySelector('[data-demotype="isDemoComponent"]');
-          if (oldDemoComponent) oldDemoComponent.outerHTML = '';
-
-          // Cloning the new component to give it a different name for the demo
-          const demoNewComponent = JSONfn.parse(JSONfn.stringify(newComponent));
-          const newComponentName = Math.random().toString(36).substr(2, 5);
-          demoNewComponent.name = newComponentName;
-
-          const demoHtmlTag = document.createElement('ccm-' + newComponentName);
-          demoHtmlTag.setAttribute('data-demotype', 'isDemoComponent');
-          document.body.appendChild(demoHtmlTag);
-
-          eval(generateNewComponentCode(demoNewComponent));
+          ccm.start(newComponent, newComponent.config, function(inst) {
+            ccm.helper.setContent(mainElement.querySelector('#demoArea'), inst.root);
+          });
         }
 
         /**
