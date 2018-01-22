@@ -455,7 +455,9 @@
                      */
                     const modifiedComponentConfigCode = xhrToLoadComponentConfig.responseText
                       .replace('ccm.files[\'configs.js\']', 'window.loadedConfigForFactory') // minified
-                      .replace('ccm.files[ \'configs.js\' ]', 'window.loadedConfigForFactory'); // not minified
+                      .replace('ccm.files["configs.js"]', 'window.loadedConfigForFactory') // minified
+                      .replace('ccm.files[ \'configs.js\' ]', 'window.loadedConfigForFactory') // not minified
+                      .replace('ccm.files[ "configs.js" ]', 'window.loadedConfigForFactory'); // not minified
 
                     eval(modifiedComponentConfigCode);
 
