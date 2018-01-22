@@ -508,6 +508,9 @@
           newComponent.config = JSON.parse(codeEditors.configEditor.getValue());
           displayNewComponent();
 
+          // Tell outside, that the config has changed
+          if (self.onchange) self.onchange(self);
+
           if (self.preview) {
             demoNewComponent();
           }
