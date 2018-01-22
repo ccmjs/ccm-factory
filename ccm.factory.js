@@ -444,18 +444,35 @@
 
 
               if (urlToComponentConfig !== '' && componentConfigKey !== '') {
-                self.ccm.load({url: urlToComponentConfig}, function (data) {
+                const xhrToLoadComponentConfig = new XMLHttpRequest();
+                xhrToLoadComponentConfig.open('GET', urlToComponentConfig);
+                xhrToLoadComponentConfig.onreadystatechange = function() {
+                  if(xhrToLoadComponentConfig.readyState === XMLHttpRequest.DONE && xhrToLoadComponentConfig.status === 200) {
 
-                  Object.keys(data[componentConfigKey.toLowerCase()]).forEach((key) => {
-                    newComponent.config[key] = data[componentConfigKey.toLowerCase()][key];
-                  });
+                    /**
+                     * Store the loaded config at a different location than normal to prevent collisions
+                     * @type {string}
+                     */
+                    const modifiedComponentConfigCode = xhrToLoadComponentConfig.responseText
+                      .replace('ccm.files[\'configs.js\']', 'window.loadedConfigForFactory') // minified
+                      .replace('ccm.files[ \'configs.js\' ]', 'window.loadedConfigForFactory'); // not minified
 
-                  if (self.use_ace_for_editing) {
-                    // Delay start to give ace time to load
-                    mainElement.querySelector('#loadSpinner').style.display = 'block';
-                    setTimeout(displayEditingOptions, 1000);
+                    eval(modifiedComponentConfigCode);
+
+                    Object.keys(window.loadedConfigForFactory[componentConfigKey.toLowerCase()]).forEach((key) => {
+                      newComponent.config[key] = window.loadedConfigForFactory[componentConfigKey.toLowerCase()][key];
+                    });
+
+                    if (self.use_ace_for_editing) {
+                      // Delay start to give ace time to load
+                      mainElement.querySelector('#loadSpinner').style.display = 'block';
+                      setTimeout(displayEditingOptions, 1000);
+                    }
+
                   }
-                });
+                };
+                xhrToLoadComponentConfig.send();
+
               } else {
                 if (self.use_ace_for_editing) {
                   // Delay start to give ace time to load
