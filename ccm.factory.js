@@ -1542,7 +1542,7 @@
         function demoNewComponent() {
           mainElement.querySelector('#demoWrapper').style.display = 'block';
 
-          ccm.start(newComponent, newComponent.config, function(inst) {
+          ccm.start(self.ccm.helper.clone(newComponent), self.ccm.helper.clone(newComponent.config), function(inst) {
             ccm.helper.setContent(mainElement.querySelector('#demoArea'), inst.root);
           });
         }
