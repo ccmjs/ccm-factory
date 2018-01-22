@@ -73,7 +73,8 @@
                 },
                 {
                   "tag": "button",
-                  "class": "btn btn-default",
+                  "class": "btn btn-success",
+                  "style": "margin-top: 15px",
                   "inner": "Load component",
                   "onclick": "%loadComponentClick%"
                 },
@@ -101,8 +102,11 @@
             {
               "tag": "div",
               "id": "chooseEditingStyle",
-              "style": "display: none;",
+              "style": "display: none; margin-top: 15px;",
               "inner": [
+                {
+                  "inner": "Choose a mode for editing:"
+                },
                 {
                   "tag": "button",
                   "class": "btn btn-default",
@@ -111,7 +115,8 @@
                 },{
                   "tag": "button",
                   "class": "btn btn-default",
-                  "inner": "Guided editing mode",
+                  "style": "margin-left: 10px;",
+                  "inner": "Guided editing",
                   "onclick": "%guidedEditingChosenClick%"
                 }
               ]
@@ -138,7 +143,7 @@
                   "inner": [
                     {
                       "tag": "button",
-                      "class": "btn btn-default",
+                      "class": "btn btn-primary",
                       "inner": "Generate new component",
                       "onclick": "%generateFromEditorClick%"
                     }
@@ -224,7 +229,7 @@
                 },
                 {
                   "tag": "button",
-                  "class": "btn btn-default",
+                  "class": "btn btn-primary",
                   "inner": "Generate new component",
                   "onclick": "%generateFromGuidedClick%"
                 }
@@ -266,7 +271,7 @@
             },
             {
               "tag": "button",
-              "class": "btn btn-default",
+              "class": "btn btn-warning",
               "id": "downloadNewComponentButton",
               "style": "display: none;",
               "inner": "Download new component",
