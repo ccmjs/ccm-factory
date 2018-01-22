@@ -274,8 +274,28 @@
               "tag": "br"
             },
             {
-              "tag": "div",
-              "id": "demoArea"
+              "id": "demoWrapper",
+              "style": "display: none;",
+              "inner": {
+                "class": "panel panel-default",
+                "inner": [
+                  {
+                    "class": "panel-heading",
+                    "inner": {
+                      "tag": "h3",
+                      "class": "panel-title",
+                      "inner": "Demo"
+                    }
+                  },
+                  {
+                    "class": "panel-body",
+                    "inner": {
+                      "tag": "div",
+                      "id": "demoArea"
+                    }
+                  }
+                ]
+              }
             }
           ]
         }
@@ -1520,6 +1540,8 @@
          * Creates a demo of the new component
          */
         function demoNewComponent() {
+          mainElement.querySelector('#demoWrapper').style.display = 'block';
+
           ccm.start(newComponent, newComponent.config, function(inst) {
             ccm.helper.setContent(mainElement.querySelector('#demoArea'), inst.root);
           });
