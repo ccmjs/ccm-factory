@@ -568,7 +568,7 @@
                   }
                 } else if (currentConfigPoint[key] === null) {
                   generateNullField(displayBufferForKey + key, currentConfigPoint[key]);
-                } else if (key === 'html') { // Check if the object is the html template
+                } else if (key === 'html' || key === 'templates') { // Check if the object is the html template
                   generateHTMLEditor();
                 } else {
                   generateComponentSpecificFields(displayBufferForKey + key);
@@ -589,7 +589,13 @@
          */
         function generateHTMLEditor() {
           mainElement.querySelector('#htmlEditorCaption').style.display = 'block';
-          codeEditors.htmlEditor = generateCodeEditor('htmlEditor', JSON.stringify(newComponent.config.html, null, 2), 500, 300, 'json');
+          if (newComponent.config.html) {
+            codeEditors.htmlEditor = generateCodeEditor('htmlEditor', JSON.stringify(newComponent.config.html, null, 2), 500, 300, 'json');
+          } else if (newComponent.config.templates) {
+            codeEditors.htmlEditor = generateCodeEditor('htmlEditor', JSON.stringify(newComponent.config.templates, null, 2), 500, 300, 'json');
+          } else {
+            console.log('Unsupported HTML template');
+          }
         }
 
         /**
@@ -1317,6 +1323,8 @@
           // html template
           if (newComponent.config.html) {
             newComponent.config.html = JSON.parse(codeEditors.htmlEditor.getValue());
+          } else if (newComponent.config.templates) {
+            newComponent.config.templates = JSON.parse(codeEditors.htmlEditor.getValue());
           }
           // custom fields can be inputs
           const customFields = mainElement.querySelectorAll('input');
