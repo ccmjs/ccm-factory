@@ -123,6 +123,7 @@
               "inner": [
                 {
                   "id": "innerConfigEditorArea",
+                  "data-configorigin": "innerConfigEditorArea",
                   "inner": [
                     {
                       "inner": "Config"
@@ -213,7 +214,8 @@
                     },
                     {
                       "tag": "div",
-                      "id": "htmlEditor"
+                      "id": "htmlEditor",
+                      "data-configorigin": "htmlEditor"
                     }
                   ]
                 },
@@ -723,6 +725,7 @@
           const input = document.createElement('input');
           input.className = 'form-control form-control-inline';
           input.id = 'guidedConfParameterCCMTypeLoad_' + key;
+          input.setAttribute('data-configorigin', 'guidedConfParameterCCMTypeLoad_' + key);
           input.value = value[1];
           const advancedButton = document.createElement('button');
           advancedButton.className = 'btn btn-default';
@@ -731,6 +734,7 @@
             caption.outerHTML = '';
             input.outerHTML = '';
             input.id = input.id.slice(5); // invalidates id
+            input.setAttribute('data-configorigin', input.id.slice(5)); // invalidates data
 
             const textAreaForEditing = createTextAreaForEditingAdvancedCCMTypes(key, value);
             advancedButton.previousElementSibling.appendChild(document.createElement('br'));
@@ -753,6 +757,7 @@
           const textAreaForEditing = document.createElement('textarea');
           textAreaForEditing.className = 'form-control';
           textAreaForEditing.id = 'guidedConfParameterCCMTypeAdvanced_' + key;
+          textAreaForEditing.setAttribute('data-configorigin', 'guidedConfParameterCCMTypeAdvanced_' + key);
           textAreaForEditing.rows = 5;
           textAreaForEditing.cols = 50;
           textAreaForEditing.value = JSON.stringify(value, null, 2);
@@ -769,6 +774,7 @@
           generateCaptionForComponentSpecificField(key, value, 'function');
           const newDiv = document.createElement('div');
           newDiv.id = 'guidedConfParameterFunction_' + key;
+          newDiv.setAttribute('data-configorigin', 'guidedConfParameterFunction_' + key);
           mainElement.querySelector('#guided_componentSpecificConfiguration').appendChild(newDiv);
           const functionEditor = generateCodeEditor('guidedConfParameterFunction_' + key, value.toString(), 500, 300, 'javascript');
           codeEditors.functionEditors['guidedConfParameterFunction_' + key] = functionEditor;
@@ -784,6 +790,7 @@
           const select = document.createElement('select');
           select.className = 'form-control';
           select.id = 'guidedConfParameterBoolean_' + key;
+          select.setAttribute('data-configorigin', 'guidedConfParameterBoolean_' + key);
           const optionT = document.createElement('option');
           optionT.text = 'true';
           optionT.value = 'true';
@@ -808,6 +815,7 @@
           input.className = 'form-control';
           input.value = value;
           input.id = 'guidedConfParameterString_' + key;
+          input.setAttribute('data-configorigin', 'guidedConfParameterString_' + key);
           mainElement.querySelector('#guided_componentSpecificConfiguration').appendChild(input);
         }
 
@@ -823,6 +831,7 @@
           input.value = 'null';
           input.disabled = true;
           input.id = 'guidedConfParameterNull_' + key;
+          input.setAttribute('data-configorigin', 'guidedConfParameterNull_' + key);
           mainElement.querySelector('#guided_componentSpecificConfiguration').appendChild(input);
         }
 
@@ -837,6 +846,7 @@
           input.className = 'form-control';
           input.value = value;
           input.id = 'guidedConfParameterNumber_' + key;
+          input.setAttribute('data-configorigin', 'guidedConfParameterNumber_' + key);
           input.type = 'number';
           mainElement.querySelector('#guided_componentSpecificConfiguration').appendChild(input);
         }
@@ -885,6 +895,7 @@
           generateCaptionForComponentSpecificField(key, value, 'Array');
           const wrapperDiv = document.createElement('div');
           wrapperDiv.id = 'guidedConfParameterArrayMultipleTypes_' + key;
+          wrapperDiv.setAttribute('data-configorigin', 'guidedConfParameterArrayMultipleTypes_' + key);
           mainElement.querySelector('#guided_componentSpecificConfiguration').appendChild(wrapperDiv);
           codeEditors.arrayMultipleTypesEditors['guidedConfParameterArrayMultipleTypes_' + key] = generateCodeEditor('guidedConfParameterArrayMultipleTypes_' + key, JSON.stringify(value, null, 2), 500, 300, 'json');
         }
@@ -945,10 +956,13 @@
           const arrayInputWrapper = document.createElement('div');
           if (type === 'string') {
             arrayInputWrapper.id = 'GuidedArrayStringList_' + key;
+            arrayInputWrapper.setAttribute('data-configorigin', 'GuidedArrayStringList_' + key);
           } else if (type === 'number') {
             arrayInputWrapper.id = 'GuidedArrayNumberList_' + key;
+            arrayInputWrapper.setAttribute('data-configorigin', 'GuidedArrayNumberList_' + key);
           } else if (type === 'boolean') {
             arrayInputWrapper.id = 'GuidedArrayBooleanList_' + key;
+            arrayInputWrapper.setAttribute('data-configorigin', 'GuidedArrayBooleanList_' + key);
           }
 
           array.forEach(function (element) {
@@ -1566,22 +1580,23 @@
 
         /**
          * Generates an editor for code
-         * @param divID   Id of the div, where the editor should be placed
+         * @param configOriginData   Value of 'data-configorigin' from the div in which the editor should be placed
          * @param content String of content to place inside the editor
          * @param width   Width of the editor
          * @param height  Height of the editor
          * @param type    Type of the content. Possibilities: {'javascript', 'json'}
          * @returns       Returns a reference to the editor
          */
-        function generateCodeEditor(divID, content, width, height, type) {
+        function generateCodeEditor(configOriginData, content, width, height, type) {
           if (self.use_ace_for_editing) {
             const editorElement = document.createElement('juicy-ace-editor');
-            editorElement.id = divID + 'attachedEditor';
+            editorElement.id = configOriginData + 'attachedEditor';
+            editorElement.setAttribute('data-configorigin', configOriginData + 'attachedEditor');
             editorElement.style.width = width + 'px';
             editorElement.style.height = height + 'px';
-            mainElement.querySelector('#' + divID).appendChild(editorElement);
+            mainElement.querySelector('[data-configorigin="' + configOriginData + '"]').appendChild(editorElement);
 
-            const editorReference = mainElement.querySelector('#' + divID + 'attachedEditor').editor;
+            const editorReference = mainElement.querySelector('[data-configorigin="' + configOriginData + 'attachedEditor"]').editor;
 
             editorReference.setTheme('ace/theme/tomorrow');
             editorReference.getSession().setMode('ace/mode/' + type);
@@ -1595,11 +1610,12 @@
             // Fallback to textareas
             const editorElement = document.createElement('textarea');
             editorElement.className = 'form-control';
-            editorElement.id = divID + 'attachedEditor';
+            editorElement.id = configOriginData + 'attachedEditor';
+            editorElement.setAttribute('data-configorigin', configOriginData + 'attachedEditor');
             editorElement.style.width = width + 'px';
             editorElement.style.height = height + 'px';
             editorElement.value = content;
-            mainElement.querySelector('#' + divID).appendChild(editorElement);
+            mainElement.querySelector('[data-configorigin="' + configOriginData + 'attachedEditor"]').appendChild(editorElement);
 
             const editorReference = {
               getValue: function () {
