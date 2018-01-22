@@ -1444,7 +1444,13 @@
          */
         function fixJSONOutput(brokenJSONString) {
           return brokenJSONString
-            .replace(/\\n/g, '\r\n') // Newlines will be visible in the textarea
+            .replace(/(.*?)\\n/g, function (match, p1) { // Newlines will be visible in the textarea
+              if (p1.endsWith('\\')) {
+                return match;
+              } else {
+                return match.replace(/\\n/g, '\r\n');
+              }
+            })
             .replace(/function([^]*)}"/g, 'function$1}') // Removes quotation marks from functions
             .replace(/"function([^]*)}"/g, 'function$1}') // Removes quotation marks from functions
             .replace(/"function/g, 'function') // Removes quotation marks from functions
