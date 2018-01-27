@@ -42,7 +42,7 @@
               "style": "display: none;",
               "inner": [
                 {
-                  "inner": "URL of the component:<br>%currentUrl%resources/test_components/ccm.navmenu.js<br>%currentUrl%resources/test_components/ccm.kanban_card.js<br>%currentUrl%resources/test_components/ccm.game_chooser.js<br>%currentUrl%resources/test_components/ccm.form.js<br>%currentUrl%resources/test_components/ccm.teambuild_builder.js<br>%currentUrl%resources/test_components/ccm.radar_chart.js<br>%currentUrl%resources/test_components/ccm.radar_chart_documented.js<br>%currentUrl%resources/test_components/ccm.solutions_view.js<br>"
+                  "inner": "URL of the component:<br>%currentUrl%resources/test_components/ccm.navmenu.js<br>%currentUrl%resources/test_components/ccm.kanban_card.js<br>%currentUrl%resources/test_components/ccm.game_chooser.js<br>%currentUrl%resources/test_components/ccm.form.js<br>%currentUrl%resources/test_components/ccm.teambuild_builder.js<br>%currentUrl%resources/test_components/ccm.radar_chart.js<br>%currentUrl%resources/test_components/ccm.radar_chart_documented.js<br>%currentUrl%resources/test_components/ccm.solutions_view.js<br>%currentUrl%resources/test_components/ccm.highlight.js<br>"
                 },
                 {
                   "tag": "input",
@@ -576,6 +576,13 @@
             fillInCCMGuidedFields();
           }
           generateComponentSpecificFields('');
+
+          /**
+           * If the component has a meta field check if there are additional fields that are not present in the current configuration
+           */
+          if (newComponent.hasOwnProperty('meta') && newComponent.meta.hasOwnProperty('config')) {
+            checkMetaFieldForAdditionalConfigurations('');
+          }
         }
 
         /**
@@ -644,6 +651,88 @@
               default:
                 console.log('!Parsing not implemented! ' + key + ' -> ' + currentConfigPoint[key] + ' (' + typeof(newComponent.config[key])+ ')');
                 break;
+            }
+          }
+        }
+
+        function checkMetaFieldForAdditionalConfigurations(currentKey) {
+          let currentMetaPoint;
+          if (currentKey === '') {
+            currentMetaPoint = newComponent.meta.config;
+          } else {
+            currentMetaPoint = objectByString(newComponent.meta.config, currentKey);
+          }
+
+          for (let key in currentMetaPoint) {
+            let bufferForKey;
+            if (currentKey === '') {
+              bufferForKey = '';
+            } else {
+              bufferForKey = currentKey + '.';
+            }
+
+            if (typeof(currentMetaPoint[key]) === 'object') {
+              if (currentMetaPoint[key].ccm_doc_type) {
+                // Check if a key present in meta is not present in the config
+                if (objectByString(newComponent.config, bufferForKey + key) === undefined) {
+                  createMissingKeyInConfig(bufferForKey, newComponent.config);
+                  switch (currentMetaPoint[key].ccm_doc_type[0]) {
+                    case 'string':
+                      generateNewStringField(bufferForKey + key, '');
+                      break;
+                    case 'number':
+                      generateNewNumberField(bufferForKey + key, 0);
+                      break;
+                    case 'boolean':
+                      generateNewBooleanField(bufferForKey + key, true);
+                      break;
+                    case 'Array<string>':
+                      generateCaptionForComponentSpecificField(bufferForKey + key, [''], 'Array<string>');
+                      generateGeneralArrayEditor(bufferForKey + key, [''], 'string');
+                      break;
+                    case 'Array<number>':
+                      generateCaptionForComponentSpecificField(bufferForKey + key, [0], 'Array<number>');
+                      generateGeneralArrayEditor(bufferForKey + key, [0], 'number');
+                      break;
+                    case 'Array<boolean>':
+                      generateCaptionForComponentSpecificField(bufferForKey + key, [true], 'Array<boolean>');
+                      generateGeneralArrayEditor(bufferForKey + key, [true], 'boolean');
+                      break;
+                    case 'function':
+                      generateNewFunctionField(bufferForKey + key, 'function () {}');
+                      break;
+                    case 'null':
+                      generateNullField(bufferForKey + key, null);
+                      break;
+                    default:
+                      console.log('!Parsing (meta) not implemented! ' + key + ' -> ' + currentMetaPoint[key].ccm_doc_type);
+                      break;
+                  }
+                }
+              } else {
+                checkMetaFieldForAdditionalConfigurations(bufferForKey + key);
+              }
+            }
+          }
+        }
+
+        /**
+         * Creates a missing key in config
+         * @param key
+         */
+        function createMissingKeyInConfig(key, o) {
+          if (key === '') return;
+          if (key.endsWith('.')) key = key.slice(0, -1);
+          s = key.replace(/\[(\w+)\]/g, '.$1'); // convert indexes to properties
+          s = s.replace(/^\./, '');           // strip a leading dot
+          let a = s.split('.');
+          for (let i = 0, n = a.length; i < n; ++i) {
+            let k = a[i];
+            if (k in o) {
+              o = o[k];
+            } else {
+              o[k] = {};
+              o = o[k];
             }
           }
         }
