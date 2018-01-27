@@ -12,6 +12,25 @@
 
     ccm: 'https://akless.github.io/ccm/version/ccm-11.5.0.min.js',
 
+    meta: {
+      "config": {
+        "title": {
+          "ccm_doc_type": ["string"],
+          "ccm_doc_desc": "Title that is displayed in the navigation."
+        },
+        "new_config_field": {
+          "ccm_doc_type": ["number"],
+          "ccm_doc_desc": "Config field that is not present in the default config."
+        },
+        "nested_config": {
+          "new_nested_field": {
+            "ccm_doc_type": ["Array<string>"],
+            "ccm_doc_desc": "Nested config field that is not present in the default config."
+          }
+        }
+      }
+    },
+
     config: {
       html: {
         main: {
