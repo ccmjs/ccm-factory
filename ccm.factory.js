@@ -214,7 +214,15 @@
                     {
                       "tag": "div",
                       "id": "htmlEditorCaption",
-                      "inner": "HTML:",
+                      "inner": [
+                        "HTML: ",
+                        {
+                          "tag": "button",
+                          "class": "btn btn-default btn-circle",
+                          "inner": "?",
+                          "onclick": "%showHelpForHTML%"
+                        },
+                      ],
                       "style": "display: none;"
                     },
                     {
@@ -410,6 +418,7 @@
           guidedEditingChosenClick: guidedEditingChosen,
           generateFromEditorClick: generateNewComponentFromEditor,
           showHelpForCCMURL: showHelpForCCMURL,
+          showHelpForHTML: showHelpForHTML,
           generateFromGuidedClick: generateNewComponentFromGuided,
           downloadNewComponentClick: downloadNewComponent
         });
@@ -1367,6 +1376,26 @@
                                 Files seen there can be accessed via the following URL-Schema:<br>
                                 https://akless.github.io/ccm/version/&lt;Filename&gt;`;
           mainElement.querySelector('#ccmUrlEditor').appendChild(helpText);
+        }
+
+        /**
+         * Generates help text for HTML input
+         */
+        function showHelpForHTML() {
+          if (this.nextElementSibling) return; // Only one help text should be displayed
+          const helpText = document.createElement('div');
+          helpText.className = 'bs-callout bs-callout-primary';
+          helpText.style.width = '500px';
+          if (newComponent.hasOwnProperty('meta') && newComponent.meta.hasOwnProperty('config') && (newComponent.meta.config.hasOwnProperty('html') || newComponent.meta.config.hasOwnProperty('template'))) {
+            if (newComponent.meta.config.hasOwnProperty('html')) {
+              helpText.innerHTML = constructHelpText(newComponent.meta.config.html.ccm_doc_type, newComponent.meta.config.html.ccm_doc_desc, newComponent.meta.config.html.ccm_doc_examples);
+            } else {
+              helpText.innerHTML = constructHelpText(newComponent.meta.config.template.ccm_doc_type, newComponent.meta.config.template.ccm_doc_desc, newComponent.meta.config.template.ccm_doc_examples);
+            }
+          } else {
+            helpText.innerHTML = `HTML template in form of a JSON object.`;
+          }
+          mainElement.querySelector('#htmlEditorCaption').appendChild(helpText);
         }
 
         /**
