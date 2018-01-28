@@ -439,6 +439,7 @@
          */
         function loadComponent() {
           mainElement.querySelector('#alertMessage').style.display = 'none';
+          mainElement.querySelector('#loadSpinner').style.display = 'block';
 
           let urlToComponent = '';
           let urlToComponentConfig = '';
@@ -503,8 +504,9 @@
 
                     if (self.use_ace_for_editing) {
                       // Delay start to give ace time to load
-                      mainElement.querySelector('#loadSpinner').style.display = 'block';
                       setTimeout(displayEditingOptions, 1000);
+                    } else {
+                      displayEditingOptions();
                     }
 
                   }
@@ -514,8 +516,9 @@
               } else {
                 if (self.use_ace_for_editing) {
                   // Delay start to give ace time to load
-                  mainElement.querySelector('#loadSpinner').style.display = 'block';
                   setTimeout(displayEditingOptions, 1000);
+                } else {
+                  displayEditingOptions();
                 }
               }
             }
@@ -1738,7 +1741,7 @@
             editorElement.style.width = width + 'px';
             editorElement.style.height = height + 'px';
             editorElement.value = content;
-            mainElement.querySelector('[data-configorigin="' + configOriginData + 'attachedEditor"]').appendChild(editorElement);
+            mainElement.querySelector('[data-configorigin="' + configOriginData + '"]').appendChild(editorElement);
 
             const editorReference = {
               getValue: function () {
