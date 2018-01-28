@@ -1386,11 +1386,11 @@
           const helpText = document.createElement('div');
           helpText.className = 'bs-callout bs-callout-primary';
           helpText.style.width = '500px';
-          if (newComponent.hasOwnProperty('meta') && newComponent.meta.hasOwnProperty('config') && (newComponent.meta.config.hasOwnProperty('html') || newComponent.meta.config.hasOwnProperty('template'))) {
+          if (newComponent.hasOwnProperty('meta') && newComponent.meta.hasOwnProperty('config') && (newComponent.meta.config.hasOwnProperty('html') || newComponent.meta.config.hasOwnProperty('templates'))) {
             if (newComponent.meta.config.hasOwnProperty('html')) {
               helpText.innerHTML = constructHelpText(newComponent.meta.config.html.ccm_doc_type, newComponent.meta.config.html.ccm_doc_desc, newComponent.meta.config.html.ccm_doc_examples);
             } else {
-              helpText.innerHTML = constructHelpText(newComponent.meta.config.template.ccm_doc_type, newComponent.meta.config.template.ccm_doc_desc, newComponent.meta.config.template.ccm_doc_examples);
+              helpText.innerHTML = constructHelpText(newComponent.meta.config.templates.ccm_doc_type, newComponent.meta.config.templates.ccm_doc_desc, newComponent.meta.config.templates.ccm_doc_examples);
             }
           } else {
             helpText.innerHTML = `HTML template in form of a JSON object.`;
