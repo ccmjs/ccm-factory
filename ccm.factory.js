@@ -772,35 +772,67 @@
           const ccmDataType = value[0];
           switch (ccmDataType) {
             case 'ccm.load':
-              if (value.length === 2 && typeof(value[0]) === 'string' && typeof(value[1]) === 'string') { // The ccm load editor only supports editing of one load element
-                generateCCMLoadEditor(key, value);
+              if (value.length === 2 && typeof(value[0]) === 'string' && typeof(value[1]) === 'string') { // The ccm datatype editor only supports editing of one element
+                generateCCMDatatypeEditor(key, value, 'ccm.load', 'Load');
               } else {
                 generateAdvancedEditorForCCMDataTypes(key, value, ccmDataType);
               }
               break;
             case 'ccm.module':
-              generateAdvancedEditorForCCMDataTypes(key, value, ccmDataType);
+              if (value.length === 2 && typeof(value[0]) === 'string' && typeof(value[1]) === 'string') { // The ccm datatype editor only supports editing of one element
+                generateCCMDatatypeEditor(key, value, 'ccm.module', 'Module');
+              } else {
+                generateAdvancedEditorForCCMDataTypes(key, value, ccmDataType);
+              }
               break;
             case 'ccm.component':
-              generateAdvancedEditorForCCMDataTypes(key, value, ccmDataType);
+              if (value.length === 2 && typeof(value[0]) === 'string' && typeof(value[1]) === 'string') { // The ccm datatype editor only supports editing of one element
+                generateCCMDatatypeEditor(key, value, 'ccm.component', 'Component');
+              } else {
+                generateAdvancedEditorForCCMDataTypes(key, value, ccmDataType);
+              }
               break;
             case 'ccm.instance':
-              generateAdvancedEditorForCCMDataTypes(key, value, ccmDataType);
+              if (value.length === 2 && typeof(value[0]) === 'string' && typeof(value[1]) === 'string') { // The ccm datatype editor only supports editing of one element
+                generateCCMDatatypeEditor(key, value, 'ccm.instance', 'Instance');
+              } else {
+                generateAdvancedEditorForCCMDataTypes(key, value, ccmDataType);
+              }
               break;
             case 'ccm.proxy':
-              generateAdvancedEditorForCCMDataTypes(key, value, ccmDataType);
+              if (value.length === 2 && typeof(value[0]) === 'string' && typeof(value[1]) === 'string') { // The ccm datatype editor only supports editing of one element
+                generateCCMDatatypeEditor(key, value, 'ccm.proxy', 'Proxy');
+              } else {
+                generateAdvancedEditorForCCMDataTypes(key, value, ccmDataType);
+              }
               break;
             case 'ccm.store':
-              generateAdvancedEditorForCCMDataTypes(key, value, ccmDataType);
+              if (value.length === 2 && typeof(value[0]) === 'string' && typeof(value[1]) === 'string') { // The ccm datatype editor only supports editing of one element
+                generateCCMDatatypeEditor(key, value, 'ccm.store', 'Store');
+              } else {
+                generateAdvancedEditorForCCMDataTypes(key, value, ccmDataType);
+              }
               break;
             case 'ccm.get':
-              generateAdvancedEditorForCCMDataTypes(key, value, ccmDataType);
+              if (value.length === 2 && typeof(value[0]) === 'string' && typeof(value[1]) === 'string') { // The ccm datatype editor only supports editing of one element
+                generateCCMDatatypeEditor(key, value, 'ccm.get', 'Get');
+              } else {
+                generateAdvancedEditorForCCMDataTypes(key, value, ccmDataType);
+              }
               break;
             case 'ccm.set':
-              generateAdvancedEditorForCCMDataTypes(key, value, ccmDataType);
+              if (value.length === 2 && typeof(value[0]) === 'string' && typeof(value[1]) === 'string') { // The ccm datatype editor only supports editing of one element
+                generateCCMDatatypeEditor(key, value, 'ccm.set', 'Set');
+              } else {
+                generateAdvancedEditorForCCMDataTypes(key, value, ccmDataType);
+              }
               break;
             case 'ccm.del':
-              generateAdvancedEditorForCCMDataTypes(key, value, ccmDataType);
+              if (value.length === 2 && typeof(value[0]) === 'string' && typeof(value[1]) === 'string') { // The ccm datatype editor only supports editing of one element
+                generateCCMDatatypeEditor(key, value, 'ccm.del', 'Del');
+              } else {
+                generateAdvancedEditorForCCMDataTypes(key, value, ccmDataType);
+              }
               break;
             default:
               console.log('Parsing of the ccm datatype ' + ccmDataType + ' not implemented!');
@@ -820,18 +852,20 @@
         }
 
         /**
-         * Generates an input for ccm load
+         * Generates an input for ccm datatypes with one value
          * @param key
          * @param value
+         * @param type        e.g. ccm.load
+         * @param typeUpper   e.g. Load
          */
-        function generateCCMLoadEditor(key, value) {
-          generateCaptionForComponentSpecificField(key, value, 'ccm.load');
+        function generateCCMDatatypeEditor(key, value, type, typeUpper) {
+          generateCaptionForComponentSpecificField(key, value, type);
           const caption = document.createElement('span');
           caption.innerHTML = 'Value: ';
           const input = document.createElement('input');
           input.className = 'form-control form-control-inline';
-          input.id = 'guidedConfParameterCCMTypeLoad_' + key;
-          input.setAttribute('data-configorigin', 'guidedConfParameterCCMTypeLoad_' + key);
+          input.id = 'guidedConfParameterCCMType' + typeUpper + '_' + key;
+          input.setAttribute('data-configorigin', 'guidedConfParameterCCMType' + typeUpper + '_' + key);
           input.value = value[1];
           const advancedButton = document.createElement('button');
           advancedButton.className = 'btn btn-default';
@@ -1545,6 +1579,38 @@
             if (customFields[i].id.startsWith('guidedConfParameterCCMTypeLoad_')) {
               const keyToChange = customFields[i].id.slice(31);
               setNewConfigValue(keyToChange, ['ccm.load', customFields[i].value]);
+            }
+            if (customFields[i].id.startsWith('guidedConfParameterCCMTypeComponent_')) {
+              const keyToChange = customFields[i].id.slice(36);
+              setNewConfigValue(keyToChange, ['ccm.component', customFields[i].value]);
+            }
+            if (customFields[i].id.startsWith('guidedConfParameterCCMTypeModule_')) {
+              const keyToChange = customFields[i].id.slice(33);
+              setNewConfigValue(keyToChange, ['ccm.module', customFields[i].value]);
+            }
+            if (customFields[i].id.startsWith('guidedConfParameterCCMTypeInstance_')) {
+              const keyToChange = customFields[i].id.slice(35);
+              setNewConfigValue(keyToChange, ['ccm.instance', customFields[i].value]);
+            }
+            if (customFields[i].id.startsWith('guidedConfParameterCCMTypeProxy_')) {
+              const keyToChange = customFields[i].id.slice(32);
+              setNewConfigValue(keyToChange, ['ccm.proxy', customFields[i].value]);
+            }
+            if (customFields[i].id.startsWith('guidedConfParameterCCMTypeStore_')) {
+              const keyToChange = customFields[i].id.slice(32);
+              setNewConfigValue(keyToChange, ['ccm.store', customFields[i].value]);
+            }
+            if (customFields[i].id.startsWith('guidedConfParameterCCMTypeGet_')) {
+              const keyToChange = customFields[i].id.slice(30);
+              setNewConfigValue(keyToChange, ['ccm.get', customFields[i].value]);
+            }
+            if (customFields[i].id.startsWith('guidedConfParameterCCMTypeSet_')) {
+              const keyToChange = customFields[i].id.slice(30);
+              setNewConfigValue(keyToChange, ['ccm.set', customFields[i].value]);
+            }
+            if (customFields[i].id.startsWith('guidedConfParameterCCMTypeDel_')) {
+              const keyToChange = customFields[i].id.slice(30);
+              setNewConfigValue(keyToChange, ['ccm.del', customFields[i].value]);
             }
           }
           // custom fields can be selects
