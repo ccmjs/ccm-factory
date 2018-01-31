@@ -867,6 +867,7 @@
           input.id = 'guidedConfParameterCCMType' + typeUpper + '_' + key;
           input.setAttribute('data-configorigin', 'guidedConfParameterCCMType' + typeUpper + '_' + key);
           input.value = value[1];
+          input.style = 'width: 50%';
           const advancedButton = document.createElement('button');
           advancedButton.className = 'btn btn-default';
           advancedButton.innerHTML = 'Advanced editor';
