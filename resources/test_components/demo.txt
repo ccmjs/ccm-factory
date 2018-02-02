@@ -1,0 +1,16 @@
+Component URLs:
+http://localhost:5000/resources/test_components/ccm.navmenu.js
+http://localhost:5000/resources/test_components/ccm.kanban_card.js
+http://localhost:5000/resources/test_components/ccm.game_chooser.js
+http://localhost:5000/resources/test_components/ccm.form.js
+http://localhost:5000/resources/test_components/ccm.teambuild_builder.js
+http://localhost:5000/resources/test_components/ccm.radar_chart.js
+http://localhost:5000/resources/test_components/ccm.radar_chart_documented.js
+http://localhost:5000/resources/test_components/ccm.solutions_view.js
+http://localhost:5000/resources/test_components/ccm.highlight.js
+
+External configs:
+http://localhost:5000/resources/test_components/configs.js
+
+Key in external configs:
+Demo

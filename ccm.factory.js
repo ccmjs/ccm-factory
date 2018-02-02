@@ -42,17 +42,18 @@
               "style": "display: none;",
               "inner": [
                 {
-                  "inner": "URL of the component:<br>%currentUrl%resources/test_components/ccm.navmenu.js<br>%currentUrl%resources/test_components/ccm.kanban_card.js<br>%currentUrl%resources/test_components/ccm.game_chooser.js<br>%currentUrl%resources/test_components/ccm.form.js<br>%currentUrl%resources/test_components/ccm.teambuild_builder.js<br>%currentUrl%resources/test_components/ccm.radar_chart.js<br>%currentUrl%resources/test_components/ccm.radar_chart_documented.js<br>%currentUrl%resources/test_components/ccm.solutions_view.js<br>%currentUrl%resources/test_components/ccm.highlight.js<br>"
+                  "inner": "URL of the component:",
+                  "style": "margin-top: 20px;"
                 },
                 {
                   "tag": "input",
                   "class": "form-control",
                   "id": "componentURL",
                   "size": "70",
-                  "value": "%currentUrl%resources/test_components/ccm.kanban_card.js"
+                  "value": ""
                 },
                 {
-                  "inner": "URL of an external config file (optional):<br>%currentUrl%resources/test_components/configs.js"
+                  "inner": "URL of an external config file (optional):"
                 },
                 {
                   "tag": "input",
@@ -62,7 +63,7 @@
                   "value": ""
                 },
                 {
-                  "inner": "Key inside the external config file (leave blank when no config file is used):<br>Demo"
+                  "inner": "Key inside the external config file (leave blank when no config file is used):"
                 },
                 {
                   "tag": "input",
@@ -412,7 +413,6 @@
         }
 
         const mainElement = this.ccm.helper.html(this.html.main, {
-          currentUrl: window.location.href,
           loadComponentClick: loadComponent,
           configEditorChosenClick: configEditorChosen,
           guidedEditingChosenClick: guidedEditingChosen,
