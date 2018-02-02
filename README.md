@@ -2,9 +2,15 @@
 
 This factory is used to modify [ccm](https://github.com/akless/ccm) components.
 
-The factory can accessed via the following url: [https://leoneck.github.io/ccm-factory/](https://leoneck.github.io/ccm-factory/)
+The factory can be accessed via the following url: [https://leoneck.github.io/ccm-factory/](https://leoneck.github.io/ccm-factory/)
 
+## Build
+```
+npm install
+npm run build
+```
 
+## Configuration
 
 The following configurations are available for the factory component:
 
