@@ -1,6 +1,6 @@
 {
   "name": "ccm-factory",
-  "version": "0.9.1",
+  "version": "0.9.2",
   "description": "Factory for ccm components",
   "scripts": {
     "build": "node build.js"

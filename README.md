@@ -24,4 +24,5 @@ The following configurations are available for the factory component:
 | `key_in_external_config`             | String  | Specify the key in the external configuration that should be modified | `''`          |
 | `display_final_component_and_config` | Boolean | If set to false, nothing will be displayed after generating the new component | `true`        |
 | `no_bootstrap_container`             | Boolean | Set to true if embedded on a site that already has a bootstrap container div | `false`       |
+| `start_values`                       | Object  | Is set by W2C to load a configuration.   | `null`        |
 

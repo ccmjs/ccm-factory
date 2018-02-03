@@ -325,7 +325,8 @@
       external_config: '', // Specify an external config file for the component that should be modified
       key_in_external_config: '', // Specify the key in the external configuration that should be modified
       display_final_component_and_config: true, // If set to false, nothing will be displayed after generating the new component
-      no_bootstrap_container: false // Set to true if embedded on a site that already has a bootstrap container div
+      no_bootstrap_container: false, // Set to true if embedded on a site that already has a bootstrap container div
+      start_values: null // Is set by W2C to load a configuration
     },
 
     /**
@@ -513,6 +514,22 @@
                 };
                 xhrToLoadComponentConfig.send();
 
+              } else if (self.start_values !== null) {
+                delete self.start_values.updated_at;
+                delete self.start_values.key;
+
+                self.ccm.helper.decodeDependencies(self.start_values);
+
+                Object.keys(self.start_values).forEach((key) => {
+                  newComponent.config[key] = self.start_values[key];
+                });
+
+                if (self.use_ace_for_editing) {
+                  // Delay start to give ace time to load
+                  setTimeout(displayEditingOptions, 1000);
+                } else {
+                  displayEditingOptions();
+                }
               } else {
                 if (self.use_ace_for_editing) {
                   // Delay start to give ace time to load
@@ -1863,7 +1880,19 @@
        */
       this.getValue = () => {
         return this.ccm.helper.clone(newComponent.config);
-      }
+      };
+
+      /**
+       * Triggers the submit of the entered data
+       * @param event
+       */
+      this.submit = event => {
+        // prevent page reload
+        if (event) event.preventDefault();
+
+        // perform finish actions
+        self.ccm.helper.onFinish(self);
+      };
     }
   };
 
