@@ -1,10 +1,8 @@
 /**
- * @overview ccm component for factory
+ * @overview ccm factory for modifying components
  * @author Leon Eck <leon.eck@smail.inf.h-brs.de> 2018
  * @license The MIT License (MIT)
- * @version latest (0.1.0)
  */
-
 
 {
 
@@ -20,7 +18,7 @@
      * recommended used framework version
      * @type {string}
      */
-    ccm: 'js/ccm-13.1.0.js',
+    ccm: 'js/ccm-14.3.0.js',
 
     /**
      * default instance configuration
@@ -455,6 +453,20 @@
             componentConfigKey = mainElement.querySelector('#componentConfigKeyURL').value;
           }
 
+          if (urlToComponent === '') {
+            mainElement.querySelector('#alertMessage').innerHTML = 'No url specified';
+            mainElement.querySelector('#alertMessage').style.display = 'block';
+            mainElement.querySelector('#loadSpinner').style.display = 'none';
+            return;
+          }
+
+          if (urlToComponentConfig !== '' && componentConfigKey === '') {
+            mainElement.querySelector('#alertMessage').innerHTML = 'No key in external config key specified';
+            mainElement.querySelector('#alertMessage').style.display = 'block';
+            mainElement.querySelector('#loadSpinner').style.display = 'none';
+            return;
+          }
+
           const xhrToLoadComponent = new XMLHttpRequest();
           xhrToLoadComponent.open('GET', urlToComponent);
           xhrToLoadComponent.onreadystatechange = function() {
@@ -475,6 +487,7 @@
                 // No ccm component was detected
                 mainElement.querySelector('#alertMessage').innerHTML = 'The loaded file does not contain a valid ccm component';
                 mainElement.querySelector('#alertMessage').style.display = 'block';
+                mainElement.querySelector('#loadSpinner').style.display = 'none';
                 return;
               }
               if (!newComponent.config) newComponent.config = {};
@@ -561,7 +574,7 @@
          * The config is going to be edited with an editor
          */
         function configEditorChosen() {
-          // TODO: This is here to trigger a new height calculation in W2C. But this should not be necessary. W2C should automatically adjust the height. Also this doesn't work if new vertical space is dynamically added inside the factory e.g. when adding elements to arrays.
+          // Notice: This is here to trigger a new height calculation in W2C. But this should not be necessary. W2C should automatically adjust the height. Also this doesn't work if new vertical space is dynamically added inside the factory e.g. when adding elements to arrays.
           if (self.onchange) self.onchange(self);
 
           mainElement.querySelector('#chooseEditingStyle').style.display = 'none';
@@ -595,7 +608,7 @@
          * Config is edited through a guided process
          */
         function guidedEditingChosen() {
-          // TODO: This is here to trigger a new height calculation in W2C. But this should not be necessary. W2C should automatically adjust the height. Also this doesn't work if new vertical space is dynamically added inside the factory e.g. when adding elements to arrays.
+          // Notice: This is here to trigger a new height calculation in W2C. But this should not be necessary. W2C should automatically adjust the height. Also this doesn't work if new vertical space is dynamically added inside the factory e.g. when adding elements to arrays.
           if (self.onchange) self.onchange(self);
 
           mainElement.querySelector('#chooseEditingStyle').style.display = 'none';
@@ -1564,149 +1577,153 @@
          * Generates a new component from the guided process
          */
         function generateNewComponentFromGuided() {
-          if (self.show_ccm_fields) {
-            // name
-            newComponent.name = mainElement.querySelector('#guided_nameOfNewComponent').value;
-            // ccm url
-            if (typeof(newComponent.ccm) === 'object') {
-              newComponent.ccm.url = mainElement.querySelector('#guided_ccmURL').value;
-              delete newComponent.ccm.integrity; // Integrity can't be guaranteed any more
-            } else {
-              newComponent.ccm = mainElement.querySelector('#guided_ccmURL').value;
-            }
-          }
-          // html template
-          if (newComponent.config.html) {
-            newComponent.config.html = JSON.parse(codeEditors.htmlEditor.getValue());
-          } else if (newComponent.config.templates) {
-            newComponent.config.templates = JSON.parse(codeEditors.htmlEditor.getValue());
-          }
-          // custom fields can be inputs
-          const customFields = mainElement.querySelectorAll('input');
-          for (let i = 0; i < customFields.length; i++) {
-            // set string parameters
-            if (customFields[i].id.startsWith('guidedConfParameterString_')) {
-              const keyToChange = customFields[i].id.slice(26);
-              setNewConfigValue(keyToChange, customFields[i].value);
-            }
-            // set null parameters
-            if (customFields[i].id.startsWith('guidedConfParameterNull_')) {
-              const keyToChange = customFields[i].id.slice(24);
-              setNewConfigValue(keyToChange, null);
-            }
-            // set number parameters
-            if (customFields[i].id.startsWith('guidedConfParameterNumber_')) {
-              const keyToChange = customFields[i].id.slice(26);
-              setNewConfigValue(keyToChange, parseFloat(customFields[i].value));
-            }
-            // set ccm datatypes from simple editor
-            if (customFields[i].id.startsWith('guidedConfParameterCCMTypeLoad_')) {
-              const keyToChange = customFields[i].id.slice(31);
-              setNewConfigValue(keyToChange, ['ccm.load', customFields[i].value]);
-            }
-            if (customFields[i].id.startsWith('guidedConfParameterCCMTypeComponent_')) {
-              const keyToChange = customFields[i].id.slice(36);
-              setNewConfigValue(keyToChange, ['ccm.component', customFields[i].value]);
-            }
-            if (customFields[i].id.startsWith('guidedConfParameterCCMTypeModule_')) {
-              const keyToChange = customFields[i].id.slice(33);
-              setNewConfigValue(keyToChange, ['ccm.module', customFields[i].value]);
-            }
-            if (customFields[i].id.startsWith('guidedConfParameterCCMTypeInstance_')) {
-              const keyToChange = customFields[i].id.slice(35);
-              setNewConfigValue(keyToChange, ['ccm.instance', customFields[i].value]);
-            }
-            if (customFields[i].id.startsWith('guidedConfParameterCCMTypeProxy_')) {
-              const keyToChange = customFields[i].id.slice(32);
-              setNewConfigValue(keyToChange, ['ccm.proxy', customFields[i].value]);
-            }
-            if (customFields[i].id.startsWith('guidedConfParameterCCMTypeStore_')) {
-              const keyToChange = customFields[i].id.slice(32);
-              setNewConfigValue(keyToChange, ['ccm.store', customFields[i].value]);
-            }
-            if (customFields[i].id.startsWith('guidedConfParameterCCMTypeGet_')) {
-              const keyToChange = customFields[i].id.slice(30);
-              setNewConfigValue(keyToChange, ['ccm.get', customFields[i].value]);
-            }
-            if (customFields[i].id.startsWith('guidedConfParameterCCMTypeSet_')) {
-              const keyToChange = customFields[i].id.slice(30);
-              setNewConfigValue(keyToChange, ['ccm.set', customFields[i].value]);
-            }
-            if (customFields[i].id.startsWith('guidedConfParameterCCMTypeDel_')) {
-              const keyToChange = customFields[i].id.slice(30);
-              setNewConfigValue(keyToChange, ['ccm.del', customFields[i].value]);
-            }
-          }
-          // custom fields can be selects
-          const customFieldsSelect = mainElement.querySelectorAll('select');
-          for (let i = 0; i < customFieldsSelect.length; i++) {
-            // set boolean parameters
-            if (customFieldsSelect[i].id.startsWith('guidedConfParameterBoolean_')) {
-              const keyToChange = customFieldsSelect[i].id.slice(27);
-              setNewConfigValue(keyToChange, (customFieldsSelect[i].value === 'true'));
-            }
-          }
-          // custom fields can be textareas
-          const customFieldsTextarea = mainElement.querySelectorAll('textarea');
-          for (let i = 0; i < customFieldsTextarea.length; i++) {
-            // set ccm datatype parameters
-            if (customFieldsTextarea[i].id.startsWith('guidedConfParameterCCMTypeAdvanced_')) {
-              const keyToChange = customFieldsTextarea[i].id.slice(35);
-              setNewConfigValue(keyToChange, JSON.parse(customFieldsTextarea[i].value));
-            }
-          }
-          // search for custom config editors in divs
-          const potentialCustomConfig = mainElement.querySelectorAll('div');
-          for (let i = 0; i < potentialCustomConfig.length; i ++) {
-            // Set new string array in config
-            if (potentialCustomConfig[i].id.startsWith('GuidedArrayStringList_')) {
-              const keyToChange = potentialCustomConfig[i].id.slice(22);
-              let newConfigArray = [];
-              const children = potentialCustomConfig[i].children;
-              for (let j = 0; j < children.length; j++) {
-                if (children[j].nodeName === 'INPUT') {
-                  newConfigArray.push(children[j].value);
-                }
+          try {
+            if (self.show_ccm_fields) {
+              // name
+              newComponent.name = mainElement.querySelector('#guided_nameOfNewComponent').value;
+              // ccm url
+              if (typeof(newComponent.ccm) === 'object') {
+                newComponent.ccm.url = mainElement.querySelector('#guided_ccmURL').value;
+                delete newComponent.ccm.integrity; // Integrity can't be guaranteed any more
+              } else {
+                newComponent.ccm = mainElement.querySelector('#guided_ccmURL').value;
               }
-              setNewConfigValue(keyToChange, newConfigArray);
-            } else if (potentialCustomConfig[i].id.startsWith('GuidedArrayNumberList_')) {
-              const keyToChange = potentialCustomConfig[i].id.slice(22);
-              let newConfigArray = [];
-              const children = potentialCustomConfig[i].children;
-              for (let j = 0; j < children.length; j++) {
-                if (children[j].nodeName === 'INPUT') {
-                  newConfigArray.push(parseFloat(children[j].value));
-                }
-              }
-              setNewConfigValue(keyToChange, newConfigArray);
-            } else if (potentialCustomConfig[i].id.startsWith('GuidedArrayBooleanList_')) {
-              const keyToChange = potentialCustomConfig[i].id.slice(23);
-              let newConfigArray = [];
-              const children = potentialCustomConfig[i].children;
-              for (let j = 0; j < children.length; j++) {
-                if (children[j].nodeName === 'SELECT') {
-                  newConfigArray.push(children[j].value === 'true');
-                }
-              }
-              setNewConfigValue(keyToChange, newConfigArray);
-            } else if (potentialCustomConfig[i].id.startsWith('guidedConfParameterFunction_')) {
-              const keyToChange = potentialCustomConfig[i].id.slice(28);
-              const newFunction = codeEditors.functionEditors[potentialCustomConfig[i].id].getValue();
-              setNewConfigValue(keyToChange, eval('(' + newFunction + ')'));
-            } else if (potentialCustomConfig[i].id.startsWith('guidedConfParameterArrayMultipleTypes_')) {
-              const keyToChange = potentialCustomConfig[i].id.slice(38);
-              const newArray = codeEditors.arrayMultipleTypesEditors[potentialCustomConfig[i].id].getValue();
-              setNewConfigValue(keyToChange, JSON.parse(newArray));
             }
-          }
+            // html template
+            if (newComponent.config.html) {
+              newComponent.config.html = JSON.parse(codeEditors.htmlEditor.getValue());
+            } else if (newComponent.config.templates) {
+              newComponent.config.templates = JSON.parse(codeEditors.htmlEditor.getValue());
+            }
+            // custom fields can be inputs
+            const customFields = mainElement.querySelectorAll('input');
+            for (let i = 0; i < customFields.length; i++) {
+              // set string parameters
+              if (customFields[i].id.startsWith('guidedConfParameterString_')) {
+                const keyToChange = customFields[i].id.slice(26);
+                setNewConfigValue(keyToChange, customFields[i].value);
+              }
+              // set null parameters
+              if (customFields[i].id.startsWith('guidedConfParameterNull_')) {
+                const keyToChange = customFields[i].id.slice(24);
+                setNewConfigValue(keyToChange, null);
+              }
+              // set number parameters
+              if (customFields[i].id.startsWith('guidedConfParameterNumber_')) {
+                const keyToChange = customFields[i].id.slice(26);
+                setNewConfigValue(keyToChange, parseFloat(customFields[i].value));
+              }
+              // set ccm datatypes from simple editor
+              if (customFields[i].id.startsWith('guidedConfParameterCCMTypeLoad_')) {
+                const keyToChange = customFields[i].id.slice(31);
+                setNewConfigValue(keyToChange, ['ccm.load', customFields[i].value]);
+              }
+              if (customFields[i].id.startsWith('guidedConfParameterCCMTypeComponent_')) {
+                const keyToChange = customFields[i].id.slice(36);
+                setNewConfigValue(keyToChange, ['ccm.component', customFields[i].value]);
+              }
+              if (customFields[i].id.startsWith('guidedConfParameterCCMTypeModule_')) {
+                const keyToChange = customFields[i].id.slice(33);
+                setNewConfigValue(keyToChange, ['ccm.module', customFields[i].value]);
+              }
+              if (customFields[i].id.startsWith('guidedConfParameterCCMTypeInstance_')) {
+                const keyToChange = customFields[i].id.slice(35);
+                setNewConfigValue(keyToChange, ['ccm.instance', customFields[i].value]);
+              }
+              if (customFields[i].id.startsWith('guidedConfParameterCCMTypeProxy_')) {
+                const keyToChange = customFields[i].id.slice(32);
+                setNewConfigValue(keyToChange, ['ccm.proxy', customFields[i].value]);
+              }
+              if (customFields[i].id.startsWith('guidedConfParameterCCMTypeStore_')) {
+                const keyToChange = customFields[i].id.slice(32);
+                setNewConfigValue(keyToChange, ['ccm.store', customFields[i].value]);
+              }
+              if (customFields[i].id.startsWith('guidedConfParameterCCMTypeGet_')) {
+                const keyToChange = customFields[i].id.slice(30);
+                setNewConfigValue(keyToChange, ['ccm.get', customFields[i].value]);
+              }
+              if (customFields[i].id.startsWith('guidedConfParameterCCMTypeSet_')) {
+                const keyToChange = customFields[i].id.slice(30);
+                setNewConfigValue(keyToChange, ['ccm.set', customFields[i].value]);
+              }
+              if (customFields[i].id.startsWith('guidedConfParameterCCMTypeDel_')) {
+                const keyToChange = customFields[i].id.slice(30);
+                setNewConfigValue(keyToChange, ['ccm.del', customFields[i].value]);
+              }
+            }
+            // custom fields can be selects
+            const customFieldsSelect = mainElement.querySelectorAll('select');
+            for (let i = 0; i < customFieldsSelect.length; i++) {
+              // set boolean parameters
+              if (customFieldsSelect[i].id.startsWith('guidedConfParameterBoolean_')) {
+                const keyToChange = customFieldsSelect[i].id.slice(27);
+                setNewConfigValue(keyToChange, (customFieldsSelect[i].value === 'true'));
+              }
+            }
+            // custom fields can be textareas
+            const customFieldsTextarea = mainElement.querySelectorAll('textarea');
+            for (let i = 0; i < customFieldsTextarea.length; i++) {
+              // set ccm datatype parameters
+              if (customFieldsTextarea[i].id.startsWith('guidedConfParameterCCMTypeAdvanced_')) {
+                const keyToChange = customFieldsTextarea[i].id.slice(35);
+                setNewConfigValue(keyToChange, JSON.parse(customFieldsTextarea[i].value));
+              }
+            }
+            // search for custom config editors in divs
+            const potentialCustomConfig = mainElement.querySelectorAll('div');
+            for (let i = 0; i < potentialCustomConfig.length; i++) {
+              // Set new string array in config
+              if (potentialCustomConfig[i].id.startsWith('GuidedArrayStringList_')) {
+                const keyToChange = potentialCustomConfig[i].id.slice(22);
+                let newConfigArray = [];
+                const children = potentialCustomConfig[i].children;
+                for (let j = 0; j < children.length; j++) {
+                  if (children[j].nodeName === 'INPUT') {
+                    newConfigArray.push(children[j].value);
+                  }
+                }
+                setNewConfigValue(keyToChange, newConfigArray);
+              } else if (potentialCustomConfig[i].id.startsWith('GuidedArrayNumberList_')) {
+                const keyToChange = potentialCustomConfig[i].id.slice(22);
+                let newConfigArray = [];
+                const children = potentialCustomConfig[i].children;
+                for (let j = 0; j < children.length; j++) {
+                  if (children[j].nodeName === 'INPUT') {
+                    newConfigArray.push(parseFloat(children[j].value));
+                  }
+                }
+                setNewConfigValue(keyToChange, newConfigArray);
+              } else if (potentialCustomConfig[i].id.startsWith('GuidedArrayBooleanList_')) {
+                const keyToChange = potentialCustomConfig[i].id.slice(23);
+                let newConfigArray = [];
+                const children = potentialCustomConfig[i].children;
+                for (let j = 0; j < children.length; j++) {
+                  if (children[j].nodeName === 'SELECT') {
+                    newConfigArray.push(children[j].value === 'true');
+                  }
+                }
+                setNewConfigValue(keyToChange, newConfigArray);
+              } else if (potentialCustomConfig[i].id.startsWith('guidedConfParameterFunction_')) {
+                const keyToChange = potentialCustomConfig[i].id.slice(28);
+                const newFunction = codeEditors.functionEditors[potentialCustomConfig[i].id].getValue();
+                setNewConfigValue(keyToChange, eval('(' + newFunction + ')'));
+              } else if (potentialCustomConfig[i].id.startsWith('guidedConfParameterArrayMultipleTypes_')) {
+                const keyToChange = potentialCustomConfig[i].id.slice(38);
+                const newArray = codeEditors.arrayMultipleTypesEditors[potentialCustomConfig[i].id].getValue();
+                setNewConfigValue(keyToChange, JSON.parse(newArray));
+              }
+            }
 
-          displayNewComponent();
+            displayNewComponent();
 
-          // Tell outside, that the config has changed
-          if (self.onchange) self.onchange(self);
+            // Tell outside, that the config has changed
+            if (self.onchange) self.onchange(self);
 
-          if (self.preview) {
-            demoNewComponent();
+            if (self.preview) {
+              demoNewComponent();
+            }
+          } catch (error) {
+            console.error('Error while generating new component', error);
           }
         }
 
