@@ -884,7 +884,7 @@
           input.id = 'guidedConfParameterCCMType' + typeUpper + '_' + key;
           input.setAttribute('data-configorigin', 'guidedConfParameterCCMType' + typeUpper + '_' + key);
           input.value = value[1];
-          input.style = 'width: 50%';
+          input.style = 'width: 70%';
           const advancedButton = document.createElement('button');
           advancedButton.className = 'btn btn-default';
           advancedButton.innerHTML = 'Advanced editor';
@@ -1146,6 +1146,7 @@
               inputElement.appendChild(optionF);
             }
             inputElement.className = 'form-control form-control-inline';
+            inputElement.style = 'width: 70%';
 
             const deleteButton = document.createElement('button');
             deleteButton.className = 'btn btn-default';
@@ -1182,6 +1183,7 @@
                 inputElement.appendChild(optionF);
               }
               inputElement.className = 'form-control form-control-inline';
+              inputElement.style = 'width: 70%';
 
               const deleteButton = document.createElement('button');
               deleteButton.className = 'btn btn-default';
@@ -1235,6 +1237,7 @@
               inputElement.appendChild(optionF);
             }
             inputElement.className = 'form-control form-control-inline';
+            inputElement.style = 'width: 70%';
 
             const deleteButton = document.createElement('button');
             deleteButton.className = 'btn btn-default';
@@ -1271,6 +1274,7 @@
                 inputElement.appendChild(optionF);
               }
               inputElement.className = 'form-control form-control-inline';
+              inputElement.style = 'width: 70%';
 
               const deleteButton = document.createElement('button');
               deleteButton.className = 'btn btn-default';
@@ -1324,6 +1328,7 @@
               inputElement.appendChild(optionF);
             }
             inputElement.className = 'form-control form-control-inline';
+            inputElement.style = 'width: 70%';
 
             const deleteButton = document.createElement('button');
             deleteButton.className = 'btn btn-default';
@@ -1360,6 +1365,7 @@
                 inputElement.appendChild(optionF);
               }
               inputElement.className = 'form-control form-control-inline';
+              inputElement.style = 'width: 70%';
 
               const deleteButton = document.createElement('button');
               deleteButton.className = 'btn btn-default';
