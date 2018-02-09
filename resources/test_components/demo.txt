@@ -8,6 +8,7 @@ http://localhost:5000/resources/test_components/ccm.radar_chart.js
 http://localhost:5000/resources/test_components/ccm.radar_chart_documented.js
 http://localhost:5000/resources/test_components/ccm.solutions_view.js
 http://localhost:5000/resources/test_components/ccm.highlight.js
+http://localhost:5000/resources/test_components/ccm.input.js
 
 External configs:
 http://localhost:5000/resources/test_components/configs.js
