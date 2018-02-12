@@ -568,6 +568,9 @@
             // Ace was not loaded. Use fallback
             self.use_ace_for_editing = false;
           }
+
+          // Notice: This is here to trigger a new height calculation in W2C. But this should not be necessary. W2C should automatically adjust the height. Also this doesn't work if new vertical space is dynamically added inside the factory e.g. when adding elements to arrays.
+          if (self.onchange) self.onchange(self);
         }
 
         /**
