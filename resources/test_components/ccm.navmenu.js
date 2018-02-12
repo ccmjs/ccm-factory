@@ -104,12 +104,15 @@
 
       var main_elem;
 
-      this.start = function () {
+      this.start = callback => {
 
         main_elem = this.ccm.helper.html(this.html.main, {
           title: this.title
         });
+
         this.element.appendChild(main_elem);
+
+        if ( callback ) callback();
       };
 
       this.setItems = function (items) {
