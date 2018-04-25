@@ -7,14 +7,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/LeonEck/ccm-factory.git"
+    "url": "git+https://github.com/ccmjs/ccm-factory.git"
   },
   "author": "Leon Eck",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/LeonEck/ccm-factory/issues"
+    "url": "https://github.com/ccmjs/ccm-factory/issues"
   },
-  "homepage": "https://leoneck.github.io/ccm-factory/",
+  "homepage": "https://ccmjs.github.io/ccm-factory/",
   "dependencies": {
     "babel-minify": "^0.2.0"
   }
